@@ -26,21 +26,30 @@ grant the app Full Disk Access in System Settings → Privacy & Security.
 
 ```
 Nautica/
-├── NauticaApp.swift            # App entry point (@main), WindowGroup → MainWindow
+├── NauticaApp.swift            # App entry (@main), WindowGroup + Settings scene,
+│                               #   menu commands, AppDelegate (tab restore, DB setup)
 ├── Info.plist                  # Declares public.folder document type
+├── Credits.rtf                 # About-box credits (GPL-2.0+)
 ├── Nautica.entitlements        # User-selected + full-disk file access
+├── Assets.xcassets/            # AppIcon (generated compass-star motif)
 ├── Models/                     # FileItem, DirectoryContents, SelectionModel,
-│                               #   FolderViewState (SwiftData)
-├── Services/                   # FileSystemService, ThumbnailService, TagService (GRDB),
-│                               #   TerminalService — all actors, UI-agnostic
+│                               #   NavigationHistory, TabState, TabPersistence,
+│                               #   TagItem/FileTag (GRDB), FolderViewState (SwiftData)
+├── Services/                   # FileSystemService, FileOperationService, TagService (GRDB),
+│                               #   QuickLookService, TerminalService — actors, UI-agnostic;
+│                               #   ViewStateService (@MainActor, SwiftData)
 ├── Views/
-│   ├── BrowserView.swift       # NavigationSplitView: sidebar + detail
+│   ├── BrowserView.swift       # NavigationSplitView: sidebar + detail, file ops,
+│   │                           #   Quick Look, per-folder state, permission banner
 │   ├── SidebarView.swift       # Favorites / Tree / Tags / Recent
 │   ├── FileViews/              # AppKit-backed file listings (Icon, List) hosted
 │   │                           #   via FileViewCoordinator (NSViewRepresentable)
-│   ├── Chrome/                 # PathBarView (breadcrumbs), BrowserToolbar (NSToolbar)
+│   ├── Chrome/                 # PathBarView (breadcrumbs), BrowserToolbar (NSToolbar),
+│   │                           #   ProgressPanel (file-op progress sheet)
+│   ├── Settings/               # SettingsView (General/Appearance/Terminal/Advanced)
+│   ├── Onboarding/             # OnboardingView (first-launch: welcome, FDA, favorites)
 │   └── Windows/MainWindow.swift
-└── Utilities/                  # Constants, URL/FileManager extensions
+└── Utilities/                  # Constants, URL/FileManager/Color extensions
 ```
 
 Design rules:
