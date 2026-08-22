@@ -1,0 +1,38 @@
+import Foundation
+
+enum Constants {
+    /// ~/Library/Application Support/Nautica
+    static let appSupportURL = FileManager.default
+        .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+        .first!
+        .appendingPathComponent("Nautica")
+
+    // MARK: - UserDefaults keys
+
+    /// Selected terminal emulator raw value (Prompt 13).
+    static let defaultTerminalKey = "defaultTerminal"
+    /// Custom shell path; empty means the login shell (Prompt 14).
+    static let terminalShellKey = "terminalShell"
+    /// "home" | "desktop" | "lastVisited" (Prompt 14).
+    static let defaultNewWindowFolderKey = "defaultNewWindowFolder"
+    static let showExtensionsKey = "showExtensions"
+    static let confirmTrashKey = "confirmTrash"
+    static let showHiddenFilesKey = "showHiddenFiles"
+    static let defaultViewModeKey = "defaultViewMode"
+    static let defaultIconSizeKey = "defaultIconSize"
+    static let sidebarWidthKey = "sidebarWidth"
+    static let useSystemAccentKey = "useSystemAccent"
+    static let checkForUpdatesKey = "checkForUpdates"
+
+    /// Initial folder for a new window, per the General preference.
+    static func defaultWindowURL() -> URL {
+        switch UserDefaults.standard.string(forKey: defaultNewWindowFolderKey) {
+        case "desktop":
+            return FileManager.default.homeURL.appendingPathComponent("Desktop")
+        default:
+            // "home", and "lastVisited" falls back to Home for brand-new
+            // windows; launch-time tab restore covers the last session.
+            return FileManager.default.homeURL
+        }
+    }
+}
