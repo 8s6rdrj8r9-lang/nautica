@@ -79,6 +79,9 @@ struct NauticaApp: App {
                 Divider()
                 Button("Toggle Hidden Files") { browserActions?.toggleHiddenFiles() }
                     .keyboardShortcut(".", modifiers: [.command, .shift])
+                Divider()
+                Button("Tree Panel") { browserActions?.toggleTreePanel() }
+                    .keyboardShortcut("0", modifiers: [.command, .option])
             }
             CommandMenu("Go") {
                 Button("Back") { browserActions?.goBack() }

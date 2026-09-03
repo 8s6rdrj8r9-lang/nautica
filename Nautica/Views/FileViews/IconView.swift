@@ -175,6 +175,10 @@ final class IconViewController: NSViewController {
     var onNavigate: ((URL) -> Void)?
     /// Keyboard events from the collection view (FileViewCoordinator routes these).
     var keyDownHandler: ((NSEvent) -> Bool)?
+    /// Context-menu actions routed to BrowserView (rename sheet, copy, trash).
+    var onRenameRequest: (() -> Void)?
+    var onCopySelection: (() -> Void)?
+    var onTrashSelection: (() -> Void)?
     /// Reports the current column count for grid-aware arrow navigation.
     var onColumnCountChanged: ((Int) -> Void)?
 
@@ -370,57 +374,36 @@ final class IconViewController: NSViewController {
         }
         contextMenuItems = selectedItems()
 
-        let menu = NSMenu()
-        menu.addItem(makeMenuItem(title: "Open", action: #selector(openSelection(_:))))
-        menu.addItem(makeOpenWithMenuItem(for: item))
-        menu.addItem(.separator())
-        menu.addItem(makeMenuItem(title: "Get Info", action: #selector(showInfo(_:))))
-        menu.addItem(makeMenuItem(title: "Rename", action: #selector(renameSelection(_:))))
-        menu.addItem(makeMenuItem(title: "Move to Trash", action: #selector(moveSelectionToTrash(_:))))
-        let tagsItem = makeMenuItem(title: "Tags", action: nil)
-        tagsItem.isEnabled = false // TagService integration arrives with F-013.
-        menu.addItem(tagsItem)
-        menu.addItem(.separator())
-        menu.addItem(makeMenuItem(title: "Share…", action: #selector(shareSelection(_:))))
-
+        let menu = FileContextMenu.makeMenu(for: contextMenuItems, actions: contextMenuActions())
         let location = collectionView.convert(event.locationInWindow, from: nil)
         menu.popUp(positioning: nil, at: location, in: collectionView)
     }
 
-    private func makeMenuItem(title: String, action: Selector?) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
-        item.target = self
-        return item
-    }
-
-    private func makeOpenWithMenuItem(for item: FileItem) -> NSMenuItem {
-        let menuItem = NSMenuItem(title: "Open With", action: nil, keyEquivalent: "")
-        let submenu = NSMenu()
-        let applications = NSWorkspace.shared.urlsForApplications(toOpen: item.url)
-        if applications.isEmpty {
-            let empty = NSMenuItem(title: "No Applications Found", action: nil, keyEquivalent: "")
-            empty.isEnabled = false
-            submenu.addItem(empty)
-        } else {
-            for appURL in applications {
-                let appItem = NSMenuItem(
-                    title: FileManager.default.displayName(atPath: appURL.path),
-                    action: #selector(openWithApplication(_:)),
-                    keyEquivalent: ""
+    /// Menu actions for the current right-click selection, shared with the
+    /// list view via `FileContextMenu`.
+    private func contextMenuActions() -> FileContextMenu.Actions {
+        FileContextMenu.Actions(
+            open: { [weak self] in self?.openSelection() },
+            openWith: { [weak self] appURL in self?.openSelection(with: appURL) },
+            quickLook: { [weak self] in
+                guard let self else { return }
+                QuickLookService.shared.togglePreview(
+                    for: contextMenuItems.map(\.url), selectedIndex: 0
                 )
-                appItem.target = self
-                appItem.representedObject = appURL
-                let icon = NSWorkspace.shared.icon(forFile: appURL.path)
-                icon.size = NSSize(width: 16, height: 16)
-                appItem.image = icon
-                submenu.addItem(appItem)
-            }
-        }
-        menuItem.submenu = submenu
-        return menuItem
+            },
+            getInfo: { [weak self] in
+                if let item = self?.contextMenuItems.first {
+                    FileContextMenu.showInfo(for: item)
+                }
+            },
+            rename: { [weak self] in self?.onRenameRequest?() },
+            copy: { [weak self] in self?.onCopySelection?() },
+            trash: { [weak self] in self?.onTrashSelection?() },
+            share: { [weak self] in self?.shareSelection() }
+        )
     }
 
-    @objc private func openSelection(_ sender: NSMenuItem) {
+    private func openSelection() {
         for item in contextMenuItems where !item.isDirectory {
             NSWorkspace.shared.open(item.url)
         }
@@ -429,8 +412,7 @@ final class IconViewController: NSViewController {
         }
     }
 
-    @objc private func openWithApplication(_ sender: NSMenuItem) {
-        guard let appURL = sender.representedObject as? URL else { return }
+    private func openSelection(with appURL: URL) {
         NSWorkspace.shared.open(
             contextMenuItems.map(\.url),
             withApplicationAt: appURL,
@@ -438,59 +420,7 @@ final class IconViewController: NSViewController {
         )
     }
 
-    @objc private func showInfo(_ sender: NSMenuItem) {
-        guard let item = contextMenuItems.first else { return }
-        // Interim panel; a full inspector window is a later refinement.
-        let alert = NSAlert()
-        alert.messageText = item.name
-        let icon = NSWorkspace.shared.icon(forFile: item.url.path)
-        icon.size = NSSize(width: 64, height: 64)
-        alert.icon = icon
-
-        var lines = ["Path: \(item.url.path)"]
-        if !item.kind.isEmpty { lines.append("Kind: \(item.kind)") }
-        if let size = item.size {
-            lines.append("Size: \(ByteCountFormatter.string(fromByteCount: size, countStyle: .file))")
-        }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        if let created = item.creationDate {
-            lines.append("Created: \(formatter.string(from: created))")
-        }
-        if let modified = item.modificationDate {
-            lines.append("Modified: \(formatter.string(from: modified))")
-        }
-        alert.informativeText = lines.joined(separator: "\n")
-        alert.runModal()
-    }
-
-    @objc private func renameSelection(_ sender: NSMenuItem) {
-        // Inline rename arrives with the file-operation service in Prompt 10.
-        NSLog("Nautica: Rename requested for %@ (not yet implemented)",
-              contextMenuItems.map(\.name).joined(separator: ", "))
-    }
-
-    @objc private func moveSelectionToTrash(_ sender: NSMenuItem) {
-        var failedNames: [String] = []
-        for item in contextMenuItems {
-            do {
-                try FileManager.default.trashItem(at: item.url, resultingItemURL: nil)
-            } catch {
-                failedNames.append(item.name)
-            }
-        }
-        selectionModel.deselectAll()
-        directoryContents.reload()
-        if !failedNames.isEmpty {
-            let alert = NSAlert()
-            alert.messageText = "Some items could not be moved to the Trash."
-            alert.informativeText = failedNames.joined(separator: "\n")
-            alert.runModal()
-        }
-    }
-
-    @objc private func shareSelection(_ sender: NSMenuItem) {
+    private func shareSelection() {
         let urls = contextMenuItems.map(\.url)
         guard !urls.isEmpty else { return }
         let picker = NSSharingServicePicker(items: urls)

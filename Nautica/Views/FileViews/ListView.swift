@@ -54,6 +54,8 @@ enum ListColumn: String, CaseIterable {
 /// mirroring IconCollectionView.
 private final class FileListTableView: NSTableView {
     var onKeyDown: ((NSEvent) -> Bool)?
+    /// Builds the right-click menu for the row under the cursor.
+    var onMenuRequest: ((Int) -> NSMenu?)?
 
     override var acceptsFirstResponder: Bool { true }
 
@@ -61,6 +63,13 @@ private final class FileListTableView: NSTableView {
         if onKeyDown?(event) != true {
             super.keyDown(with: event)
         }
+    }
+
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let point = convert(event.locationInWindow, from: nil)
+        let row = row(at: point)
+        guard row >= 0 else { return nil }
+        return onMenuRequest?(row)
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -108,6 +117,10 @@ final class ListViewController: NSViewController {
     var onNavigate: ((URL) -> Void)?
     /// Keyboard events from the table view (FileViewCoordinator routes these).
     var keyDownHandler: ((NSEvent) -> Bool)?
+    /// Context-menu actions routed to BrowserView (rename sheet, copy, trash).
+    var onRenameRequest: (() -> Void)?
+    var onCopySelection: (() -> Void)?
+    var onTrashSelection: (() -> Void)?
     /// Comma-separated tag names for an item. Stub seam for the TagService
     /// integration arriving in Prompt 11 (F-013).
     var tagsProvider: (FileItem) -> String = { _ in "" }
@@ -146,6 +159,9 @@ final class ListViewController: NSViewController {
         tableView.columnAutoresizingStyle = .noColumnAutoresizing
         tableView.onKeyDown = { [weak self] event in
             self?.keyDownHandler?(event) ?? false
+        }
+        tableView.onMenuRequest = { [weak self] row in
+            self?.menu(forRow: row)
         }
         tableView.target = self
         tableView.doubleAction = #selector(handleDoubleClick(_:))
@@ -273,6 +289,73 @@ final class ListViewController: NSViewController {
             onNavigate?(item.url)
         } else {
             NSWorkspace.shared.open(item.url)
+        }
+    }
+
+    // MARK: - Context menu
+
+    /// Items the context menu acts on (the selection after the right-click).
+    private var contextMenuItems: [FileItem] = []
+    private var sharingServicePicker: NSSharingServicePicker?
+
+    /// Right-click on a row: select it if needed, then build the shared menu.
+    private func menu(forRow row: Int) -> NSMenu? {
+        guard row >= 0, row < currentItems.count else { return nil }
+        let item = currentItems[row]
+        if !selectionModel.isSelected(item.id) {
+            selectionModel.select(item.id, modifierFlags: [])
+            applySelection()
+        }
+        contextMenuItems = currentItems.filter { selectionModel.isSelected($0.id) }
+        return FileContextMenu.makeMenu(for: contextMenuItems, actions: contextMenuActions(forRow: row))
+    }
+
+    private func contextMenuActions(forRow row: Int) -> FileContextMenu.Actions {
+        FileContextMenu.Actions(
+            open: { [weak self] in
+                guard let self else { return }
+                for item in contextMenuItems where !item.isDirectory {
+                    NSWorkspace.shared.open(item.url)
+                }
+                if let folder = contextMenuItems.first(where: \.isDirectory) {
+                    onNavigate?(folder.url)
+                }
+            },
+            openWith: { [weak self] appURL in
+                guard let self else { return }
+                NSWorkspace.shared.open(
+                    contextMenuItems.map(\.url),
+                    withApplicationAt: appURL,
+                    configuration: NSWorkspace.OpenConfiguration()
+                )
+            },
+            quickLook: { [weak self] in
+                guard let self else { return }
+                QuickLookService.shared.togglePreview(
+                    for: contextMenuItems.map(\.url), selectedIndex: 0
+                )
+            },
+            getInfo: { [weak self] in
+                if let item = self?.contextMenuItems.first {
+                    FileContextMenu.showInfo(for: item)
+                }
+            },
+            rename: { [weak self] in self?.onRenameRequest?() },
+            copy: { [weak self] in self?.onCopySelection?() },
+            trash: { [weak self] in self?.onTrashSelection?() },
+            share: { [weak self] in self?.shareSelection(anchoredAtRow: row) }
+        )
+    }
+
+    private func shareSelection(anchoredAtRow row: Int) {
+        let urls = contextMenuItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        let picker = NSSharingServicePicker(items: urls)
+        sharingServicePicker = picker // retained until the picker is dismissed
+        if let rowView = tableView.rowView(atRow: row, makeIfNecessary: false) {
+            picker.show(relativeTo: rowView.bounds, of: rowView, preferredEdge: .minY)
+        } else {
+            picker.show(relativeTo: tableView.bounds, of: tableView, preferredEdge: .minY)
         }
     }
 }

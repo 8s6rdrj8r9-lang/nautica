@@ -21,6 +21,9 @@ struct FileViewCoordinator: NSViewRepresentable {
     var onNavigate: ((URL) -> Void)?
     /// Return/Enter pressed with a single selection (rename, Prompt 10).
     var onRenameRequest: (() -> Void)?
+    /// Context-menu actions routed to BrowserView.
+    var onCopySelection: (() -> Void)?
+    var onTrashSelection: (() -> Void)?
 
     func makeNSView(context: Context) -> KeyHandlingView {
         let container = KeyHandlingView()
@@ -36,6 +39,15 @@ struct FileViewCoordinator: NSViewRepresentable {
             coordinator?.handleKeyDown(event) ?? false
         }
         iconController.onNavigate = onNavigate
+        iconController.onRenameRequest = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onRenameRequest?()
+        }
+        iconController.onCopySelection = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCopySelection?()
+        }
+        iconController.onTrashSelection = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onTrashSelection?()
+        }
         iconController.onColumnCountChanged = { [weak coordinator = context.coordinator] count in
             coordinator?.liveColumnCount = count
         }
@@ -53,6 +65,15 @@ struct FileViewCoordinator: NSViewRepresentable {
             coordinator?.handleKeyDown(event) ?? false
         }
         listController.onNavigate = onNavigate
+        listController.onRenameRequest = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onRenameRequest?()
+        }
+        listController.onCopySelection = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCopySelection?()
+        }
+        listController.onTrashSelection = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onTrashSelection?()
+        }
         context.coordinator.listViewController = listController
 
         let listView = listController.view

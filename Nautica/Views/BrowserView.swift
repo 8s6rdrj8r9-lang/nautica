@@ -27,6 +27,8 @@ struct BrowserActions {
     // View menu (Prompt 16).
     var setViewMode: (ViewMode) -> Void
     var toggleHiddenFiles: () -> Void
+    /// Toggles the right-hand tree panel.
+    var toggleTreePanel: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -76,6 +78,8 @@ struct BrowserView: View {
     /// "Go to Folder…" sheet state (Prompt 16).
     @State private var showGoToFolderSheet = false
     @State private var goToFolderText = ""
+    /// Right-hand directory tree panel.
+    @State private var showTreePanel = true
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
     /// Per-folder view state persistence (Prompt 12); created in onAppear
@@ -101,9 +105,15 @@ struct BrowserView: View {
                     onQuickLook: quickLook,
                     iconSize: iconSize,
                     onNavigate: navigate(to:),
-                    onRenameRequest: renameSelection
+                    onRenameRequest: renameSelection,
+                    onCopySelection: copySelectionToPasteboard,
+                    onTrashSelection: trashSelection
                 )
             }
+        }
+        .inspector(isPresented: $showTreePanel) {
+            TreePanelView(model: sidebarModel, onNavigate: navigate(to:))
+                .inspectorColumnWidth(min: 200, ideal: 260, max: 400)
         }
         .frame(minWidth: 800, minHeight: 600)
         .background(WindowAccessor(toolbar: toolbar.toolbar, onWindow: configureWindow))
@@ -122,7 +132,8 @@ struct BrowserView: View {
             navigateTo: navigate(to:),
             promptGoToFolder: { showGoToFolderSheet = true },
             setViewMode: setViewMode,
-            toggleHiddenFiles: toggleHiddenFiles
+            toggleHiddenFiles: toggleHiddenFiles,
+            toggleTreePanel: { showTreePanel.toggle() }
         ))
         .sheet(isPresented: showsOperationSheet) {
             if let operationProgress {
@@ -507,24 +518,26 @@ private struct WindowAccessor: NSViewRepresentable {
 
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
-        DispatchQueue.main.async { [toolbar, onWindow] in
-            if let window = view.window {
-                window.toolbar = toolbar
-                onWindow(window)
-            }
-        }
+        DispatchQueue.main.async { configure(view) }
         return view
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
         // Fallback for the case where makeNSView ran before the view joined
-        // a window; `onWindow` is idempotent.
-        if let window = nsView.window {
-            if window.toolbar !== toolbar {
-                window.toolbar = toolbar
-            }
-            onWindow(window)
+        // a window.
+        DispatchQueue.main.async { configure(nsView) }
+    }
+
+    /// Assigns the toolbar exactly once, always outside the current layout
+    /// pass. Assigning `window.toolbar` twice — even the same instance —
+    /// makes SwiftUI's BarAppearanceBridge over-remove its `displayMode`
+    /// KVO observer and crash with NSRangeException.
+    private func configure(_ view: NSView) {
+        guard let window = view.window else { return }
+        if window.toolbar == nil {
+            window.toolbar = toolbar
         }
+        onWindow(window)
     }
 }
 

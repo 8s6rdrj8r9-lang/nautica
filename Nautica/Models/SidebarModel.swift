@@ -17,7 +17,9 @@ final class SidebarModel {
     private static let recentsKey = "Nautica.Sidebar.Recent"
     private static let maxRecents = 10
     /// Tree nodes expand automatically on first load down to this depth (root = 1).
-    private static let initialExpansionDepth = 3
+    /// Keep at 1: deeper auto-expansion enumerates the whole subtree at launch
+    /// and stalls the UI; children load lazily when the user expands a node.
+    private static let initialExpansionDepth = 1
 
     init() {
         favorites = Self.loadFavorites()
