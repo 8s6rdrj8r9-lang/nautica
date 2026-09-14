@@ -5,12 +5,13 @@ private extension NSToolbarItem.Identifier {
     static let back = NSToolbarItem.Identifier("Nautica.Back")
     static let forward = NSToolbarItem.Identifier("Nautica.Forward")
     static let pathBar = NSToolbarItem.Identifier("Nautica.PathBar")
+    static let splitLayout = NSToolbarItem.Identifier("Nautica.SplitLayout")
     static let viewMode = NSToolbarItem.Identifier("Nautica.ViewMode")
     static let iconSize = NSToolbarItem.Identifier("Nautica.IconSize")
     static let hiddenFiles = NSToolbarItem.Identifier("Nautica.HiddenFiles")
 }
 
-/// Main-window toolbar: back/forward, path bar, view mode, icon size, hidden files.
+/// Main-window toolbar: back/forward, path bar, split layout, view mode, icon size, hidden files.
 ///
 /// Owns the `NSToolbar` and acts as its delegate. Browser state is mirrored into
 /// the properties below by `BrowserView`, which then calls `refresh()` to
@@ -22,6 +23,7 @@ final class BrowserToolbar: NSObject {
     var onForward: (() -> Void)?
     var onNavigate: ((URL) -> Void)?
     var onAddFavorite: ((URL) -> Void)?
+    var onSplitLayoutChanged: ((SplitLayout) -> Void)?
     var onViewModeChanged: ((ViewMode) -> Void)?
     var onIconSizeChanged: ((CGFloat) -> Void)?
     var onToggleHiddenFiles: (() -> Void)?
@@ -31,6 +33,7 @@ final class BrowserToolbar: NSObject {
     var canGoBack = false
     var canGoForward = false
     var currentURL = FileManager.default.homeURL
+    var splitLayout: SplitLayout = .single
     var viewMode: ViewMode = .icon
     var iconSize: CGFloat = 64
     var showsHiddenFiles = false
@@ -40,6 +43,7 @@ final class BrowserToolbar: NSObject {
     private weak var backItem: NSToolbarItem?
     private weak var forwardItem: NSToolbarItem?
     private weak var pathBarHostingView: NSHostingView<PathBarView>?
+    private weak var splitLayoutControl: NSSegmentedControl?
     private weak var viewModeControl: NSSegmentedControl?
     private weak var iconSizeSlider: NSSlider?
     private weak var hiddenFilesButton: NSButton?
@@ -57,6 +61,7 @@ final class BrowserToolbar: NSObject {
         backItem?.isEnabled = canGoBack
         forwardItem?.isEnabled = canGoForward
         pathBarHostingView?.rootView = makePathBarView()
+        splitLayoutControl?.selectedSegment = splitLayout.rawValue
         viewModeControl?.selectedSegment = viewMode == .icon ? 0 : 1
         iconSizeSlider?.doubleValue = Double(iconSize)
         iconSizeSlider?.isEnabled = viewMode == .icon
@@ -75,6 +80,12 @@ final class BrowserToolbar: NSObject {
 
     @objc private func backAction() { onBack?() }
     @objc private func forwardAction() { onForward?() }
+
+    @objc private func splitLayoutAction(_ sender: NSSegmentedControl) {
+        if let layout = SplitLayout(rawValue: sender.selectedSegment) {
+            onSplitLayoutChanged?(layout)
+        }
+    }
 
     @objc private func viewModeAction(_ sender: NSSegmentedControl) {
         onViewModeChanged?(sender.selectedSegment == 0 ? .icon : .list)
@@ -115,6 +126,25 @@ extension BrowserToolbar: NSToolbarDelegate {
             item.minSize = NSSize(width: 160, height: 32)
             item.maxSize = NSSize(width: 4000, height: 32)
             pathBarHostingView = hostingView
+            return item
+
+        case .splitLayout:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Panes"
+            let control = NSSegmentedControl(
+                images: [
+                    NSImage(systemSymbolName: "rectangle", accessibilityDescription: "Single Pane")!,
+                    NSImage(systemSymbolName: "rectangle.split.2x1", accessibilityDescription: "2 Columns")!,
+                    NSImage(systemSymbolName: "rectangle.split.1x2", accessibilityDescription: "2 Rows")!,
+                    NSImage(systemSymbolName: "rectangle.split.2x2", accessibilityDescription: "4 Grid")!,
+                ],
+                trackingMode: .selectOne,
+                target: self,
+                action: #selector(splitLayoutAction(_:))
+            )
+            control.selectedSegment = splitLayout.rawValue
+            item.view = control
+            splitLayoutControl = control
             return item
 
         case .viewMode:
@@ -165,7 +195,7 @@ extension BrowserToolbar: NSToolbarDelegate {
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.back, .forward, .pathBar, .viewMode, .iconSize, .hiddenFiles]
+        [.back, .forward, .pathBar, .splitLayout, .viewMode, .iconSize, .hiddenFiles]
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {

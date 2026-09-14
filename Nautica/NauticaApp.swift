@@ -82,7 +82,20 @@ struct NauticaApp: App {
                 Button("Toggle Hidden Files") { browserActions?.toggleHiddenFiles() }
                     .keyboardShortcut(".", modifiers: [.command, .shift])
                 Divider()
-                Button("Toggle Dual Pane") { browserActions?.toggleDualPane() }
+                Menu("Panes") {
+                    Button("Single Pane") { browserActions?.setSplitLayout(.single) }
+                        .keyboardShortcut("1", modifiers: [.command, .option])
+                    Button("2 Columns (Horizontal)") { browserActions?.setSplitLayout(.horizontal2) }
+                        .keyboardShortcut("2", modifiers: [.command, .option])
+                    Button("2 Rows (Vertical)") { browserActions?.setSplitLayout(.vertical2) }
+                        .keyboardShortcut("3", modifiers: [.command, .option])
+                    Button("4 Panes (Grid)") { browserActions?.setSplitLayout(.quad4) }
+                        .keyboardShortcut("4", modifiers: [.command, .option])
+                    Divider()
+                    Button("Next Pane") { browserActions?.cycleNextPane() }
+                        .keyboardShortcut(.tab, modifiers: .option)
+                }
+                Button("Toggle Dual Pane") { browserActions?.setSplitLayout(.horizontal2) }
                     .keyboardShortcut("d", modifiers: [.command, .shift])
                 Button("Tree Panel") { browserActions?.toggleTreePanel() }
                     .keyboardShortcut("0", modifiers: [.command, .option])

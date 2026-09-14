@@ -28,8 +28,10 @@ struct BrowserActions {
     // View menu (Prompt 16).
     var setViewMode: (ViewMode) -> Void
     var toggleHiddenFiles: () -> Void
-    /// Toggles dual-pane browsing (F-004).
-    var toggleDualPane: () -> Void
+    /// Sets multi-pane split layout (F-004).
+    var setSplitLayout: (SplitLayout) -> Void
+    /// Cycles to the next pane (Option+Tab).
+    var cycleNextPane: () -> Void
     /// Toggles the right-hand tree panel.
     var toggleTreePanel: () -> Void
 }
@@ -61,15 +63,9 @@ private final class UndoBox {
 /// (`TabState`) that owns navigation history, directory listing, selection,
 /// and view mode (Prompt 8).
 struct BrowserView: View {
-    enum ActivePane {
-        case primary
-        case secondary
-    }
-
-    @State private var tab = TabState(url: Constants.defaultWindowURL())
-    @State private var secondaryTab: TabState? = nil
-    @State private var isDualPane = false
-    @State private var activePane: ActivePane = .primary
+    @State private var splitLayout: SplitLayout = .single
+    @State private var activePaneIndex: Int = 0
+    @State private var panes: [TabState] = [TabState(url: Constants.defaultWindowURL())]
 
     @State private var sidebarModel = SidebarModel()
     @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
@@ -100,10 +96,14 @@ struct BrowserView: View {
     @State private var viewStateService: ViewStateService?
 
     private var activeTab: TabState {
-        if isDualPane, activePane == .secondary, let secondaryTab {
-            return secondaryTab
+        if panes.indices.contains(activePaneIndex) {
+            return panes[activePaneIndex]
         }
-        return tab
+        return panes.first ?? TabState(url: Constants.defaultWindowURL())
+    }
+
+    private var activePanes: [TabState] {
+        Array(panes.prefix(splitLayout.paneCount))
     }
 
     var body: some View {
@@ -118,24 +118,7 @@ struct BrowserView: View {
                     // Persistence handled by SidebarModel; hook for later prompts.
                 }
             } detail: {
-                if isDualPane, let secondary = secondaryTab {
-                    HSplitView {
-                        paneView(for: tab, isFocused: activePane == .primary)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                activePane = .primary
-                                syncToolbar()
-                            }
-                        paneView(for: secondary, isFocused: activePane == .secondary)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                activePane = .secondary
-                                syncToolbar()
-                            }
-                    }
-                } else {
-                    paneView(for: tab, isFocused: true)
-                }
+                splitLayoutView
             }
         }
         .inspector(isPresented: $showTreePanel) {
@@ -161,7 +144,8 @@ struct BrowserView: View {
             promptGoToFolder: { showGoToFolderSheet = true },
             setViewMode: setViewMode,
             toggleHiddenFiles: toggleHiddenFiles,
-            toggleDualPane: toggleDualPane,
+            setSplitLayout: setSplitLayout,
+            cycleNextPane: cycleNextPane,
             toggleTreePanel: { showTreePanel.toggle() }
         ))
         .sheet(isPresented: showsOperationSheet) {
@@ -188,21 +172,66 @@ struct BrowserView: View {
         .onAppear {
             if viewStateService == nil {
                 viewStateService = ViewStateService(context: modelContext)
-                tab.directoryContents.onSortChanged = persistViewState
+                activeTab.directoryContents.onSortChanged = persistViewState
             }
             wireToolbar()
             restoreIfPending()
-            applyViewState(for: tab.navigationHistory.currentURL)
+            applyViewState(for: activeTab.navigationHistory.currentURL)
             showPermissionBanner = !FullDiskAccess.isGranted
         }
         .onChange(of: iconSize) { syncToolbar() }
-        .task { tab.directoryContents.reload() }
+        .task {
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+        }
     }
 
     @ViewBuilder
-    private func paneView(for currentTab: TabState, isFocused: Bool) -> some View {
+    private var splitLayoutView: some View {
+        switch splitLayout {
+        case .single:
+            if let first = panes.first {
+                paneView(for: first, index: 0)
+            }
+
+        case .horizontal2:
+            if panes.count >= 2 {
+                HSplitView {
+                    paneView(for: panes[0], index: 0)
+                    paneView(for: panes[1], index: 1)
+                }
+            }
+
+        case .vertical2:
+            if panes.count >= 2 {
+                VSplitView {
+                    paneView(for: panes[0], index: 0)
+                    paneView(for: panes[1], index: 1)
+                }
+            }
+
+        case .quad4:
+            if panes.count >= 4 {
+                VSplitView {
+                    HSplitView {
+                        paneView(for: panes[0], index: 0)
+                        paneView(for: panes[1], index: 1)
+                    }
+                    HSplitView {
+                        paneView(for: panes[2], index: 2)
+                        paneView(for: panes[3], index: 3)
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func paneView(for currentTab: TabState, index: Int) -> some View {
+        let isFocused = activePaneIndex == index
         VStack(spacing: 0) {
-            if isDualPane {
+            if splitLayout != .single {
                 HStack(spacing: 8) {
                     Image(systemName: "folder")
                         .foregroundStyle(isFocused ? Color.accentColor : .secondary)
@@ -211,6 +240,8 @@ struct BrowserView: View {
                          : currentTab.navigationHistory.currentURL.lastPathComponent)
                         .font(.caption.weight(.medium))
                         .foregroundStyle(isFocused ? .primary : .secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                     Spacer()
                     if isFocused {
                         Text("Active")
@@ -250,11 +281,16 @@ struct BrowserView: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 0)
-                        .stroke(isDualPane && isFocused ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
+                        .stroke(splitLayout != .single && isFocused ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
                 )
             }
         }
-        .frame(minWidth: 200)
+        .frame(minWidth: 160, minHeight: 120)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            activePaneIndex = index
+            syncToolbar()
+        }
     }
 
     /// Single navigation entry point: sidebar, path bar, and double-click on a
@@ -319,6 +355,10 @@ struct BrowserView: View {
         toolbar.onForward = goForward
         toolbar.onNavigate = { url in navigate(to: url) }
         toolbar.onAddFavorite = { url in sidebarModel.addFavorite(url: url) }
+        toolbar.onSplitLayoutChanged = { [weak toolbar] layout in
+            setSplitLayout(layout)
+            toolbar?.refresh()
+        }
         toolbar.onViewModeChanged = { [weak toolbar] mode in
             setViewMode(mode)
             toolbar?.refresh()
@@ -346,27 +386,36 @@ struct BrowserView: View {
     /// Flips hidden-file visibility and reloads (Prompts 7, 16).
     private func toggleHiddenFiles() {
         showHiddenFiles.toggle()
-        tab.directoryContents.showHiddenFiles = showHiddenFiles
-        tab.directoryContents.reload()
-        secondaryTab?.directoryContents.showHiddenFiles = showHiddenFiles
-        secondaryTab?.directoryContents.reload()
+        for pane in activePanes {
+            pane.directoryContents.showHiddenFiles = showHiddenFiles
+            pane.directoryContents.reload()
+        }
         toolbar.showsHiddenFiles = showHiddenFiles
         toolbar.refresh()
         persistViewState()
     }
 
-    /// Toggles dual-pane browsing (F-004).
-    private func toggleDualPane() {
-        if isDualPane {
-            isDualPane = false
-            activePane = .primary
-            secondaryTab = nil
-        } else {
-            isDualPane = true
-            let secondary = TabState(url: tab.navigationHistory.currentURL)
-            secondary.directoryContents.reload()
-            secondaryTab = secondary
+    /// Sets the multi-pane split layout (F-004).
+    private func setSplitLayout(_ layout: SplitLayout) {
+        splitLayout = layout
+        let requiredCount = layout.paneCount
+        while panes.count < requiredCount {
+            let seedURL = activeTab.navigationHistory.currentURL
+            let newTab = TabState(url: seedURL)
+            newTab.directoryContents.showHiddenFiles = showHiddenFiles
+            newTab.directoryContents.reload()
+            panes.append(newTab)
         }
+        if activePaneIndex >= requiredCount {
+            activePaneIndex = 0
+        }
+        syncToolbar()
+    }
+
+    /// Cycles to the next pane (Option+Tab).
+    private func cycleNextPane() {
+        guard splitLayout != .single else { return }
+        activePaneIndex = (activePaneIndex + 1) % splitLayout.paneCount
         syncToolbar()
     }
 
@@ -375,6 +424,7 @@ struct BrowserView: View {
         toolbar.canGoBack = activeTab.navigationHistory.canGoBack
         toolbar.canGoForward = activeTab.navigationHistory.canGoForward
         toolbar.currentURL = activeTab.navigationHistory.currentURL
+        toolbar.splitLayout = splitLayout
         toolbar.viewMode = activeTab.viewMode
         toolbar.iconSize = iconSize
         toolbar.showsHiddenFiles = showHiddenFiles
@@ -581,8 +631,9 @@ struct BrowserView: View {
                 showDelay.cancel()
                 operationProgress = nil
                 isOperationRunning = false
-                tab.directoryContents.reload()
-                secondaryTab?.directoryContents.reload()
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
                 onCompletion?(result)
                 if let (url, error) = result.failed.first(where: { !($0.1 is CancellationError) }) {
                     showError(
@@ -604,8 +655,9 @@ struct BrowserView: View {
         undoManager.registerUndo(withTarget: UndoBox {
             Task {
                 let result = await FileOperationService.shared.restoreItems(transfers)
-                tab.directoryContents.reload()
-                secondaryTab?.directoryContents.reload()
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
                 if let (_, error) = result.failed.first {
                     showError("Undo Failed", error: error)
                 }
