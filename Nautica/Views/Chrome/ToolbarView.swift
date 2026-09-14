@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 private extension NSToolbarItem.Identifier {
+    static let toggleSidebar = NSToolbarItem.Identifier("Nautica.ToggleSidebar")
     static let navigationGroup = NSToolbarItem.Identifier("Nautica.NavigationGroup")
     static let back = NSToolbarItem.Identifier("Nautica.Back")
     static let forward = NSToolbarItem.Identifier("Nautica.Forward")
@@ -9,7 +10,15 @@ private extension NSToolbarItem.Identifier {
     static let viewMode = NSToolbarItem.Identifier("Nautica.ViewMode")
     static let sortMenu = NSToolbarItem.Identifier("Nautica.SortMenu")
     static let share = NSToolbarItem.Identifier("Nautica.Share")
+    static let tags = NSToolbarItem.Identifier("Nautica.Tags")
     static let action = NSToolbarItem.Identifier("Nautica.Action")
+    static let newFolder = NSToolbarItem.Identifier("Nautica.NewFolder")
+    static let quickLook = NSToolbarItem.Identifier("Nautica.QuickLook")
+    static let trash = NSToolbarItem.Identifier("Nautica.Trash")
+    static let getInfo = NSToolbarItem.Identifier("Nautica.GetInfo")
+    static let terminal = NSToolbarItem.Identifier("Nautica.Terminal")
+    static let newTab = NSToolbarItem.Identifier("Nautica.NewTab")
+    static let batchRename = NSToolbarItem.Identifier("Nautica.BatchRename")
     static let search = NSToolbarItem.Identifier("Nautica.Search")
     static let pathBar = NSToolbarItem.Identifier("Nautica.PathBar")
     static let iconSize = NSToolbarItem.Identifier("Nautica.IconSize")
@@ -17,7 +26,7 @@ private extension NSToolbarItem.Identifier {
 }
 
 /// Main-window toolbar matching macOS Finder:
-/// Back/Forward navigation group, flexible space, View mode, Panes, Sort/Group, Share, Actions, and Search.
+/// Back/Forward navigation group, flexible space, View mode, Panes, Sort/Group, Share, Tags, Actions, New Folder, and Search.
 final class BrowserToolbar: NSObject {
     // MARK: - Callbacks (wired by BrowserView)
 
@@ -38,11 +47,16 @@ final class BrowserToolbar: NSObject {
     var onTrash: (() -> Void)?
     var onTogglePathBar: (() -> Void)?
     var onSearch: ((String) -> Void)?
+    var onQuickLook: (() -> Void)?
+    var onTerminal: (() -> Void)?
+    var onNewTab: (() -> Void)?
+    var onApplyTag: ((String, String) -> Void)?
 
     // MARK: - Mirrored state (set before calling refresh())
 
     var canGoBack = false
     var canGoForward = false
+    var hasSelection = false
     var currentURL = FileManager.default.homeURL
     var splitLayout: SplitLayout = .single
     var viewMode: ViewMode = .list
@@ -63,7 +77,7 @@ final class BrowserToolbar: NSObject {
     private weak var hiddenFilesButton: NSButton?
 
     override init() {
-        toolbar = NSToolbar(identifier: "NauticaMainToolbar.v5")
+        toolbar = NSToolbar(identifier: "NauticaMainToolbar.v7")
         super.init()
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
@@ -140,6 +154,9 @@ final class BrowserToolbar: NSObject {
     @objc private func shareAction() { onShare?() }
     @objc private func newFolderAction() { onNewFolder?() }
     @objc private func getInfoAction() { onGetInfo?() }
+    @objc private func quickLookAction() { onQuickLook?() }
+    @objc private func terminalAction() { onTerminal?() }
+    @objc private func newTabAction() { onNewTab?() }
     @objc private func renameAction() { onRename?() }
     @objc private func batchRenameAction() { onBatchRename?() }
     @objc private func navigationAction(_ sender: NSSegmentedControl) {
@@ -153,6 +170,12 @@ final class BrowserToolbar: NSObject {
     @objc private func trashAction() { onTrash?() }
     @objc private func togglePathBarAction() { onTogglePathBar?() }
     @objc private func searchAction(_ sender: NSSearchField) { onSearch?(sender.stringValue) }
+
+    @objc private func tagColorAction(_ sender: NSMenuItem) {
+        if let tuple = sender.representedObject as? [String], tuple.count == 2 {
+            onApplyTag?(tuple[0], tuple[1])
+        }
+    }
 }
 
 // MARK: - NSToolbarDelegate
@@ -199,6 +222,7 @@ extension BrowserToolbar: NSToolbarDelegate {
         case .back:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Back"
+            item.paletteLabel = "Back"
             item.image = NSImage(systemSymbolName: "chevron.backward", accessibilityDescription: "Back")
             item.target = self
             item.action = #selector(backAction)
@@ -209,6 +233,7 @@ extension BrowserToolbar: NSToolbarDelegate {
         case .forward:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Forward"
+            item.paletteLabel = "Forward"
             item.image = NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: "Forward")
             item.target = self
             item.action = #selector(forwardAction)
@@ -292,9 +317,46 @@ extension BrowserToolbar: NSToolbarDelegate {
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Share"
             item.paletteLabel = "Share"
+            item.toolTip = "Share selected items"
             item.image = NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: "Share")
             item.target = self
             item.action = #selector(shareAction)
+            item.visibilityPriority = .standard
+            return item
+
+        case .tags:
+            let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Tags"
+            item.paletteLabel = "Edit Tags"
+            item.toolTip = "Apply tags to selected items"
+            item.image = NSImage(systemSymbolName: "tag", accessibilityDescription: "Tags")
+            let menu = NSMenu(title: "Tags")
+            let tagColors: [(String, String)] = [
+                ("Red", "#FF3B30"),
+                ("Orange", "#FF9500"),
+                ("Yellow", "#FFCC00"),
+                ("Green", "#34C759"),
+                ("Blue", "#007AFF"),
+                ("Purple", "#AF52DE"),
+                ("Gray", "#8E8E93"),
+            ]
+            for (name, hex) in tagColors {
+                let menuItem = NSMenuItem(title: name, action: #selector(tagColorAction(_:)), keyEquivalent: "")
+                menuItem.target = self
+                menuItem.representedObject = [name, hex]
+                let dot = NSImage(size: NSSize(width: 12, height: 12), flipped: false) { rect in
+                    if let color = NSColor(hex: hex) {
+                        color.setFill()
+                        NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1)).fill()
+                        return true
+                    }
+                    return false
+                }
+                menuItem.image = dot
+                menu.addItem(menuItem)
+            }
+            item.menu = menu
+            item.visibilityPriority = .standard
             return item
 
         case .action:
@@ -305,11 +367,13 @@ extension BrowserToolbar: NSToolbarDelegate {
             let menu = NSMenu(title: "Action")
             menu.addItem(withTitle: "New Folder", action: #selector(newFolderAction), keyEquivalent: "")
             menu.addItem(withTitle: "Get Info", action: #selector(getInfoAction), keyEquivalent: "")
+            menu.addItem(withTitle: "Quick Look", action: #selector(quickLookAction), keyEquivalent: "")
             menu.addItem(NSMenuItem.separator())
             menu.addItem(withTitle: "Rename…", action: #selector(renameAction), keyEquivalent: "")
             menu.addItem(withTitle: "Batch Rename…", action: #selector(batchRenameAction), keyEquivalent: "")
             menu.addItem(withTitle: "Move to Trash", action: #selector(trashAction), keyEquivalent: "")
             menu.addItem(NSMenuItem.separator())
+            menu.addItem(withTitle: "Open in Terminal", action: #selector(terminalAction), keyEquivalent: "")
             menu.addItem(withTitle: "Toggle Hidden Files", action: #selector(hiddenFilesAction), keyEquivalent: "")
             menu.addItem(withTitle: "Toggle Path Bar", action: #selector(togglePathBarAction), keyEquivalent: "")
             for m in menu.items { m.target = self }
@@ -317,11 +381,82 @@ extension BrowserToolbar: NSToolbarDelegate {
             item.visibilityPriority = .standard
             return item
 
+        case .newFolder:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "New Folder"
+            item.paletteLabel = "New Folder"
+            item.toolTip = "Create a new folder"
+            item.image = NSImage(systemSymbolName: "folder.badge.plus", accessibilityDescription: "New Folder")
+            item.target = self
+            item.action = #selector(newFolderAction)
+            item.visibilityPriority = .standard
+            return item
+
+        case .quickLook:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Quick Look"
+            item.paletteLabel = "Quick Look"
+            item.toolTip = "Preview selected item"
+            item.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "Quick Look")
+            item.target = self
+            item.action = #selector(quickLookAction)
+            return item
+
+        case .trash:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Delete"
+            item.paletteLabel = "Move to Trash"
+            item.toolTip = "Move selected items to the Trash"
+            item.image = NSImage(systemSymbolName: "trash", accessibilityDescription: "Move to Trash")
+            item.target = self
+            item.action = #selector(trashAction)
+            return item
+
+        case .getInfo:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Get Info"
+            item.paletteLabel = "Get Info"
+            item.toolTip = "Show information for selected item"
+            item.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: "Get Info")
+            item.target = self
+            item.action = #selector(getInfoAction)
+            return item
+
+        case .terminal:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Terminal"
+            item.paletteLabel = "Open in Terminal"
+            item.toolTip = "Open current directory in Terminal"
+            item.image = NSImage(systemSymbolName: "terminal", accessibilityDescription: "Open in Terminal")
+            item.target = self
+            item.action = #selector(terminalAction)
+            return item
+
+        case .newTab:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "New Tab"
+            item.paletteLabel = "New Tab"
+            item.toolTip = "Open a new tab at current location"
+            item.image = NSImage(systemSymbolName: "plus", accessibilityDescription: "New Tab")
+            item.target = self
+            item.action = #selector(newTabAction)
+            return item
+
+        case .batchRename:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Rename"
+            item.paletteLabel = "Batch Rename"
+            item.toolTip = "Rename selected items"
+            item.image = NSImage(systemSymbolName: "pencil", accessibilityDescription: "Batch Rename")
+            item.target = self
+            item.action = #selector(batchRenameAction)
+            return item
+
         case .search:
             let item = NSSearchToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Search"
             item.paletteLabel = "Search"
-            item.preferredWidthForSearchField = 160
+            item.preferredWidthForSearchField = 150
             item.searchField.target = self
             item.searchField.action = #selector(searchAction(_:))
             item.visibilityPriority = .standard
@@ -330,30 +465,29 @@ extension BrowserToolbar: NSToolbarDelegate {
         case .pathBar:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Path"
+            item.paletteLabel = "Path Bar"
             let hostingView = NSHostingView(rootView: makePathBarView())
             item.view = hostingView
-            item.minSize = NSSize(width: 160, height: 32)
-            item.maxSize = NSSize(width: 4000, height: 32)
             pathBarHostingView = hostingView
             return item
 
         case .iconSize:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Icon Size"
+            item.paletteLabel = "Icon Size"
             let slider = NSSlider(value: Double(iconSize), minValue: 32, maxValue: 256,
                                   target: self, action: #selector(iconSizeAction(_:)))
             slider.isContinuous = true
             slider.controlSize = .small
             slider.isEnabled = viewMode == .icon
             item.view = slider
-            item.minSize = NSSize(width: 100, height: 24)
-            item.maxSize = NSSize(width: 140, height: 24)
             iconSizeSlider = slider
             return item
 
         case .hiddenFiles:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Hidden Files"
+            item.paletteLabel = "Hidden Files"
             let button = NSButton(checkboxWithTitle: "Hidden",
                                   target: self, action: #selector(hiddenFilesAction))
             button.controlSize = .small
@@ -368,23 +502,26 @@ extension BrowserToolbar: NSToolbarDelegate {
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.toggleSidebar, .navigationGroup, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .action, .search]
+        [.toggleSidebar, .navigationGroup, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .tags, .action, .newFolder, .search]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.toggleSidebar, .navigationGroup, .back, .forward, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search, .pathBar, .iconSize, .hiddenFiles]
+        [.toggleSidebar, .navigationGroup, .back, .forward, .flexibleSpace, .space, .viewMode, .splitLayout, .sortMenu, .share, .tags, .action, .newFolder, .quickLook, .trash, .getInfo, .terminal, .newTab, .batchRename, .search, .pathBar, .iconSize, .hiddenFiles]
     }
 }
 
 // MARK: - NSToolbarItemValidation
 
 extension BrowserToolbar: NSToolbarItemValidation {
-    /// Keeps back/forward in sync when AppKit revalidates the toolbar on its own.
+    /// Keeps back/forward and selection-dependent items in sync.
     func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         switch item.itemIdentifier {
         case .navigationGroup, .back: return canGoBack
         case .forward: return canGoForward
-        default: return true
+        case .share, .quickLook, .getInfo, .trash, .batchRename, .tags:
+            return hasSelection
+        default:
+            return true
         }
     }
 }

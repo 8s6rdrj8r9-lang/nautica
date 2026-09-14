@@ -107,6 +107,7 @@ struct BrowserView: View {
     @State private var showTreePanel = false
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openWindow) private var openWindow
     /// Per-folder view state persistence (Prompt 12); created in onAppear
     /// once the model context is available.
     @State private var viewStateService: ViewStateService?
@@ -473,6 +474,44 @@ struct BrowserView: View {
                 FileContextMenu.showInfo(for: first)
             }
         }
+        toolbar.onQuickLook = { quickLook() }
+        toolbar.onTerminal = {
+            Task {
+                try? await TerminalService.shared.openTerminal(
+                    at: activeTab.navigationHistory.currentURL,
+                    emulator: TerminalService.shared.defaultTerminal()
+                )
+            }
+        }
+        toolbar.onNewTab = {
+            TabRestoreQueue.shared.enqueue(activeTab.navigationHistory.currentURL)
+            openWindow(id: "browser")
+        }
+        toolbar.onApplyTag = { name, hex in
+            let urls = selectedItems.map(\.url)
+            guard !urls.isEmpty else { return }
+            Task {
+                do {
+                    let all = (try? await TagService.shared.allTags()) ?? []
+                    let tag: TagItem
+                    if let existing = all.first(where: { $0.name.lowercased() == name.lowercased() }) {
+                        tag = existing
+                    } else {
+                        tag = try await TagService.shared.createTag(name: name, colorHex: hex)
+                    }
+                    for url in urls {
+                        try await TagService.shared.applyTag(tag.id, to: url)
+                    }
+                    await MainActor.run {
+                        for pane in activePanes {
+                            pane.directoryContents.reload()
+                        }
+                    }
+                } catch {
+                    NSLog("Failed to apply tag: %@", error.localizedDescription)
+                }
+            }
+        }
         toolbar.onRename = { renameSelection() }
         toolbar.onBatchRename = { batchRenameSelection() }
         toolbar.onTrash = { trashSelection() }
@@ -551,6 +590,7 @@ struct BrowserView: View {
     private func syncToolbar() {
         toolbar.canGoBack = activeTab.navigationHistory.canGoBack
         toolbar.canGoForward = activeTab.navigationHistory.canGoForward
+        toolbar.hasSelection = !selectedItems.isEmpty
         toolbar.currentURL = activeTab.navigationHistory.currentURL
         toolbar.splitLayout = splitLayout
         toolbar.viewMode = activeTab.viewMode
