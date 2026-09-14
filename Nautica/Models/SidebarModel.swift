@@ -16,7 +16,7 @@ final class SidebarModel {
 
     private static let favoritesKey = "Nautica.Sidebar.Favorites"
     private static let recentsKey = "Nautica.Sidebar.Recent"
-    private static let maxRecents = 10
+    private static let maxRecents = 20
     /// Tree nodes expand automatically on first load down to this depth (root = 1).
     /// Keep at 1: deeper auto-expansion enumerates the whole subtree at launch
     /// and stalls the UI; children load lazily when the user expands a node.
@@ -54,7 +54,7 @@ final class SidebarModel {
 
     // MARK: - Recents
 
-    /// Records a navigated directory, most-recent first, capped at 10.
+    /// Records a navigated directory, most-recent first, capped at 20.
     func recordVisit(_ url: URL) {
         recents.removeAll { $0.url == url }
         recents.insert(Self.makeItem(for: url), at: 0)
@@ -62,6 +62,12 @@ final class SidebarModel {
             recents.removeLast(recents.count - Self.maxRecents)
         }
         UserDefaults.standard.set(recents.map(\.url.path), forKey: Self.recentsKey)
+    }
+
+    /// Clears the recent directory history.
+    func clearRecents() {
+        recents.removeAll()
+        UserDefaults.standard.removeObject(forKey: Self.recentsKey)
     }
 
     // MARK: - Tree

@@ -113,8 +113,12 @@ struct NauticaApp: App {
                     .keyboardShortcut("d", modifiers: [.command, .shift])
                 Button("Toggle Path Bar") { browserActions?.togglePathBar() }
                     .keyboardShortcut("p", modifiers: [.command, .option])
-                Button("Tree Panel") { browserActions?.toggleTreePanel() }
+                Button("Toggle Inspector") { browserActions?.toggleInspector() }
+                    .keyboardShortcut("i", modifiers: [.command, .option])
+                Button("Directory Tree") { browserActions?.toggleTreePanel() }
                     .keyboardShortcut("0", modifiers: [.command, .option])
+                Button("Recent Folders") { browserActions?.showInspectorTab(.recents) }
+                    .keyboardShortcut("r", modifiers: [.command, .option])
             }
             CommandMenu("Go") {
                 Button("Back") { browserActions?.goBack() }

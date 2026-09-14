@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// SwiftUI sidebar with Favorites, Tags, and Recent sections. The directory
-/// tree lives in the right-hand inspector (`TreePanelView`).
+/// SwiftUI sidebar with Favorites, Locations, and Tags sections. Recent history
+/// and the directory tree live in the right-hand inspector.
 struct SidebarView: View {
     @State private var model: SidebarModel
     var selectedURL: URL? = nil
@@ -41,7 +41,6 @@ struct SidebarView: View {
             favoritesSection
             locationsSection
             tagsSection
-            recentsSection
         }
         .listStyle(.sidebar)
         .font(.system(size: fontSize))
@@ -54,7 +53,7 @@ struct SidebarView: View {
 
     private var effectiveWidth: CGFloat {
         guard autoWidth else { return min(600, max(160, sidebarWidth)) }
-        let names = model.favorites.map(\.name) + model.recents.map(\.name) + tags.map(\.name)
+        let names = model.favorites.map(\.name) + tags.map(\.name)
         let font = NSFont.systemFont(ofSize: fontSize)
         let longest = names.map { ($0 as NSString).size(withAttributes: [.font: font]).width }.max() ?? 0
         // Include the folder icon, label gap, and both native list margins.
@@ -125,21 +124,6 @@ struct SidebarView: View {
                     }
                     .modifier(SidebarHoverTint(isSelected: false))
                     .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var recentsSection: some View {
-        if !model.recents.isEmpty {
-            Section("Recent") {
-                ForEach(model.recents) { item in
-                    let isSelected = isCurrentURL(item.url)
-                    SidebarRowView(item: item, isSelected: isSelected)
-                        .modifier(SidebarHoverTint(isSelected: isSelected))
-                        .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
-                        .onTapGesture { onNavigate(item.url) }
                 }
             }
         }

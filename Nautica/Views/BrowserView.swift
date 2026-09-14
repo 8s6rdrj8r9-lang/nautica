@@ -41,6 +41,10 @@ struct BrowserActions {
     var togglePathBar: () -> Void
     /// Toggles the right-hand tree panel.
     var toggleTreePanel: () -> Void
+    /// Toggles the right-hand inspector.
+    var toggleInspector: () -> Void
+    /// Shows a specific inspector tab.
+    var showInspectorTab: (RightSidebarTab) -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -106,8 +110,9 @@ struct BrowserView: View {
     @State private var showGoToFolderSheet = false
     @State private var goToFolderText = ""
     @AppStorage("showPathBar") private var showPathBar = true
-    /// Right-hand directory tree panel.
-    @State private var showTreePanel = false
+    /// Right-hand inspector panel.
+    @AppStorage("showRightSidebar") private var showRightSidebar = true
+    @AppStorage("Nautica.RightSidebar.ActiveTab") private var rightSidebarTab: RightSidebarTab = .recents
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openWindow) private var openWindow
@@ -165,9 +170,25 @@ struct BrowserView: View {
             .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
         }
         .navigationSplitViewStyle(.balanced)
-        .inspector(isPresented: $showTreePanel) {
-            TreePanelView(model: sidebarModel, onNavigate: navigate(to:))
-                .inspectorColumnWidth(min: 200, ideal: 260, max: 400)
+        .inspector(isPresented: $showRightSidebar) {
+            RightSidebarView(
+                selectedTab: $rightSidebarTab,
+                sidebarModel: sidebarModel,
+                selectedItems: selectedItems,
+                currentFolderURL: activeTab.navigationHistory.currentURL,
+                currentFolderItemCount: activeTab.directoryContents.items.count,
+                onNavigate: { url in navigate(to: url) },
+                onQuickLook: { quickLook() },
+                onOpenTerminal: { url in
+                    Task {
+                        try? await TerminalService.shared.openTerminal(
+                            at: url,
+                            emulator: TerminalService.shared.defaultTerminal()
+                        )
+                    }
+                }
+            )
+            .inspectorColumnWidth(min: 220, ideal: 280, max: 420)
         }
         .frame(minWidth: 720, minHeight: 450)
         .background(WindowAccessor(onWindow: configureWindow))
@@ -195,7 +216,19 @@ struct BrowserView: View {
             toggleDualPane: toggleDualPane,
             cycleNextPane: cycleNextPane,
             togglePathBar: { showPathBar.toggle() },
-            toggleTreePanel: { showTreePanel.toggle() }
+            toggleTreePanel: {
+                if showRightSidebar && rightSidebarTab == .tree {
+                    showRightSidebar = false
+                } else {
+                    rightSidebarTab = .tree
+                    showRightSidebar = true
+                }
+            },
+            toggleInspector: { showRightSidebar.toggle() },
+            showInspectorTab: { tab in
+                rightSidebarTab = tab
+                showRightSidebar = true
+            }
         ))
         .sheet(isPresented: showsOperationSheet) {
             if let operationProgress {
@@ -408,6 +441,11 @@ struct BrowserView: View {
                 Image(systemName: "folder.badge.plus")
             }
             .help("New Folder (⇧⌘N)")
+
+            Button(action: { showRightSidebar.toggle() }) {
+                Image(systemName: "sidebar.right")
+            }
+            .help(showRightSidebar ? "Hide Inspector (⌥⌘I)" : "Show Inspector (⌥⌘I)")
         }
     }
 
@@ -706,9 +744,8 @@ struct BrowserView: View {
     }
 
     private func getInfo() {
-        if let first = selectedItems.first {
-            FileContextMenu.showInfo(for: first)
-        }
+        rightSidebarTab = .info
+        showRightSidebar = true
     }
 
     private func openTerminal() {
