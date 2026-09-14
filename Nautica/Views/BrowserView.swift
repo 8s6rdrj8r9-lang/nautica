@@ -34,6 +34,8 @@ struct BrowserActions {
     var toggleDualPane: () -> Void
     /// Cycles to the next pane (Option+Tab).
     var cycleNextPane: () -> Void
+    /// Toggles the bottom path bar (Option+Command+P).
+    var togglePathBar: () -> Void
     /// Toggles the right-hand tree panel.
     var toggleTreePanel: () -> Void
 }
@@ -98,6 +100,7 @@ struct BrowserView: View {
     /// "Go to Folder…" sheet state (Prompt 16).
     @State private var showGoToFolderSheet = false
     @State private var goToFolderText = ""
+    @AppStorage("showPathBar") private var showPathBar = true
     /// Right-hand directory tree panel.
     @State private var showTreePanel = true
     @Environment(\.undoManager) private var undoManager
@@ -118,18 +121,34 @@ struct BrowserView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if showPermissionBanner {
-                permissionBanner
+        NavigationSplitView {
+            SidebarView(model: sidebarModel, selectedURL: activeTab.navigationHistory.currentURL) { url in
+                navigate(to: url)
+            } onFavoriteAdded: { _ in
+                // Persistence handled by SidebarModel; hook for later prompts.
             }
-            NavigationSplitView {
-                SidebarView(model: sidebarModel) { url in
-                    navigate(to: url)
-                } onFavoriteAdded: { _ in
-                    // Persistence handled by SidebarModel; hook for later prompts.
+        } detail: {
+            VStack(spacing: 0) {
+                if showPermissionBanner {
+                    permissionBanner
                 }
-            } detail: {
                 splitLayoutView
+
+                if showPathBar {
+                    Divider()
+                    HStack(spacing: 8) {
+                        PathBarView(currentURL: activeTab.navigationHistory.currentURL) { url in
+                            navigate(to: url)
+                        } onAddFavorite: { url in
+                            sidebarModel.addFavorite(url: url)
+                        }
+                        Spacer()
+                        statusBarInfo
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color(NSColor.windowBackgroundColor))
+                }
             }
         }
         .inspector(isPresented: $showTreePanel) {
@@ -158,6 +177,7 @@ struct BrowserView: View {
             setSplitLayout: setSplitLayout,
             toggleDualPane: toggleDualPane,
             cycleNextPane: cycleNextPane,
+            togglePathBar: { showPathBar.toggle() },
             toggleTreePanel: { showTreePanel.toggle() }
         ))
         .sheet(isPresented: showsOperationSheet) {
@@ -425,6 +445,41 @@ struct BrowserView: View {
             toggleHiddenFiles()
             toolbar?.refresh()
         }
+        toolbar.onSortChanged = { key, ascending in
+            activeTab.directoryContents.sort(by: key, ascending: ascending)
+            persistViewState()
+        }
+        toolbar.onShare = {
+            let urls = selectedItems.map(\.url)
+            guard !urls.isEmpty else { return }
+            let picker = NSSharingServicePicker(items: urls)
+            if let window = NSApp.keyWindow, let contentView = window.contentView {
+                picker.show(relativeTo: contentView.bounds, of: contentView, preferredEdge: .minY)
+            }
+        }
+        toolbar.onNewFolder = {
+            let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
+            try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+            for pane in activePanes { pane.directoryContents.reload() }
+        }
+        toolbar.onGetInfo = {
+            if let first = selectedItems.first {
+                FileContextMenu.showInfo(for: first)
+            }
+        }
+        toolbar.onRename = { renameSelection() }
+        toolbar.onBatchRename = { batchRenameSelection() }
+        toolbar.onTrash = { trashSelection() }
+        toolbar.onTogglePathBar = { showPathBar.toggle() }
+        toolbar.onSearch = { query in
+            if query.isEmpty {
+                activeTab.directoryContents.reload()
+            } else {
+                activeTab.directoryContents.items = activeTab.directoryContents.items.filter {
+                    $0.name.localizedCaseInsensitiveContains(query)
+                }
+            }
+        }
         syncToolbar()
     }
 
@@ -495,7 +550,10 @@ struct BrowserView: View {
         toolbar.viewMode = activeTab.viewMode
         toolbar.iconSize = iconSize
         toolbar.showsHiddenFiles = showHiddenFiles
+        toolbar.currentSortKey = activeTab.directoryContents.sortKey
+        toolbar.sortAscending = activeTab.directoryContents.sortAscending
         toolbar.refresh()
+        updateWindowTitle()
     }
 
     /// Space: Quick Look the selected item (Prompt 9).
@@ -746,13 +804,42 @@ struct BrowserView: View {
         navigate(to: url)
     }
 
+    private var statusBarInfo: some View {
+        let count = activeTab.directoryContents.items.count
+        let selectedCount = activeTab.selectionModel.selectedIDs.count
+        return HStack(spacing: 4) {
+            if selectedCount > 0 {
+                Text("\(selectedCount) of \(count) selected")
+            } else {
+                Text("\(count) item\(count == 1 ? "" : "s")")
+            }
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
+
     /// Enables native window tabbing and registers the window so its current
     /// directory can be saved on quit.
     private func configureWindow(_ window: NSWindow) {
         window.tabbingMode = .preferred
+        window.titleVisibility = .visible
+        window.titlebarAppearsTransparent = false
+        window.toolbarStyle = .unified
+        window.isMovableByWindowBackground = true
         WindowTabRegistry.shared.register(window) { [activeTab] in
             activeTab.navigationHistory.currentURL
         }
+        updateWindowTitle(for: window)
+    }
+
+    private func updateWindowTitle(for window: NSWindow? = nil) {
+        guard let win = window ?? NSApp.keyWindow else { return }
+        let currentURL = activeTab.navigationHistory.currentURL
+        let titleName = currentURL.path == FileManager.default.homeURL.path
+            ? "Home"
+            : (currentURL.lastPathComponent.isEmpty ? "Macintosh HD" : currentURL.lastPathComponent)
+        win.title = titleName
+        win.representedURL = currentURL
     }
 
     /// Persistent banner shown while Full Disk Access is missing (Prompt 15).

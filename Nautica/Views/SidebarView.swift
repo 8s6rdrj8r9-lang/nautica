@@ -4,6 +4,7 @@ import SwiftUI
 /// tree lives in the right-hand inspector (`TreePanelView`).
 struct SidebarView: View {
     @State private var model: SidebarModel
+    var selectedURL: URL? = nil
     /// All stored tags (Prompt 11); refreshed when the sidebar appears.
     @State private var tags: [TagItem] = []
 
@@ -17,24 +18,28 @@ struct SidebarView: View {
 
     init(
         model: SidebarModel,
+        selectedURL: URL? = nil,
         onNavigate: @escaping (URL) -> Void = { _ in },
         onFavoriteAdded: @escaping (URL) -> Void = { _ in }
     ) {
         _model = State(initialValue: model)
+        self.selectedURL = selectedURL
         self.onNavigate = onNavigate
         self.onFavoriteAdded = onFavoriteAdded
     }
 
     init(
+        selectedURL: URL? = nil,
         onNavigate: @escaping (URL) -> Void = { _ in },
         onFavoriteAdded: @escaping (URL) -> Void = { _ in }
     ) {
-        self.init(model: SidebarModel(), onNavigate: onNavigate, onFavoriteAdded: onFavoriteAdded)
+        self.init(model: SidebarModel(), selectedURL: selectedURL, onNavigate: onNavigate, onFavoriteAdded: onFavoriteAdded)
     }
 
     var body: some View {
         List {
             favoritesSection
+            locationsSection
             tagsSection
             recentsSection
         }
@@ -58,11 +63,17 @@ struct SidebarView: View {
 
     // MARK: - Sections
 
+    private func isCurrentURL(_ url: URL) -> Bool {
+        guard let selectedURL else { return false }
+        return selectedURL.standardizedFileURL.path == url.standardizedFileURL.path
+    }
+
     private var favoritesSection: some View {
         Section("Favorites") {
             ForEach(model.favorites) { item in
-                SidebarRowView(item: item)
-                    .modifier(SidebarHoverTint())
+                let isSelected = isCurrentURL(item.url)
+                SidebarRowView(item: item, isSelected: isSelected)
+                    .modifier(SidebarHoverTint(isSelected: isSelected))
                     .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
                     .onTapGesture { onNavigate(item.url) }
                     .contextMenu {
@@ -85,6 +96,21 @@ struct SidebarView: View {
         }
     }
 
+    @ViewBuilder
+    private var locationsSection: some View {
+        if !model.locations.isEmpty {
+            Section("Locations") {
+                ForEach(model.locations) { item in
+                    let isSelected = isCurrentURL(item.url)
+                    SidebarRowView(item: item, isSelected: isSelected)
+                        .modifier(SidebarHoverTint(isSelected: isSelected))
+                        .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
+                        .onTapGesture { onNavigate(item.url) }
+                }
+            }
+        }
+    }
+
     /// Stored tags with their color dot (Prompt 11). Hidden while empty.
     @ViewBuilder
     private var tagsSection: some View {
@@ -97,7 +123,7 @@ struct SidebarView: View {
                         Image(systemName: "circle.fill")
                             .foregroundStyle(Color(hex: tag.colorHex) ?? .secondary)
                     }
-                    .modifier(SidebarHoverTint())
+                    .modifier(SidebarHoverTint(isSelected: false))
                     .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
                 }
             }
@@ -109,8 +135,9 @@ struct SidebarView: View {
         if !model.recents.isEmpty {
             Section("Recent") {
                 ForEach(model.recents) { item in
-                    SidebarRowView(item: item)
-                        .modifier(SidebarHoverTint())
+                    let isSelected = isCurrentURL(item.url)
+                    SidebarRowView(item: item, isSelected: isSelected)
+                        .modifier(SidebarHoverTint(isSelected: isSelected))
                         .listRowInsets(EdgeInsets(top: spacing, leading: 8, bottom: spacing, trailing: 8))
                         .onTapGesture { onNavigate(item.url) }
                 }
@@ -119,8 +146,9 @@ struct SidebarView: View {
     }
 }
 
-/// Tint the full row while keeping the sidebar's native spacing and context menus.
+/// Tint the full row with Finder-style selection or hover while keeping spacing and context menus.
 private struct SidebarHoverTint: ViewModifier {
+    var isSelected: Bool = false
     @State private var isHovered = false
 
     func body(content: Content) -> some View {
@@ -131,7 +159,11 @@ private struct SidebarHoverTint: ViewModifier {
             .onDisappear { isHovered = false }
             .listRowBackground(
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.primary.opacity(isHovered ? 0.07 : 0))
+                    .fill(
+                        isSelected
+                            ? Color.accentColor.opacity(0.18)
+                            : (isHovered ? Color.primary.opacity(0.06) : Color.clear)
+                    )
             )
     }
 }

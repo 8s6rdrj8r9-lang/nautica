@@ -6,10 +6,12 @@ import Observation
 enum ListColumn: String, CaseIterable {
     case name
     case size
+    case kind
     case modificationDate
     case creationDate
-    case kind
     case tags
+
+    static let defaultColumns: [ListColumn] = [.name, .size, .kind, .modificationDate]
 
     var title: String {
         switch self {
@@ -168,8 +170,10 @@ final class ListViewController: NSViewController {
         tableView.headerView = NSTableHeaderView()
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.rowHeight = 20
-        tableView.usesAlternatingRowBackgroundColors = true
+        tableView.rowHeight = 22
+        tableView.intercellSpacing = NSSize(width: 6, height: 2)
+        tableView.usesAlternatingRowBackgroundColors = false
+        tableView.style = .plain
         tableView.allowsMultipleSelection = true
         tableView.allowsColumnReordering = true
         tableView.allowsColumnResizing = true
@@ -183,12 +187,15 @@ final class ListViewController: NSViewController {
         tableView.target = self
         tableView.doubleAction = #selector(handleDoubleClick(_:))
 
-        for column in ListColumn.allCases {
+        for column in ListColumn.defaultColumns {
             let identifier = NSUserInterfaceItemIdentifier(column.rawValue)
             let tableColumn = NSTableColumn(identifier: identifier)
             tableColumn.title = column.title
             tableColumn.minWidth = column.minWidth
             tableColumn.width = ListColumnLayoutStore.loadWidth(for: column) ?? column.defaultWidth
+            if column == .size {
+                tableColumn.headerCell.alignment = .right
+            }
             if let sortKey = column.sortKey {
                 tableColumn.sortDescriptorPrototype = NSSortDescriptor(
                     key: sortKey.rawValue, ascending: true

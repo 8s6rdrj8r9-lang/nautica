@@ -1,22 +1,72 @@
 import SwiftUI
 
-/// Folder icon + name used by Favorites, Recent, and tree rows.
+/// Folder icon + name used by Favorites, Locations, Recent, and tree rows.
 struct SidebarRowView: View {
     let item: SidebarItem
+    var isSelected: Bool = false
 
     var body: some View {
-        Label {
+        HStack(spacing: 8) {
+            iconView
+                .frame(width: 18, height: 18)
+                .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+
             Text(item.name)
-        } icon: {
-            if let icon = item.icon {
-                Image(nsImage: icon)
-                    .resizable()
-                    .frame(width: 16, height: 16)
-            } else {
-                Image(systemName: "folder")
+                .font(.system(size: 13, weight: isSelected ? .medium : .regular))
+                .foregroundStyle(isSelected ? Color.accentColor : .primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            if isCloudItem {
+                Image(systemName: "icloud")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
         }
         .contentShape(Rectangle())
+    }
+
+    private var isCloudItem: Bool {
+        let name = item.name.lowercased()
+        return name == "desktop" || name == "documents"
+    }
+
+    @ViewBuilder
+    private var iconView: some View {
+        let name = item.name.lowercased()
+        let path = item.url.path.lowercased()
+        if path == "/applications" || name == "applications" {
+            Image(systemName: "app.badge")
+        } else if name == "desktop" {
+            Image(systemName: "display")
+        } else if name == "documents" {
+            Image(systemName: "doc")
+        } else if name == "downloads" {
+            Image(systemName: "arrow.down.circle")
+        } else if name == "music" {
+            Image(systemName: "music.note")
+        } else if name == "pictures" {
+            Image(systemName: "photo")
+        } else if name == "movies" {
+            Image(systemName: "film")
+        } else if name == "development" || name == "projects" || name == "developer" {
+            Image(systemName: "hammer")
+        } else if name == "home" || item.url == FileManager.default.homeURL {
+            Image(systemName: "house")
+        } else if name == "icloud drive" || name == "icloud" {
+            Image(systemName: "icloud")
+        } else if path == "/" || name == "macintosh hd" {
+            Image(systemName: "internaldrive")
+        } else if path == "/volumes" || name == "network" {
+            Image(systemName: "network")
+        } else if let icon = item.icon {
+            Image(nsImage: icon)
+                .resizable()
+                .scaledToFit()
+        } else {
+            Image(systemName: "folder")
+        }
     }
 }
 

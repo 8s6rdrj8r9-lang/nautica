@@ -102,6 +102,8 @@ struct NauticaApp: App {
                 }
                 Button("Toggle Dual Pane") { browserActions?.toggleDualPane() }
                     .keyboardShortcut("d", modifiers: [.command, .shift])
+                Button("Toggle Path Bar") { browserActions?.togglePathBar() }
+                    .keyboardShortcut("p", modifiers: [.command, .option])
                 Button("Tree Panel") { browserActions?.toggleTreePanel() }
                     .keyboardShortcut("0", modifiers: [.command, .option])
             }

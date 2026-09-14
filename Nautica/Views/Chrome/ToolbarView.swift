@@ -2,20 +2,22 @@ import AppKit
 import SwiftUI
 
 private extension NSToolbarItem.Identifier {
+    static let navigationGroup = NSToolbarItem.Identifier("Nautica.NavigationGroup")
     static let back = NSToolbarItem.Identifier("Nautica.Back")
     static let forward = NSToolbarItem.Identifier("Nautica.Forward")
-    static let pathBar = NSToolbarItem.Identifier("Nautica.PathBar")
     static let splitLayout = NSToolbarItem.Identifier("Nautica.SplitLayout")
     static let viewMode = NSToolbarItem.Identifier("Nautica.ViewMode")
+    static let sortMenu = NSToolbarItem.Identifier("Nautica.SortMenu")
+    static let share = NSToolbarItem.Identifier("Nautica.Share")
+    static let action = NSToolbarItem.Identifier("Nautica.Action")
+    static let search = NSToolbarItem.Identifier("Nautica.Search")
+    static let pathBar = NSToolbarItem.Identifier("Nautica.PathBar")
     static let iconSize = NSToolbarItem.Identifier("Nautica.IconSize")
     static let hiddenFiles = NSToolbarItem.Identifier("Nautica.HiddenFiles")
 }
 
-/// Main-window toolbar: back/forward, path bar, split layout, view mode, icon size, hidden files.
-///
-/// Owns the `NSToolbar` and acts as its delegate. Browser state is mirrored into
-/// the properties below by `BrowserView`, which then calls `refresh()` to
-/// re-apply it to the toolbar items.
+/// Main-window toolbar matching macOS Finder:
+/// Back/Forward navigation group, flexible space, View mode, Panes, Sort/Group, Share, Actions, and Search.
 final class BrowserToolbar: NSObject {
     // MARK: - Callbacks (wired by BrowserView)
 
@@ -27,19 +29,31 @@ final class BrowserToolbar: NSObject {
     var onViewModeChanged: ((ViewMode) -> Void)?
     var onIconSizeChanged: ((CGFloat) -> Void)?
     var onToggleHiddenFiles: (() -> Void)?
+    var onSortChanged: ((SortKey, Bool) -> Void)?
+    var onShare: (() -> Void)?
+    var onNewFolder: (() -> Void)?
+    var onGetInfo: (() -> Void)?
+    var onRename: (() -> Void)?
+    var onBatchRename: (() -> Void)?
+    var onTrash: (() -> Void)?
+    var onTogglePathBar: (() -> Void)?
+    var onSearch: ((String) -> Void)?
 
     // MARK: - Mirrored state (set before calling refresh())
 
     var canGoBack = false
     var canGoForward = false
     var currentURL = FileManager.default.homeURL
-    var splitLayout: SplitLayout = .single
-    var viewMode: ViewMode = .icon
+    var splitLayout: SplitLayout = .quad4
+    var viewMode: ViewMode = .list
     var iconSize: CGFloat = 64
     var showsHiddenFiles = false
+    var currentSortKey: SortKey = .name
+    var sortAscending: Bool = true
 
     let toolbar: NSToolbar
 
+    private weak var navigationControl: NSSegmentedControl?
     private weak var backItem: NSToolbarItem?
     private weak var forwardItem: NSToolbarItem?
     private weak var pathBarHostingView: NSHostingView<PathBarView>?
@@ -53,11 +67,13 @@ final class BrowserToolbar: NSObject {
         super.init()
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
-        toolbar.allowsUserCustomization = false
+        toolbar.allowsUserCustomization = true
     }
 
     /// Re-applies the mirrored state to the toolbar items. Cheap; call freely.
     func refresh() {
+        navigationControl?.setEnabled(canGoBack, forSegment: 0)
+        navigationControl?.setEnabled(canGoForward, forSegment: 1)
         backItem?.isEnabled = canGoBack
         forwardItem?.isEnabled = canGoForward
         pathBarHostingView?.rootView = makePathBarView()
@@ -96,6 +112,35 @@ final class BrowserToolbar: NSObject {
     }
 
     @objc private func hiddenFilesAction() { onToggleHiddenFiles?() }
+
+    @objc private func sortKeyAction(_ sender: NSMenuItem) {
+        if let key = sender.representedObject as? SortKey {
+            currentSortKey = key
+            onSortChanged?(key, sortAscending)
+        }
+    }
+
+    @objc private func toggleSortAscending(_ sender: NSMenuItem) {
+        sortAscending.toggle()
+        onSortChanged?(currentSortKey, sortAscending)
+    }
+
+    @objc private func shareAction() { onShare?() }
+    @objc private func newFolderAction() { onNewFolder?() }
+    @objc private func getInfoAction() { onGetInfo?() }
+    @objc private func renameAction() { onRename?() }
+    @objc private func batchRenameAction() { onBatchRename?() }
+    @objc private func navigationAction(_ sender: NSSegmentedControl) {
+        if sender.selectedSegment == 0 {
+            backAction()
+        } else if sender.selectedSegment == 1 {
+            forwardAction()
+        }
+    }
+
+    @objc private func trashAction() { onTrash?() }
+    @objc private func togglePathBarAction() { onTogglePathBar?() }
+    @objc private func searchAction(_ sender: NSSearchField) { onSearch?(sender.stringValue) }
 }
 
 // MARK: - NSToolbarDelegate
@@ -105,27 +150,43 @@ extension BrowserToolbar: NSToolbarDelegate {
                  itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
                  willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
         switch itemIdentifier {
-        case .back, .forward:
-            let isBack = itemIdentifier == .back
+        case .navigationGroup:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-            item.label = isBack ? "Back" : "Forward"
-            item.image = NSImage(named: isBack ? NSImage.goBackTemplateName : NSImage.goForwardTemplateName)
-            item.target = self
-            item.action = isBack ? #selector(backAction) : #selector(forwardAction)
-            item.isEnabled = isBack ? canGoBack : canGoForward
-            if isBack { backItem = item } else { forwardItem = item }
+            item.label = "Navigate"
+            let control = NSSegmentedControl(
+                images: [
+                    NSImage(systemSymbolName: "chevron.backward", accessibilityDescription: "Back")!,
+                    NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: "Forward")!,
+                ],
+                trackingMode: .momentary,
+                target: self,
+                action: #selector(navigationAction(_:))
+            )
+            control.segmentStyle = .separated
+            control.setEnabled(canGoBack, forSegment: 0)
+            control.setEnabled(canGoForward, forSegment: 1)
+            item.view = control
+            navigationControl = control
             return item
 
-        case .pathBar:
+        case .back:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-            item.label = "Path"
-            let hostingView = NSHostingView(rootView: makePathBarView())
-            item.view = hostingView
-            // Flexible width: grows to fill the space between the arrows and
-            // the trailing controls.
-            item.minSize = NSSize(width: 160, height: 32)
-            item.maxSize = NSSize(width: 4000, height: 32)
-            pathBarHostingView = hostingView
+            item.label = "Back"
+            item.image = NSImage(systemSymbolName: "chevron.backward", accessibilityDescription: "Back")
+            item.target = self
+            item.action = #selector(backAction)
+            item.isEnabled = canGoBack
+            backItem = item
+            return item
+
+        case .forward:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Forward"
+            item.image = NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: "Forward")
+            item.target = self
+            item.action = #selector(forwardAction)
+            item.isEnabled = canGoForward
+            forwardItem = item
             return item
 
         case .splitLayout:
@@ -151,7 +212,7 @@ extension BrowserToolbar: NSToolbarDelegate {
 
         case .viewMode:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
-            item.label = "View Mode"
+            item.label = "View"
             let control = NSSegmentedControl(
                 images: [
                     NSImage(systemSymbolName: "square.grid.2x2", accessibilityDescription: "Icon View")!,
@@ -164,6 +225,68 @@ extension BrowserToolbar: NSToolbarDelegate {
             control.selectedSegment = viewMode == .icon ? 0 : 1
             item.view = control
             viewModeControl = control
+            return item
+
+        case .sortMenu:
+            let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Group"
+            item.image = NSImage(systemSymbolName: "square.grid.3x1.below.line.grid.1x2", accessibilityDescription: "Sort")
+                ?? NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: "Sort")
+            let menu = NSMenu(title: "Sort")
+            for key in SortKey.allCases {
+                let menuItem = NSMenuItem(title: "Sort by \(key.title)", action: #selector(sortKeyAction(_:)), keyEquivalent: "")
+                menuItem.target = self
+                menuItem.representedObject = key
+                menu.addItem(menuItem)
+            }
+            menu.addItem(NSMenuItem.separator())
+            let ascItem = NSMenuItem(title: "Ascending", action: #selector(toggleSortAscending(_:)), keyEquivalent: "")
+            ascItem.target = self
+            menu.addItem(ascItem)
+            item.menu = menu
+            return item
+
+        case .share:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Share"
+            item.image = NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: "Share")
+            item.target = self
+            item.action = #selector(shareAction)
+            return item
+
+        case .action:
+            let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Action"
+            item.image = NSImage(systemSymbolName: "ellipsis.circle", accessibilityDescription: "Action")
+            let menu = NSMenu(title: "Action")
+            menu.addItem(withTitle: "New Folder", action: #selector(newFolderAction), keyEquivalent: "")
+            menu.addItem(withTitle: "Get Info", action: #selector(getInfoAction), keyEquivalent: "")
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(withTitle: "Rename…", action: #selector(renameAction), keyEquivalent: "")
+            menu.addItem(withTitle: "Batch Rename…", action: #selector(batchRenameAction), keyEquivalent: "")
+            menu.addItem(withTitle: "Move to Trash", action: #selector(trashAction), keyEquivalent: "")
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(withTitle: "Toggle Hidden Files", action: #selector(hiddenFilesAction), keyEquivalent: "")
+            menu.addItem(withTitle: "Toggle Path Bar", action: #selector(togglePathBarAction), keyEquivalent: "")
+            for m in menu.items { m.target = self }
+            item.menu = menu
+            return item
+
+        case .search:
+            let item = NSSearchToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Search"
+            item.searchField.target = self
+            item.searchField.action = #selector(searchAction(_:))
+            return item
+
+        case .pathBar:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Path"
+            let hostingView = NSHostingView(rootView: makePathBarView())
+            item.view = hostingView
+            item.minSize = NSSize(width: 160, height: 32)
+            item.maxSize = NSSize(width: 4000, height: 32)
+            pathBarHostingView = hostingView
             return item
 
         case .iconSize:
@@ -196,12 +319,12 @@ extension BrowserToolbar: NSToolbarDelegate {
         }
     }
 
-    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.back, .forward, .pathBar, .splitLayout, .viewMode, .iconSize, .hiddenFiles]
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [.navigationGroup, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search]
     }
 
-    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        toolbarAllowedItemIdentifiers(toolbar)
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [.navigationGroup, .back, .forward, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search, .pathBar, .iconSize, .hiddenFiles]
     }
 }
 
@@ -211,7 +334,7 @@ extension BrowserToolbar: NSToolbarItemValidation {
     /// Keeps back/forward in sync when AppKit revalidates the toolbar on its own.
     func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
         switch item.itemIdentifier {
-        case .back: return canGoBack
+        case .navigationGroup, .back: return canGoBack
         case .forward: return canGoForward
         default: return true
         }

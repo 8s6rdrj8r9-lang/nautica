@@ -5,6 +5,7 @@ import Foundation
 @Observable
 final class SidebarModel {
     var favorites: [SidebarItem] = []
+    var locations: [SidebarItem] = []
     var treeRoot: SidebarItem?
     var recents: [SidebarItem] = []
 
@@ -23,6 +24,7 @@ final class SidebarModel {
 
     init() {
         favorites = Self.loadFavorites()
+        locations = Self.loadLocations()
         recents = Self.loadRecents()
         let home = FileManager.default.homeURL
         treeRoot = SidebarItem(url: home, name: "Home", children: [])
@@ -142,19 +144,46 @@ final class SidebarModel {
 
     private static func defaultFavorites() -> [SidebarItem] {
         let fileManager = FileManager.default
-        var urls = [
-            fileManager.homeURL,
-            fileManager.desktopURL,
-            fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!,
-            fileManager.downloadsURL,
-            fileManager.urls(for: .picturesDirectory, in: .userDomainMask).first!,
-        ]
+        var urls: [URL] = []
+        let appURL = URL(fileURLWithPath: "/Applications", isDirectory: true)
+        if fileManager.fileExists(atPath: appURL.path) {
+            urls.append(appURL)
+        }
+        urls.append(fileManager.desktopURL)
+        if let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
+            urls.append(docs)
+        }
+        urls.append(fileManager.downloadsURL)
+        if let music = fileManager.urls(for: .musicDirectory, in: .userDomainMask).first,
+           fileManager.fileExists(atPath: music.path) {
+            urls.append(music)
+        }
+        if let pics = fileManager.urls(for: .picturesDirectory, in: .userDomainMask).first {
+            urls.append(pics)
+        }
+        let dev = fileManager.homeURL.appending(path: "Development", directoryHint: .isDirectory)
         let projects = fileManager.homeURL.appending(path: "Projects", directoryHint: .isDirectory)
-        var isDirectory: ObjCBool = false
-        if fileManager.fileExists(atPath: projects.path, isDirectory: &isDirectory), isDirectory.boolValue {
+        if fileManager.fileExists(atPath: dev.path) {
+            urls.append(dev)
+        } else if fileManager.fileExists(atPath: projects.path) {
             urls.append(projects)
         }
+        if let movies = fileManager.urls(for: .moviesDirectory, in: .userDomainMask).first,
+           fileManager.fileExists(atPath: movies.path) {
+            urls.append(movies)
+        }
         return urls.map(makeItem(for:))
+    }
+
+    private static func loadLocations() -> [SidebarItem] {
+        var items: [SidebarItem] = []
+        items.append(SidebarItem(url: URL(fileURLWithPath: "/"), name: "Macintosh HD"))
+        let icloud = FileManager.default.homeURL.appendingPathComponent("Library/Mobile Documents/com~apple~CloudDocs")
+        if FileManager.default.fileExists(atPath: icloud.path) {
+            items.append(SidebarItem(url: icloud, name: "iCloud Drive"))
+        }
+        items.append(SidebarItem(url: URL(fileURLWithPath: "/Volumes"), name: "Network"))
+        return items
     }
 
     private static func loadFavorites() -> [SidebarItem] {

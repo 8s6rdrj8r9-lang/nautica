@@ -7,4 +7,14 @@ enum SortKey: String, CaseIterable {
     case modificationDate
     case creationDate
     case kind
+
+    var title: String {
+        switch self {
+        case .name: return "Name"
+        case .size: return "Size"
+        case .modificationDate: return "Date Modified"
+        case .creationDate: return "Date Created"
+        case .kind: return "Kind"
+        }
+    }
 }
