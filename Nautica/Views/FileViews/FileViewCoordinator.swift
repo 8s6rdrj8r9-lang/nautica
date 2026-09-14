@@ -7,6 +7,12 @@ import SwiftUI
 /// Prompt 3 hosts the NSCollectionView icon grid; Prompt 4 hosts the
 /// NSTableView list. Only one is visible at a time, per `viewMode`.
 struct FileViewCoordinator: NSViewRepresentable {
+    @AppStorage(Constants.listFontSizeKey) private var listFontSize: Double = 13
+    @AppStorage(Constants.listIconSizeKey) private var listIconSize: Double = 16
+    @AppStorage(Constants.listSpacingKey) private var listSpacing: Double = 2
+    @AppStorage(Constants.iconFontSizeKey) private var iconFontSize: Double = 11
+    @AppStorage(Constants.iconSpacingKey) private var iconSpacing: Double = 10
+
     var directoryContents: DirectoryContents
     var selectionModel: SelectionModel
     var viewMode: ViewMode
@@ -106,9 +112,10 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.view.isHidden = !isIconMode
         listController.view.isHidden = isIconMode
         if isIconMode {
-            iconController.iconSize = iconSize
+            iconController.applyAppearance(fontSize: iconFontSize, iconSize: iconSize, spacing: iconSpacing)
             iconController.applyItems(directoryContents.items)
         } else {
+            listController.applyAppearance(fontSize: listFontSize, iconSize: listIconSize, spacing: listSpacing)
             listController.applyItems(directoryContents.items)
             listController.applySelection()
         }

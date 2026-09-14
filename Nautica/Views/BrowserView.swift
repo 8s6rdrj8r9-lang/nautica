@@ -60,10 +60,7 @@ private final class UndoBox {
 struct BrowserView: View {
     @State private var tab = TabState(url: Constants.defaultWindowURL())
     @State private var sidebarModel = SidebarModel()
-    @State private var iconSize: CGFloat = {
-        let stored = UserDefaults.standard.double(forKey: Constants.defaultIconSizeKey)
-        return stored > 0 ? stored : 64
-    }()
+    @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
     /// Session-level default for the hidden-files toggle.
     @State private var showHiddenFiles = UserDefaults.standard.bool(forKey: Constants.showHiddenFilesKey)
     @State private var toolbar = BrowserToolbar()
@@ -73,6 +70,7 @@ struct BrowserView: View {
     /// Long-running copy/move progress; non-nil presents the sheet.
     @State private var operationName = ""
     @State private var operationProgress: Progress?
+    @State private var isOperationRunning = false
     /// Persistent banner while Full Disk Access is missing (Prompt 15).
     @State private var showPermissionBanner = false
     /// "Go to Folder…" sheet state (Prompt 16).
@@ -98,17 +96,29 @@ struct BrowserView: View {
                     // Persistence handled by SidebarModel; hook for later prompts.
                 }
             } detail: {
-                FileViewCoordinator(
-                    directoryContents: tab.directoryContents,
-                    selectionModel: tab.selectionModel,
-                    viewMode: tab.viewMode,
-                    onQuickLook: quickLook,
-                    iconSize: iconSize,
-                    onNavigate: navigate(to:),
-                    onRenameRequest: renameSelection,
-                    onCopySelection: copySelectionToPasteboard,
-                    onTrashSelection: trashSelection
-                )
+                VStack(spacing: 0) {
+                    if let error = tab.directoryContents.error {
+                        ContentUnavailableView {
+                            Label("Unable to Open Folder", systemImage: "exclamationmark.folder")
+                        } description: {
+                            Text(error.localizedDescription)
+                        } actions: {
+                            Button("Retry") { tab.directoryContents.reload() }
+                        }
+                    } else {
+                        FileViewCoordinator(
+                            directoryContents: tab.directoryContents,
+                            selectionModel: tab.selectionModel,
+                            viewMode: tab.viewMode,
+                            onQuickLook: quickLook,
+                            iconSize: iconSize,
+                            onNavigate: navigate(to:),
+                            onRenameRequest: renameSelection,
+                            onCopySelection: copySelectionToPasteboard,
+                            onTrashSelection: trashSelection
+                        )
+                    }
+                }
             }
         }
         .inspector(isPresented: $showTreePanel) {
@@ -142,6 +152,7 @@ struct BrowserView: View {
                     operationName: operationName,
                     onCancel: cancelOperation
                 )
+                .interactiveDismissDisabled()
             }
         }
         .sheet(item: $renameTarget) { item in
@@ -160,6 +171,7 @@ struct BrowserView: View {
             applyViewState(for: tab.navigationHistory.currentURL)
             showPermissionBanner = !FullDiskAccess.isGranted
         }
+        .onChange(of: iconSize) { syncToolbar() }
         .task { tab.directoryContents.reload() }
     }
 
@@ -186,7 +198,6 @@ struct BrowserView: View {
     private func applyViewState(for url: URL) {
         guard let state = viewStateService?.state(for: url.path) else { return }
         tab.viewMode = ViewMode(rawValue: state.viewMode) ?? .icon
-        iconSize = state.iconSize
         showHiddenFiles = state.showHiddenFiles
         tab.directoryContents.sortKey = SortKey(rawValue: state.sortKey) ?? .name
         tab.directoryContents.sortAscending = state.sortAscending
@@ -197,7 +208,6 @@ struct BrowserView: View {
     private func persistViewState() {
         guard let state = viewStateService?.current else { return }
         state.viewMode = tab.viewMode.rawValue
-        state.iconSize = Double(iconSize)
         state.sortKey = tab.directoryContents.sortKey.rawValue
         state.sortAscending = tab.directoryContents.sortAscending
         state.showHiddenFiles = showHiddenFiles
@@ -305,11 +315,11 @@ struct BrowserView: View {
             move
                 ? await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
                 : await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
-        } onSuccess: { result in
+        } onCompletion: { result in
             // Undo of a move: put everything back where it came from.
             if move {
                 registerRestoreUndo(
-                    name: "Move", originals: sources, destinations: result.succeeded
+                    name: "Move", transfers: result.transfers
                 )
             }
         }
@@ -332,7 +342,8 @@ struct BrowserView: View {
             let result = await FileOperationService.shared.trashItems(urls)
             tab.directoryContents.reload()
             tab.selectionModel.deselectAll()
-            registerRestoreUndo(name: "Move to Trash", originals: urls, destinations: result.succeeded)
+            registerRestoreUndo(name: "Move to Trash", transfers: result.transfers)
+            if let (_, error) = result.failed.first { showError("Move to Trash Failed", error: error) }
         }
     }
 
@@ -423,8 +434,10 @@ struct BrowserView: View {
     private func runFileOperation(
         _ name: String,
         operation: @escaping (Progress) async -> FileOperationResult,
-        onSuccess: ((FileOperationResult) -> Void)? = nil
+        onCompletion: ((FileOperationResult) -> Void)? = nil
     ) {
+        guard !isOperationRunning else { return }
+        isOperationRunning = true
         let progress = Progress(totalUnitCount: 1)
         let showDelay = Task { @MainActor in
             try? await Task.sleep(for: .seconds(1))
@@ -438,14 +451,14 @@ struct BrowserView: View {
             await MainActor.run {
                 showDelay.cancel()
                 operationProgress = nil
+                isOperationRunning = false
                 tab.directoryContents.reload()
-                if let (url, error) = result.failed.first, !(error is CancellationError) {
+                onCompletion?(result)
+                if let (url, error) = result.failed.first(where: { !($0.1 is CancellationError) }) {
                     showError(
                         "\(name) failed for “\(url.lastPathComponent)”",
                         error: error
                     )
-                } else {
-                    onSuccess?(result)
                 }
             }
         }
@@ -453,23 +466,18 @@ struct BrowserView: View {
 
     private func cancelOperation() {
         operationProgress?.cancel()
-        operationProgress = nil
     }
 
-    /// Registers a Cmd+Z undo that moves `destinations` back to the folders
-    /// of their `originals` (used after move and trash).
-    private func registerRestoreUndo(name: String, originals: [URL], destinations: [URL]) {
-        guard let undoManager, !destinations.isEmpty else { return }
+    /// Restore successful transfers to their exact original paths, including names.
+    private func registerRestoreUndo(name: String, transfers: [FileOperationResult.Transfer]) {
+        guard let undoManager, !transfers.isEmpty else { return }
         undoManager.registerUndo(withTarget: UndoBox {
             Task {
-                for (original, moved) in zip(originals, destinations) {
-                    _ = await FileOperationService.shared.moveItems(
-                        [moved],
-                        to: original.deletingLastPathComponent(),
-                        progress: Progress()
-                    )
+                let result = await FileOperationService.shared.restoreItems(transfers)
+                tab.directoryContents.reload()
+                if let (_, error) = result.failed.first {
+                    showError("Undo Failed", error: error)
                 }
-                await MainActor.run { [tab] in tab.directoryContents.reload() }
             }
         }) { box in
             box.work()

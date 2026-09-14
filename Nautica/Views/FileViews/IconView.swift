@@ -32,7 +32,7 @@ final class IconCache {
     /// Items per prefetch batch (spec: batches of 50 for large directories).
     static let batchSize = 50
 
-    private let cache = NSCache<NSURL, NSImage>()
+    private let cache = NSCache<NSString, NSImage>()
 
     let queue: OperationQueue = {
         let queue = OperationQueue()
@@ -45,13 +45,13 @@ final class IconCache {
         cache.removeAllObjects()
     }
 
-    func cachedIcon(for url: URL) -> NSImage? {
-        cache.object(forKey: url as NSURL)
+    func cachedIcon(for url: URL, size: CGFloat) -> NSImage? {
+        cache.object(forKey: "\(url.absoluteString)|\(size)" as NSString)
     }
 
     /// Loads the icon for `url`, invoking `completion` on the main thread.
     func icon(for url: URL, size: CGFloat, completion: @escaping (NSImage) -> Void) {
-        if let cached = cachedIcon(for: url) {
+        if let cached = cachedIcon(for: url, size: size) {
             completion(cached)
             return
         }
@@ -63,7 +63,7 @@ final class IconCache {
 
     /// Preloads icons in batches of `batchSize` on the loading queue.
     func prefetch(urls: [URL], size: CGFloat) {
-        let missing = urls.filter { cachedIcon(for: $0) == nil }
+        let missing = urls.filter { cachedIcon(for: $0, size: size) == nil }
         for start in stride(from: 0, to: missing.count, by: Self.batchSize) {
             let batch = Array(missing[start..<min(start + Self.batchSize, missing.count)])
             queue.addOperation { [weak self] in
@@ -77,7 +77,7 @@ final class IconCache {
     /// Loads and resizes the workspace icon; caches the result. Thread-safe.
     @discardableResult
     private func loadIcon(for url: URL, size: CGFloat) -> NSImage? {
-        let key = url as NSURL
+        let key = "\(url.absoluteString)|\(size)" as NSString
         if let cached = cache.object(forKey: key) { return cached }
         let resized = Self.resized(NSWorkspace.shared.icon(forFile: url.path), to: size)
         cache.setObject(resized, forKey: key)
@@ -160,15 +160,21 @@ final class IconViewController: NSViewController {
     let selectionModel: SelectionModel
 
     /// Icon size in points (32–256, default 64). Driven by the toolbar slider (Prompt 7).
-    var iconSize: CGFloat = 64 {
-        didSet {
-            let clamped = min(256, max(32, iconSize))
-            guard clamped != oldValue else { return }
-            iconSize = clamped
-            iconCache.clear()
-            updateLayout()
-            applyItems(currentItems)
-        }
+    private(set) var iconSize: CGFloat = 64
+    private var fontSize: CGFloat = 11
+    private var itemSpacing: CGFloat = 10
+
+    func applyAppearance(fontSize: CGFloat, iconSize: CGFloat, spacing: CGFloat) {
+        guard self.fontSize != fontSize || self.iconSize != iconSize || itemSpacing != spacing else { return }
+        self.fontSize = fontSize
+        self.iconSize = iconSize
+        itemSpacing = spacing
+        iconCache.clear()
+        updateLayout()
+        guard let dataSource else { return }
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadItems(snapshot.itemIdentifiers)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
 
     /// Double-click on a folder.
@@ -244,7 +250,8 @@ final class IconViewController: NSViewController {
                 for: indexPath
             )
             guard let self, let iconItem = item as? IconViewItem else { return item }
-            iconItem.configure(with: fileItem, isSelected: self.selectionModel.isSelected(fileItem.id))
+            iconItem.configure(with: fileItem, isSelected: self.selectionModel.isSelected(fileItem.id),
+                               fontSize: self.fontSize, iconSize: self.iconSize)
             self.iconCache.icon(for: fileItem.url, size: self.iconSize) { [weak iconItem] image in
                 guard let iconItem, iconItem.fileItem?.id == fileItem.id else { return }
                 iconItem.iconView.image = image
@@ -270,7 +277,7 @@ final class IconViewController: NSViewController {
         let insets = flowLayout.sectionInset
         let available = collectionView.bounds.width - insets.left - insets.right
         let pitch = flowLayout.itemSize.width + flowLayout.minimumInteritemSpacing
-        let count = max(1, Int(available / pitch))
+        let count = max(1, Int((available + flowLayout.minimumInteritemSpacing) / pitch))
         if count != currentColumnCount {
             currentColumnCount = count
             onColumnCountChanged?(count)
@@ -278,10 +285,10 @@ final class IconViewController: NSViewController {
     }
 
     private func updateLayout() {
-        let width = max(Self.minimumItemWidth, iconSize + 24)
-        flowLayout.itemSize = NSSize(width: width, height: iconSize + 48)
-        flowLayout.minimumInteritemSpacing = Self.gridSpacing
-        flowLayout.minimumLineSpacing = Self.gridSpacing
+        let width = max(Self.minimumItemWidth * fontSize / 11, iconSize + 24)
+        flowLayout.itemSize = NSSize(width: width, height: iconSize + ceil(fontSize * 2.6) + 18)
+        flowLayout.minimumInteritemSpacing = itemSpacing
+        flowLayout.minimumLineSpacing = itemSpacing
         flowLayout.sectionInset = NSEdgeInsets(
             top: Self.gridSpacing, left: Self.gridSpacing,
             bottom: Self.gridSpacing, right: Self.gridSpacing

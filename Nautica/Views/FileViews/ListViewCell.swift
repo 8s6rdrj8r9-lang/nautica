@@ -8,6 +8,7 @@ final class ListViewCell: NSTableCellView {
     static let iconSize: CGFloat = 16
 
     private(set) var fileItem: FileItem?
+    private var iconHeightConstraint: NSLayoutConstraint!
     private var iconWidthConstraint: NSLayoutConstraint!
 
     init(identifier: NSUserInterfaceItemIdentifier) {
@@ -31,11 +32,12 @@ final class ListViewCell: NSTableCellView {
 
         // Text-only columns collapse the icon slot to zero width.
         iconWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: Self.iconSize)
+        iconHeightConstraint = imageView.heightAnchor.constraint(equalToConstant: Self.iconSize)
         NSLayoutConstraint.activate([
             imageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 2),
             imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             iconWidthConstraint,
-            imageView.heightAnchor.constraint(equalToConstant: Self.iconSize),
+            iconHeightConstraint,
 
             label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 4),
             label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -2),
@@ -52,10 +54,13 @@ final class ListViewCell: NSTableCellView {
     /// TagService integration arriving in Prompt 11 (F-013); for now the
     /// caller passes an empty string. Folder sizes show "—" because
     /// enumerating folder contents per row would be too costly.
-    func configure(with item: FileItem, forColumn column: ListColumn, tags: String = "") {
+    func configure(with item: FileItem, forColumn column: ListColumn, tags: String = "",
+                   fontSize: CGFloat = 13, iconSize: CGFloat = 16) {
         fileItem = item
         imageView?.isHidden = column != .name
-        iconWidthConstraint.constant = column == .name ? Self.iconSize : 0
+        iconWidthConstraint.constant = column == .name ? iconSize : 0
+        iconHeightConstraint.constant = iconSize
+        textField?.font = NSFont.systemFont(ofSize: fontSize)
         textField?.alignment = column == .size ? .right : .left
 
         switch column {

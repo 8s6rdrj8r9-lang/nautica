@@ -7,6 +7,8 @@ final class IconViewItem: NSCollectionViewItem {
 
     var iconView: NSImageView!
     var nameLabel: NSTextField!
+    private var iconWidth: NSLayoutConstraint!
+    private var iconHeight: NSLayoutConstraint!
     private(set) var fileItem: FileItem?
 
     /// Rounded-rect highlight shown behind the icon and label when selected.
@@ -44,7 +46,10 @@ final class IconViewItem: NSCollectionViewItem {
         container.addSubview(imageView)
         container.addSubview(label)
 
+        iconWidth = imageView.widthAnchor.constraint(equalToConstant: 64)
+        iconHeight = imageView.heightAnchor.constraint(equalToConstant: 64)
         NSLayoutConstraint.activate([
+            iconWidth, iconHeight,
             highlightView.topAnchor.constraint(equalTo: container.topAnchor, constant: 2),
             highlightView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 2),
             highlightView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -2),
@@ -61,8 +66,11 @@ final class IconViewItem: NSCollectionViewItem {
     }
 
     /// Populates the cell; the icon image is assigned asynchronously by the controller.
-    func configure(with item: FileItem, isSelected: Bool) {
+    func configure(with item: FileItem, isSelected: Bool, fontSize: CGFloat = 11, iconSize: CGFloat = 64) {
         loadViewIfNeeded() // the collection view loads item views lazily
+        nameLabel.font = NSFont.systemFont(ofSize: fontSize)
+        iconWidth.constant = iconSize
+        iconHeight.constant = iconSize
         fileItem = item
         nameLabel.stringValue = item.name
         nameLabel.toolTip = item.name

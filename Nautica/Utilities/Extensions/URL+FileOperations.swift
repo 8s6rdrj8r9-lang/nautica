@@ -7,7 +7,8 @@ extension URL {
     func nonCollidingURL(in directory: URL) -> URL {
         let fileManager = FileManager.default
         var candidate = directory.appendingPathComponent(lastPathComponent)
-        guard fileManager.fileExists(atPath: candidate.path) else { return candidate }
+        // attributesOfItem inspects the link itself, so dangling symlinks count as collisions.
+        guard (try? fileManager.attributesOfItem(atPath: candidate.path)) != nil else { return candidate }
 
         let base = deletingPathExtension().lastPathComponent
         let pathExtension = self.pathExtension
@@ -17,7 +18,7 @@ extension URL {
                 ? "\(base) \(counter)"
                 : "\(base) \(counter).\(pathExtension)"
             candidate = directory.appendingPathComponent(name)
-            if !fileManager.fileExists(atPath: candidate.path) { return candidate }
+            if (try? fileManager.attributesOfItem(atPath: candidate.path)) == nil { return candidate }
             counter += 1
         }
     }

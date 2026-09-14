@@ -9,6 +9,7 @@ struct ProgressPanel: View {
 
     @State private var completed: Int64 = 0
     @State private var total: Int64 = 1
+    @State private var isCancelling = false
     @State private var startedAt = Date()
 
     var body: some View {
@@ -21,7 +22,11 @@ struct ProgressPanel: View {
                 .foregroundStyle(.secondary)
             HStack {
                 Spacer()
-                Button("Cancel", action: onCancel)
+                Button(isCancelling ? "Cancelling…" : "Cancel") {
+                    isCancelling = true
+                    onCancel()
+                }
+                    .disabled(isCancelling)
                     .keyboardShortcut(.cancelAction)
             }
         }

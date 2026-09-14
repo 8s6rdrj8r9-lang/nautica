@@ -15,7 +15,7 @@ actor FileSystemService {
     ]
 
     /// Enumerates a directory via NSFileCoordinator, returning sorted items.
-    /// Unreadable directories yield an empty array instead of throwing.
+    /// Unreadable directories propagate their error to the browser.
     func contentsOfDirectory(at url: URL, includingHidden: Bool) async throws -> [FileItem] {
         var items: [FileItem] = []
         var coordinationError: NSError?
@@ -39,10 +39,7 @@ actor FileSystemService {
         }
 
         if let coordinationError { throw coordinationError }
-        if let enumerationError {
-            // Permission errors etc. — return what we have (possibly empty).
-            return items
-        }
+        if let enumerationError { throw enumerationError }
 
         return items.sorted {
             $0.name.localizedStandardCompare($1.name) == .orderedAscending

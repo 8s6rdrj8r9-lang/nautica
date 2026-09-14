@@ -125,6 +125,23 @@ final class ListViewController: NSViewController {
     /// integration arriving in Prompt 11 (F-013).
     var tagsProvider: (FileItem) -> String = { _ in "" }
 
+    private var fontSize: CGFloat = 13
+    private var iconSize: CGFloat = 16
+    private var rowSpacing: CGFloat = 2
+
+    func applyAppearance(fontSize: CGFloat, iconSize: CGFloat, spacing: CGFloat) {
+        guard self.fontSize != fontSize || self.iconSize != iconSize || rowSpacing != spacing else { return }
+        self.fontSize = fontSize
+        self.iconSize = iconSize
+        rowSpacing = spacing
+        iconCache.clear()
+        guard isViewLoaded else { return }
+        tableView.rowHeight = max(ceil(fontSize * 1.3), iconSize) + 2 * spacing
+        tableView.intercellSpacing = NSSize(width: 3, height: 0)
+        tableView.reloadData()
+        applySelection()
+    }
+
     private let iconCache = IconCache()
     private var tableView: FileListTableView!
     private var currentItems: [FileItem] = []
@@ -381,9 +398,10 @@ extension ListViewController: NSTableViewDelegate {
         let identifier = tableColumn.identifier
         let cell = tableView.makeView(withIdentifier: identifier, owner: self) as? ListViewCell
             ?? ListViewCell(identifier: identifier)
-        cell.configure(with: item, forColumn: column, tags: tagsProvider(item))
+        cell.configure(with: item, forColumn: column, tags: tagsProvider(item),
+                       fontSize: fontSize, iconSize: iconSize)
         if column == .name {
-            iconCache.icon(for: item.url, size: ListViewCell.iconSize) { [weak cell] image in
+            iconCache.icon(for: item.url, size: iconSize) { [weak cell] image in
                 guard let cell, cell.fileItem?.id == item.id else { return }
                 cell.imageView?.image = image
             }
