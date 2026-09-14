@@ -18,6 +18,9 @@ struct BrowserActions {
     var trashSelection: () -> Void
     var renameSelection: () -> Void
     var batchRenameSelection: () -> Void
+    var newFolder: () -> Void
+    var getInfo: () -> Void
+    var quickLook: () -> Void
     // Navigation (Go menu, Prompt 16).
     var goBack: () -> Void
     var goForward: () -> Void
@@ -171,6 +174,17 @@ struct BrowserView: View {
             trashSelection: trashSelection,
             renameSelection: renameSelection,
             batchRenameSelection: batchRenameSelection,
+            newFolder: {
+                let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
+                try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+                for pane in activePanes { pane.directoryContents.reload() }
+            },
+            getInfo: {
+                if let first = selectedItems.first {
+                    FileContextMenu.showInfo(for: first)
+                }
+            },
+            quickLook: quickLook,
             goBack: goBack,
             goForward: goForward,
             goToEnclosingFolder: {

@@ -55,6 +55,13 @@ struct NauticaApp: App {
                     .keyboardShortcut(KeyEquivalent(Character("\u{7F}")), modifiers: .command)
             }
             CommandGroup(after: .newItem) {
+                Button("New Folder") { browserActions?.newFolder() }
+                    .keyboardShortcut("n", modifiers: [.command, .shift])
+                Button("Get Info") { browserActions?.getInfo() }
+                    .keyboardShortcut("i", modifiers: .command)
+                Button("Quick Look") { browserActions?.quickLook() }
+                    .keyboardShortcut("y", modifiers: .command)
+                Divider()
                 Button("New Tab") {
                     // The new window picks this URL up in onAppear.
                     if let browserURL {
@@ -78,9 +85,9 @@ struct NauticaApp: App {
             }
             CommandMenu("View") {
                 Button("as Icons") { browserActions?.setViewMode(.icon) }
-                    .keyboardShortcut("1", modifiers: [.command, .control])
+                    .keyboardShortcut("1", modifiers: .command)
                 Button("as List") { browserActions?.setViewMode(.list) }
-                    .keyboardShortcut("2", modifiers: [.command, .control])
+                    .keyboardShortcut("2", modifiers: .command)
                 Divider()
                 Button("Toggle Hidden Files") { browserActions?.toggleHiddenFiles() }
                     .keyboardShortcut(".", modifiers: [.command, .shift])
