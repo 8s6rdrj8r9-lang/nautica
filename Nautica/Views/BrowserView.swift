@@ -88,7 +88,7 @@ struct BrowserView: View {
     @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
     /// Session-level default for the hidden-files toggle.
     @State private var showHiddenFiles = UserDefaults.standard.bool(forKey: Constants.showHiddenFilesKey)
-    @State private var toolbar = BrowserToolbar()
+    @State private var searchText = ""
     /// Rename sheet state (Prompt 10).
     @State private var renameTarget: FileItem?
     @State private var renameText = ""
@@ -158,6 +158,11 @@ struct BrowserView: View {
                     .background(Color(NSColor.windowBackgroundColor))
                 }
             }
+            .navigationTitle(windowTitle)
+            .toolbar {
+                mainToolbarContent
+            }
+            .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
         }
         .navigationSplitViewStyle(.balanced)
         .inspector(isPresented: $showTreePanel) {
@@ -165,7 +170,7 @@ struct BrowserView: View {
                 .inspectorColumnWidth(min: 200, ideal: 260, max: 400)
         }
         .frame(minWidth: 720, minHeight: 450)
-        .background(WindowAccessor(toolbar: toolbar.toolbar, onWindow: configureWindow))
+        .background(WindowAccessor(onWindow: configureWindow))
         .focusedSceneValue(\.browserURL, activeTab.navigationHistory.currentURL)
         .focusedSceneValue(\.browserActions, BrowserActions(
             copySelection: copySelectionToPasteboard,
@@ -174,17 +179,9 @@ struct BrowserView: View {
             trashSelection: trashSelection,
             renameSelection: renameSelection,
             batchRenameSelection: batchRenameSelection,
-            newFolder: {
-                let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
-                try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
-                for pane in activePanes { pane.directoryContents.reload() }
-            },
-            getInfo: {
-                if let first = selectedItems.first {
-                    FileContextMenu.showInfo(for: first)
-                }
-            },
-            quickLook: quickLook,
+            newFolder: newFolder,
+            getInfo: getInfo,
+            quickLook: { quickLook() },
             goBack: goBack,
             goForward: goForward,
             goToEnclosingFolder: {
@@ -226,16 +223,191 @@ struct BrowserView: View {
                 viewStateService = ViewStateService(context: modelContext)
                 activeTab.directoryContents.onSortChanged = persistViewState
             }
-            wireToolbar()
             restoreIfPending()
             applyViewState(for: activeTab.navigationHistory.currentURL)
             showPermissionBanner = !FullDiskAccess.isGranted
         }
-        .onChange(of: iconSize) { syncToolbar() }
+        .onChange(of: iconSize) { persistViewState() }
+        .onChange(of: searchText) { performSearch(searchText) }
         .task {
             for pane in activePanes {
                 pane.directoryContents.reload()
             }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var mainToolbarContent: some ToolbarContent {
+        ToolbarItemGroup(placement: .navigation) {
+            ControlGroup {
+                Button(action: goBack) {
+                    Label("Back", systemImage: "chevron.backward")
+                }
+                .disabled(!activeTab.navigationHistory.canGoBack)
+                .help("Back (⌘[)")
+
+                Button(action: goForward) {
+                    Label("Forward", systemImage: "chevron.forward")
+                }
+                .disabled(!activeTab.navigationHistory.canGoForward)
+                .help("Forward (⌘])")
+            }
+        }
+
+        ToolbarItemGroup(placement: .primaryAction) {
+            Picker("View Mode", selection: Binding(
+                get: { activeTab.viewMode },
+                set: { setViewMode($0) }
+            )) {
+                Image(systemName: "square.grid.2x2").tag(ViewMode.icon)
+                Image(systemName: "list.bullet").tag(ViewMode.list)
+            }
+            .pickerStyle(.segmented)
+            .help("View as Icons or List (⌘1, ⌘2)")
+
+            Menu {
+                Button {
+                    setSplitLayout(.single)
+                } label: {
+                    Label("Single Pane", systemImage: "rectangle")
+                }
+                Divider()
+                Button {
+                    setSplitLayout(.horizontal2)
+                } label: {
+                    Label("2 Panes (Side by Side)", systemImage: "rectangle.split.2x1")
+                }
+                Button {
+                    setSplitLayout(.vertical2)
+                } label: {
+                    Label("2 Panes (Stacked)", systemImage: "rectangle.split.1x2")
+                }
+                Divider()
+                Button {
+                    setSplitLayout(.quad4)
+                } label: {
+                    Label("4 Panes (Grid)", systemImage: "rectangle.split.2x2")
+                }
+                Button {
+                    setSplitLayout(.horizontal4)
+                } label: {
+                    Label("4 Panes (Columns)", systemImage: "rectangle.split.3x1")
+                }
+                Button {
+                    setSplitLayout(.vertical4)
+                } label: {
+                    Label("4 Panes (Rows)", systemImage: "rectangle.split.1x2")
+                }
+            } label: {
+                Image(systemName: splitLayoutIcon)
+            }
+            .help("Panes Layout")
+
+            Menu {
+                ForEach(SortKey.allCases, id: \.self) { key in
+                    Button {
+                        activeTab.directoryContents.sort(by: key, ascending: activeTab.directoryContents.sortAscending)
+                        persistViewState()
+                    } label: {
+                        HStack {
+                            Text("Sort by \(key.title)")
+                            if activeTab.directoryContents.sortKey == key {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+                Divider()
+                Button {
+                    activeTab.directoryContents.sort(by: activeTab.directoryContents.sortKey, ascending: !activeTab.directoryContents.sortAscending)
+                    persistViewState()
+                } label: {
+                    HStack {
+                        Text(activeTab.directoryContents.sortAscending ? "Ascending" : "Descending")
+                        Image(systemName: activeTab.directoryContents.sortAscending ? "arrow.up" : "arrow.down")
+                    }
+                }
+            } label: {
+                Image(systemName: "square.grid.3x1.below.line.grid.1x2")
+            }
+            .help("Group and Sort Items")
+
+            Button(action: shareSelection) {
+                Image(systemName: "square.and.arrow.up")
+            }
+            .disabled(selectedItems.isEmpty)
+            .help("Share selected items")
+
+            Menu {
+                ForEach(tagColors, id: \.0) { name, hex in
+                    Button {
+                        applyTag(name, hex: hex)
+                    } label: {
+                        Label {
+                            Text(name)
+                        } icon: {
+                            Image(nsImage: tagDotImage(for: hex))
+                        }
+                    }
+                }
+            } label: {
+                Image(systemName: "tag")
+            }
+            .disabled(selectedItems.isEmpty)
+            .help("Edit Tags")
+
+            Menu {
+                Button(action: newFolder) {
+                    Label("New Folder", systemImage: "folder.badge.plus")
+                }
+                Divider()
+                Button(action: getInfo) {
+                    Label("Get Info", systemImage: "info.circle")
+                }
+                .disabled(selectedItems.isEmpty)
+
+                Button(action: { quickLook() }) {
+                    Label("Quick Look", systemImage: "eye")
+                }
+                .disabled(selectedItems.isEmpty)
+
+                Divider()
+                Button(action: renameSelection) {
+                    Label("Rename…", systemImage: "pencil")
+                }
+                .disabled(selectedItems.isEmpty)
+
+                Button(action: batchRenameSelection) {
+                    Label("Batch Rename…", systemImage: "pencil.and.list.clipboard")
+                }
+                .disabled(selectedItems.isEmpty)
+
+                Button(action: trashSelection) {
+                    Label("Move to Trash", systemImage: "trash")
+                }
+                .disabled(selectedItems.isEmpty)
+
+                Divider()
+                Button(action: openTerminal) {
+                    Label("Open in Terminal", systemImage: "terminal")
+                }
+
+                Button(action: toggleHiddenFiles) {
+                    Label(showHiddenFiles ? "Hide Hidden Files" : "Show Hidden Files", systemImage: "eye.slash")
+                }
+
+                Button(action: { showPathBar.toggle() }) {
+                    Label(showPathBar ? "Hide Path Bar" : "Show Path Bar", systemImage: "character.textbox")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+            }
+            .help("Action")
+
+            Button(action: newFolder) {
+                Image(systemName: "folder.badge.plus")
+            }
+            .help("New Folder (⇧⌘N)")
         }
     }
 
@@ -444,125 +616,20 @@ struct BrowserView: View {
         show(url, in: activeTab)
     }
 
-    private func wireToolbar() {
-        toolbar.onBack = goBack
-        toolbar.onForward = goForward
-        toolbar.onNavigate = { url in navigate(to: url) }
-        toolbar.onAddFavorite = { url in sidebarModel.addFavorite(url: url) }
-        toolbar.onSplitLayoutChanged = { [weak toolbar] layout in
-            setSplitLayout(layout)
-            toolbar?.refresh()
-        }
-        toolbar.onViewModeChanged = { [weak toolbar] mode in
-            setViewMode(mode)
-            toolbar?.refresh()
-        }
-        toolbar.onIconSizeChanged = { [weak toolbar] size in
-            _iconSize.wrappedValue = size
-            toolbar?.iconSize = size
-            persistViewState()
-        }
-        toolbar.onToggleHiddenFiles = { [weak toolbar] in
-            toggleHiddenFiles()
-            toolbar?.refresh()
-        }
-        toolbar.onSortChanged = { key, ascending in
-            activeTab.directoryContents.sort(by: key, ascending: ascending)
-            persistViewState()
-        }
-        toolbar.onShare = {
-            let urls = selectedItems.map(\.url)
-            guard !urls.isEmpty else { return }
-            let picker = NSSharingServicePicker(items: urls)
-            if let window = NSApp.keyWindow, let contentView = window.contentView {
-                picker.show(relativeTo: contentView.bounds, of: contentView, preferredEdge: .minY)
-            }
-        }
-        toolbar.onNewFolder = {
-            let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
-            try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
-            for pane in activePanes { pane.directoryContents.reload() }
-        }
-        toolbar.onGetInfo = {
-            if let first = selectedItems.first {
-                FileContextMenu.showInfo(for: first)
-            }
-        }
-        toolbar.onQuickLook = { quickLook() }
-        toolbar.onTerminal = {
-            Task {
-                try? await TerminalService.shared.openTerminal(
-                    at: activeTab.navigationHistory.currentURL,
-                    emulator: TerminalService.shared.defaultTerminal()
-                )
-            }
-        }
-        toolbar.onNewTab = {
-            TabRestoreQueue.shared.enqueue(activeTab.navigationHistory.currentURL)
-            openWindow(id: "browser")
-        }
-        toolbar.onApplyTag = { name, hex in
-            let urls = selectedItems.map(\.url)
-            guard !urls.isEmpty else { return }
-            Task {
-                do {
-                    let all = (try? await TagService.shared.allTags()) ?? []
-                    let tag: TagItem
-                    if let existing = all.first(where: { $0.name.lowercased() == name.lowercased() }) {
-                        tag = existing
-                    } else {
-                        tag = try await TagService.shared.createTag(name: name, colorHex: hex)
-                    }
-                    for url in urls {
-                        try await TagService.shared.applyTag(tag.id, to: url)
-                    }
-                    await MainActor.run {
-                        for pane in activePanes {
-                            pane.directoryContents.reload()
-                        }
-                    }
-                } catch {
-                    NSLog("Failed to apply tag: %@", error.localizedDescription)
-                }
-            }
-        }
-        toolbar.onRename = { renameSelection() }
-        toolbar.onBatchRename = { batchRenameSelection() }
-        toolbar.onTrash = { trashSelection() }
-        toolbar.onTogglePathBar = { showPathBar.toggle() }
-        toolbar.onSearch = { query in
-            if query.isEmpty {
-                activeTab.directoryContents.reload()
-            } else {
-                activeTab.directoryContents.items = activeTab.directoryContents.items.filter {
-                    $0.name.localizedCaseInsensitiveContains(query)
-                }
-            }
-        }
-        syncToolbar()
-    }
-
-    /// Switches icon/list view and persists the choice (Prompts 12, 16).
     private func setViewMode(_ mode: ViewMode) {
         activeTab.viewMode = mode
-        toolbar.viewMode = mode
-        toolbar.refresh()
         persistViewState()
     }
 
-    /// Flips hidden-file visibility and reloads (Prompts 7, 16).
     private func toggleHiddenFiles() {
         showHiddenFiles.toggle()
         for pane in activePanes {
             pane.directoryContents.showHiddenFiles = showHiddenFiles
             pane.directoryContents.reload()
         }
-        toolbar.showsHiddenFiles = showHiddenFiles
-        toolbar.refresh()
         persistViewState()
     }
 
-    /// Sets the multi-pane split layout (F-004).
     private func setSplitLayout(_ layout: SplitLayout) {
         splitLayout = layout
         let requiredCount = layout.paneCount
@@ -584,7 +651,6 @@ struct BrowserView: View {
         syncToolbar()
     }
 
-    /// Toggles between single pane and dual pane.
     private func toggleDualPane() {
         if splitLayout == .single {
             setSplitLayout(.horizontal2)
@@ -593,27 +659,133 @@ struct BrowserView: View {
         }
     }
 
-    /// Cycles to the next pane (Option+Tab).
     private func cycleNextPane() {
         guard splitLayout != .single else { return }
         activePaneIndex = (activePaneIndex + 1) % splitLayout.paneCount
         syncToolbar()
     }
 
-    /// Mirrors SwiftUI state into the toolbar and revalidates its items.
     private func syncToolbar() {
-        toolbar.canGoBack = activeTab.navigationHistory.canGoBack
-        toolbar.canGoForward = activeTab.navigationHistory.canGoForward
-        toolbar.hasSelection = !selectedItems.isEmpty
-        toolbar.currentURL = activeTab.navigationHistory.currentURL
-        toolbar.splitLayout = splitLayout
-        toolbar.viewMode = activeTab.viewMode
-        toolbar.iconSize = iconSize
-        toolbar.showsHiddenFiles = showHiddenFiles
-        toolbar.currentSortKey = activeTab.directoryContents.sortKey
-        toolbar.sortAscending = activeTab.directoryContents.sortAscending
-        toolbar.refresh()
         updateWindowTitle()
+    }
+
+    private func newFolder() {
+        let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
+        try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+        for pane in activePanes { pane.directoryContents.reload() }
+    }
+
+    private func getInfo() {
+        if let first = selectedItems.first {
+            FileContextMenu.showInfo(for: first)
+        }
+    }
+
+    private func openTerminal() {
+        Task {
+            try? await TerminalService.shared.openTerminal(
+                at: activeTab.navigationHistory.currentURL,
+                emulator: TerminalService.shared.defaultTerminal()
+            )
+        }
+    }
+
+    private func shareSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        let picker = NSSharingServicePicker(items: urls)
+        if let window = NSApp.keyWindow, let contentView = window.contentView {
+            picker.show(relativeTo: contentView.bounds, of: contentView, preferredEdge: .minY)
+        }
+    }
+
+    private func applyTag(_ name: String, hex: String) {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            do {
+                let all = (try? await TagService.shared.allTags()) ?? []
+                let tag: TagItem
+                if let existing = all.first(where: { $0.name.lowercased() == name.lowercased() }) {
+                    tag = existing
+                } else {
+                    tag = try await TagService.shared.createTag(name: name, colorHex: hex)
+                }
+                for url in urls {
+                    try await TagService.shared.applyTag(tag.id, to: url)
+                }
+                await MainActor.run {
+                    for pane in activePanes {
+                        pane.directoryContents.reload()
+                    }
+                }
+            } catch {
+                NSLog("Failed to apply tag: %@", error.localizedDescription)
+            }
+        }
+    }
+
+    private func performSearch(_ query: String) {
+        if query.isEmpty {
+            activeTab.directoryContents.reload()
+        } else {
+            Task {
+                do {
+                    let all = try await FileSystemService.shared.contentsOfDirectory(
+                        at: activeTab.navigationHistory.currentURL,
+                        includingHidden: showHiddenFiles
+                    )
+                    let sorted = DirectoryContents.sort(
+                        all,
+                        by: activeTab.directoryContents.sortKey,
+                        ascending: activeTab.directoryContents.sortAscending
+                    )
+                    await MainActor.run {
+                        activeTab.directoryContents.items = sorted.filter {
+                            $0.name.localizedCaseInsensitiveContains(query)
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        activeTab.directoryContents.items = []
+                    }
+                }
+            }
+        }
+    }
+
+    private func tagDotImage(for hex: String) -> NSImage {
+        let size = NSSize(width: 10, height: 10)
+        let img = NSImage(size: size, flipped: false) { rect in
+            if let color = NSColor(hex: hex) {
+                color.setFill()
+                NSBezierPath(ovalIn: rect.insetBy(dx: 1, dy: 1)).fill()
+                return true
+            }
+            return false
+        }
+        return img
+    }
+
+    private let tagColors: [(String, String)] = [
+        ("Red", "#FF3B30"),
+        ("Orange", "#FF9500"),
+        ("Yellow", "#FFCC00"),
+        ("Green", "#34C759"),
+        ("Blue", "#007AFF"),
+        ("Purple", "#AF52DE"),
+        ("Gray", "#8E8E93"),
+    ]
+
+    private var splitLayoutIcon: String {
+        switch splitLayout {
+        case .single: return "rectangle"
+        case .horizontal2: return "rectangle.split.2x1"
+        case .vertical2: return "rectangle.split.1x2"
+        case .quad4: return "rectangle.split.2x2"
+        case .horizontal4: return "rectangle.split.3x1"
+        case .vertical4: return "rectangle.split.1x2"
+        }
     }
 
     /// Space: Quick Look the selected item (Prompt 9).
@@ -898,13 +1070,17 @@ struct BrowserView: View {
         updateWindowTitle(for: window)
     }
 
+    private var windowTitle: String {
+        let currentURL = activeTab.navigationHistory.currentURL
+        return currentURL.path == FileManager.default.homeURL.path
+            ? "Home"
+            : (currentURL.lastPathComponent.isEmpty ? "Macintosh HD" : currentURL.lastPathComponent)
+    }
+
     private func updateWindowTitle(for window: NSWindow? = nil) {
         guard let win = window ?? NSApp.keyWindow else { return }
         let currentURL = activeTab.navigationHistory.currentURL
-        let titleName = currentURL.path == FileManager.default.homeURL.path
-            ? "Home"
-            : (currentURL.lastPathComponent.isEmpty ? "Macintosh HD" : currentURL.lastPathComponent)
-        win.title = titleName
+        win.title = windowTitle
         win.representedURL = currentURL
     }
 
@@ -942,10 +1118,8 @@ struct BrowserView: View {
     }
 }
 
-/// Hands the browser's NSToolbar to the hosting NSWindow once it exists, and
-/// gives the window a one-time (idempotent) configuration pass.
+/// Configures the hosting NSWindow once it exists (one-time idempotent pass).
 private struct WindowAccessor: NSViewRepresentable {
-    let toolbar: NSToolbar
     let onWindow: (NSWindow) -> Void
 
     func makeNSView(context: Context) -> NSView {
@@ -955,20 +1129,11 @@ private struct WindowAccessor: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        // Fallback for the case where makeNSView ran before the view joined
-        // a window.
         DispatchQueue.main.async { configure(nsView) }
     }
 
-    /// Assigns the toolbar exactly once, always outside the current layout
-    /// pass. Assigning `window.toolbar` twice — even the same instance —
-    /// makes SwiftUI's BarAppearanceBridge over-remove its `displayMode`
-    /// KVO observer and crash with NSRangeException.
     private func configure(_ view: NSView) {
         guard let window = view.window else { return }
-        if window.toolbar == nil {
-            window.toolbar = toolbar
-        }
         onWindow(window)
     }
 }
