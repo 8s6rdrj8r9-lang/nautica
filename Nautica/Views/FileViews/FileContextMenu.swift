@@ -40,8 +40,8 @@ enum FileContextMenu {
         menu.addItem(openWithItem(for: items, actions: actions))
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Quick Look") { _ in actions.quickLook() })
-        menu.addItem(NSMenuItem(title: "Get Info") { _ in actions.getInfo() })
-        menu.addItem(NSMenuItem(title: "Rename…", enabled: items.count == 1) { _ in actions.rename() })
+        let renameTitle = items.count > 1 ? "Batch Rename (\(items.count) Items)…" : "Rename…"
+        menu.addItem(NSMenuItem(title: renameTitle, enabled: !items.isEmpty) { _ in actions.rename() })
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Copy") { _ in actions.copy() })
         menu.addItem(NSMenuItem(title: "Move to Trash") { _ in actions.trash() })

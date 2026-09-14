@@ -17,6 +17,7 @@ struct BrowserActions {
     var moveHere: () -> Void
     var trashSelection: () -> Void
     var renameSelection: () -> Void
+    var batchRenameSelection: () -> Void
     // Navigation (Go menu, Prompt 16).
     var goBack: () -> Void
     var goForward: () -> Void
@@ -27,6 +28,8 @@ struct BrowserActions {
     // View menu (Prompt 16).
     var setViewMode: (ViewMode) -> Void
     var toggleHiddenFiles: () -> Void
+    /// Toggles dual-pane browsing (F-004).
+    var toggleDualPane: () -> Void
     /// Toggles the right-hand tree panel.
     var toggleTreePanel: () -> Void
 }
@@ -58,7 +61,16 @@ private final class UndoBox {
 /// (`TabState`) that owns navigation history, directory listing, selection,
 /// and view mode (Prompt 8).
 struct BrowserView: View {
+    enum ActivePane {
+        case primary
+        case secondary
+    }
+
     @State private var tab = TabState(url: Constants.defaultWindowURL())
+    @State private var secondaryTab: TabState? = nil
+    @State private var isDualPane = false
+    @State private var activePane: ActivePane = .primary
+
     @State private var sidebarModel = SidebarModel()
     @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
     /// Session-level default for the hidden-files toggle.
@@ -67,6 +79,9 @@ struct BrowserView: View {
     /// Rename sheet state (Prompt 10).
     @State private var renameTarget: FileItem?
     @State private var renameText = ""
+    /// Batch rename sheet state (Prompt 17 / F-012).
+    @State private var showBatchRenameSheet = false
+    @State private var batchRenameTargets: [FileItem] = []
     /// Long-running copy/move progress; non-nil presents the sheet.
     @State private var operationName = ""
     @State private var operationProgress: Progress?
@@ -84,6 +99,13 @@ struct BrowserView: View {
     /// once the model context is available.
     @State private var viewStateService: ViewStateService?
 
+    private var activeTab: TabState {
+        if isDualPane, activePane == .secondary, let secondaryTab {
+            return secondaryTab
+        }
+        return tab
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             if showPermissionBanner {
@@ -96,28 +118,23 @@ struct BrowserView: View {
                     // Persistence handled by SidebarModel; hook for later prompts.
                 }
             } detail: {
-                VStack(spacing: 0) {
-                    if let error = tab.directoryContents.error {
-                        ContentUnavailableView {
-                            Label("Unable to Open Folder", systemImage: "exclamationmark.folder")
-                        } description: {
-                            Text(error.localizedDescription)
-                        } actions: {
-                            Button("Retry") { tab.directoryContents.reload() }
-                        }
-                    } else {
-                        FileViewCoordinator(
-                            directoryContents: tab.directoryContents,
-                            selectionModel: tab.selectionModel,
-                            viewMode: tab.viewMode,
-                            onQuickLook: quickLook,
-                            iconSize: iconSize,
-                            onNavigate: navigate(to:),
-                            onRenameRequest: renameSelection,
-                            onCopySelection: copySelectionToPasteboard,
-                            onTrashSelection: trashSelection
-                        )
+                if isDualPane, let secondary = secondaryTab {
+                    HSplitView {
+                        paneView(for: tab, isFocused: activePane == .primary)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                activePane = .primary
+                                syncToolbar()
+                            }
+                        paneView(for: secondary, isFocused: activePane == .secondary)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                activePane = .secondary
+                                syncToolbar()
+                            }
                     }
+                } else {
+                    paneView(for: tab, isFocused: true)
                 }
             }
         }
@@ -127,22 +144,24 @@ struct BrowserView: View {
         }
         .frame(minWidth: 800, minHeight: 600)
         .background(WindowAccessor(toolbar: toolbar.toolbar, onWindow: configureWindow))
-        .focusedSceneValue(\.browserURL, tab.navigationHistory.currentURL)
+        .focusedSceneValue(\.browserURL, activeTab.navigationHistory.currentURL)
         .focusedSceneValue(\.browserActions, BrowserActions(
             copySelection: copySelectionToPasteboard,
             paste: { pasteFromPasteboard(move: false) },
             moveHere: { pasteFromPasteboard(move: true) },
             trashSelection: trashSelection,
             renameSelection: renameSelection,
+            batchRenameSelection: batchRenameSelection,
             goBack: goBack,
             goForward: goForward,
             goToEnclosingFolder: {
-                navigate(to: tab.navigationHistory.currentURL.deletingLastPathComponent())
+                navigate(to: activeTab.navigationHistory.currentURL.deletingLastPathComponent())
             },
             navigateTo: navigate(to:),
             promptGoToFolder: { showGoToFolderSheet = true },
             setViewMode: setViewMode,
             toggleHiddenFiles: toggleHiddenFiles,
+            toggleDualPane: toggleDualPane,
             toggleTreePanel: { showTreePanel.toggle() }
         ))
         .sheet(isPresented: showsOperationSheet) {
@@ -157,6 +176,11 @@ struct BrowserView: View {
         }
         .sheet(item: $renameTarget) { item in
             renameSheet(for: item)
+        }
+        .sheet(isPresented: $showBatchRenameSheet) {
+            BatchRenameSheet(items: batchRenameTargets) { renames in
+                applyBatchRename(renames)
+            }
         }
         .sheet(isPresented: $showGoToFolderSheet) {
             goToFolderSheet
@@ -175,59 +199,125 @@ struct BrowserView: View {
         .task { tab.directoryContents.reload() }
     }
 
+    @ViewBuilder
+    private func paneView(for currentTab: TabState, isFocused: Bool) -> some View {
+        VStack(spacing: 0) {
+            if isDualPane {
+                HStack(spacing: 8) {
+                    Image(systemName: "folder")
+                        .foregroundStyle(isFocused ? Color.accentColor : .secondary)
+                    Text(currentTab.navigationHistory.currentURL.lastPathComponent.isEmpty
+                         ? "/"
+                         : currentTab.navigationHistory.currentURL.lastPathComponent)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(isFocused ? .primary : .secondary)
+                    Spacer()
+                    if isFocused {
+                        Text("Active")
+                            .font(.caption2.bold())
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.accentColor.opacity(0.15))
+                            .foregroundStyle(Color.accentColor)
+                            .clipShape(Capsule())
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color(NSColor.windowBackgroundColor))
+                Divider()
+            }
+
+            if let error = currentTab.directoryContents.error {
+                ContentUnavailableView {
+                    Label("Unable to Open Folder", systemImage: "exclamationmark.folder")
+                } description: {
+                    Text(error.localizedDescription)
+                } actions: {
+                    Button("Retry") { currentTab.directoryContents.reload() }
+                }
+            } else {
+                FileViewCoordinator(
+                    directoryContents: currentTab.directoryContents,
+                    selectionModel: currentTab.selectionModel,
+                    viewMode: currentTab.viewMode,
+                    onQuickLook: { quickLook(for: currentTab) },
+                    iconSize: iconSize,
+                    onNavigate: { url in navigate(to: url, in: currentTab) },
+                    onRenameRequest: renameSelection,
+                    onCopySelection: copySelectionToPasteboard,
+                    onTrashSelection: trashSelection
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(isDualPane && isFocused ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
+                )
+            }
+        }
+        .frame(minWidth: 200)
+    }
+
     /// Single navigation entry point: sidebar, path bar, and double-click on a
     /// folder all route here. Pushes history, then shows the new location.
     private func navigate(to url: URL) {
-        tab.navigationHistory.navigate(to: url)
-        show(url)
+        navigate(to: url, in: activeTab)
+    }
+
+    private func navigate(to url: URL, in targetTab: TabState) {
+        targetTab.navigationHistory.navigate(to: url)
+        show(url, in: targetTab)
     }
 
     /// Shows a location without touching the history stacks. Used by `navigate`
     /// (history already pushed) and by back/forward (stacks already updated).
-    private func show(_ url: URL) {
-        tab.directoryContents.url = url
-        applyViewState(for: url)
-        tab.directoryContents.showHiddenFiles = showHiddenFiles
-        tab.directoryContents.reload()
+    private func show(_ url: URL, in targetTab: TabState) {
+        targetTab.directoryContents.url = url
+        if targetTab === activeTab {
+            applyViewState(for: url)
+        }
+        targetTab.directoryContents.showHiddenFiles = showHiddenFiles
+        targetTab.directoryContents.reload()
         sidebarModel.recordVisit(url)
-        tab.selectionModel.deselectAll()
-        syncToolbar()
+        targetTab.selectionModel.deselectAll()
+        if targetTab === activeTab {
+            syncToolbar()
+        }
     }
 
     /// Restores the persisted per-folder view state (Prompt 12), if any.
     private func applyViewState(for url: URL) {
         guard let state = viewStateService?.state(for: url.path) else { return }
-        tab.viewMode = ViewMode(rawValue: state.viewMode) ?? .icon
+        activeTab.viewMode = ViewMode(rawValue: state.viewMode) ?? .icon
         showHiddenFiles = state.showHiddenFiles
-        tab.directoryContents.sortKey = SortKey(rawValue: state.sortKey) ?? .name
-        tab.directoryContents.sortAscending = state.sortAscending
+        activeTab.directoryContents.sortKey = SortKey(rawValue: state.sortKey) ?? .name
+        activeTab.directoryContents.sortAscending = state.sortAscending
     }
 
     /// Mirrors the current view settings into the folder's state and saves
     /// after a 500 ms quiet period (Prompt 12).
     private func persistViewState() {
         guard let state = viewStateService?.current else { return }
-        state.viewMode = tab.viewMode.rawValue
-        state.sortKey = tab.directoryContents.sortKey.rawValue
-        state.sortAscending = tab.directoryContents.sortAscending
+        state.viewMode = activeTab.viewMode.rawValue
+        state.sortKey = activeTab.directoryContents.sortKey.rawValue
+        state.sortAscending = activeTab.directoryContents.sortAscending
         state.showHiddenFiles = showHiddenFiles
         viewStateService?.scheduleSave()
     }
 
     private func goBack() {
-        guard let url = tab.navigationHistory.goBack() else { return }
-        show(url)
+        guard let url = activeTab.navigationHistory.goBack() else { return }
+        show(url, in: activeTab)
     }
 
     private func goForward() {
-        guard let url = tab.navigationHistory.goForward() else { return }
-        show(url)
+        guard let url = activeTab.navigationHistory.goForward() else { return }
+        show(url, in: activeTab)
     }
 
     private func wireToolbar() {
         toolbar.onBack = goBack
         toolbar.onForward = goForward
-        toolbar.onNavigate = navigate(to:)
+        toolbar.onNavigate = { url in navigate(to: url) }
         toolbar.onAddFavorite = { url in sidebarModel.addFavorite(url: url) }
         toolbar.onViewModeChanged = { [weak toolbar] mode in
             setViewMode(mode)
@@ -247,7 +337,7 @@ struct BrowserView: View {
 
     /// Switches icon/list view and persists the choice (Prompts 12, 16).
     private func setViewMode(_ mode: ViewMode) {
-        tab.viewMode = mode
+        activeTab.viewMode = mode
         toolbar.viewMode = mode
         toolbar.refresh()
         persistViewState()
@@ -258,27 +348,47 @@ struct BrowserView: View {
         showHiddenFiles.toggle()
         tab.directoryContents.showHiddenFiles = showHiddenFiles
         tab.directoryContents.reload()
+        secondaryTab?.directoryContents.showHiddenFiles = showHiddenFiles
+        secondaryTab?.directoryContents.reload()
         toolbar.showsHiddenFiles = showHiddenFiles
         toolbar.refresh()
         persistViewState()
     }
 
+    /// Toggles dual-pane browsing (F-004).
+    private func toggleDualPane() {
+        if isDualPane {
+            isDualPane = false
+            activePane = .primary
+            secondaryTab = nil
+        } else {
+            isDualPane = true
+            let secondary = TabState(url: tab.navigationHistory.currentURL)
+            secondary.directoryContents.reload()
+            secondaryTab = secondary
+        }
+        syncToolbar()
+    }
+
     /// Mirrors SwiftUI state into the toolbar and revalidates its items.
     private func syncToolbar() {
-        toolbar.canGoBack = tab.navigationHistory.canGoBack
-        toolbar.canGoForward = tab.navigationHistory.canGoForward
-        toolbar.currentURL = tab.navigationHistory.currentURL
-        toolbar.viewMode = tab.viewMode
+        toolbar.canGoBack = activeTab.navigationHistory.canGoBack
+        toolbar.canGoForward = activeTab.navigationHistory.canGoForward
+        toolbar.currentURL = activeTab.navigationHistory.currentURL
+        toolbar.viewMode = activeTab.viewMode
         toolbar.iconSize = iconSize
         toolbar.showsHiddenFiles = showHiddenFiles
         toolbar.refresh()
     }
 
-    /// Space: Quick Look the selected item (Prompt 9). The panel receives the
-    /// whole listing so its arrow keys walk the folder; Esc or Space closes it.
+    /// Space: Quick Look the selected item (Prompt 9).
     private func quickLook() {
-        let items = tab.directoryContents.items
-        let selection = tab.selectionModel
+        quickLook(for: activeTab)
+    }
+
+    private func quickLook(for currentTab: TabState) {
+        let items = currentTab.directoryContents.items
+        let selection = currentTab.selectionModel
         let anchor = selection.lastClickedID ?? selection.selectedIDs.first
         guard let anchor, let index = items.firstIndex(where: { $0.id == anchor }) else {
             QuickLookService.shared.hidePreview()
@@ -290,7 +400,7 @@ struct BrowserView: View {
     // MARK: - File operations (Prompt 10)
 
     private var selectedItems: [FileItem] {
-        tab.directoryContents.items.filter { tab.selectionModel.selectedIDs.contains($0.id) }
+        activeTab.directoryContents.items.filter { activeTab.selectionModel.selectedIDs.contains($0.id) }
     }
 
     /// Cmd+C: put the selected file URLs on the general pasteboard.
@@ -309,7 +419,7 @@ struct BrowserView: View {
         guard let urls = NSPasteboard.general.readObjects(
             forClasses: [NSURL.self], options: options
         ) as? [URL], !urls.isEmpty else { return }
-        let destination = tab.navigationHistory.currentURL
+        let destination = activeTab.navigationHistory.currentURL
         let sources = urls
         runFileOperation(move ? "Moving Files" : "Copying Files") { progress in
             move
@@ -340,19 +450,38 @@ struct BrowserView: View {
         }
         Task {
             let result = await FileOperationService.shared.trashItems(urls)
-            tab.directoryContents.reload()
-            tab.selectionModel.deselectAll()
+            activeTab.directoryContents.reload()
+            activeTab.selectionModel.deselectAll()
             registerRestoreUndo(name: "Move to Trash", transfers: result.transfers)
             if let (_, error) = result.failed.first { showError("Move to Trash Failed", error: error) }
         }
     }
 
-    /// Return/Enter with a single selection: present the rename sheet.
+    /// Return/Enter or context menu: single rename or batch rename sheet.
     private func renameSelection() {
         let selected = selectedItems
-        guard selected.count == 1, let item = selected.first else { return }
-        renameText = item.name
-        renameTarget = item
+        if selected.count == 1, let item = selected.first {
+            renameText = item.name
+            renameTarget = item
+        } else if selected.count > 1 {
+            batchRenameTargets = selected
+            showBatchRenameSheet = true
+        }
+    }
+
+    private func batchRenameSelection() {
+        let selected = selectedItems
+        guard !selected.isEmpty else { return }
+        batchRenameTargets = selected
+        showBatchRenameSheet = true
+    }
+
+    private func applyBatchRename(_ renames: [(url: URL, newName: String)]) {
+        runFileOperation("Batch Rename") { progress in
+            await FileOperationService.shared.renameItems(renames, progress: progress)
+        } onCompletion: { result in
+            registerRestoreUndo(name: "Batch Rename", transfers: result.transfers)
+        }
     }
 
     private func renameSheet(for item: FileItem) -> some View {
@@ -382,7 +511,7 @@ struct BrowserView: View {
             } catch {
                 await MainActor.run { showError("Rename Failed", error: error) }
             }
-            tab.directoryContents.reload()
+            activeTab.directoryContents.reload()
         }
     }
 
@@ -453,6 +582,7 @@ struct BrowserView: View {
                 operationProgress = nil
                 isOperationRunning = false
                 tab.directoryContents.reload()
+                secondaryTab?.directoryContents.reload()
                 onCompletion?(result)
                 if let (url, error) = result.failed.first(where: { !($0.1 is CancellationError) }) {
                     showError(
@@ -475,6 +605,7 @@ struct BrowserView: View {
             Task {
                 let result = await FileOperationService.shared.restoreItems(transfers)
                 tab.directoryContents.reload()
+                secondaryTab?.directoryContents.reload()
                 if let (_, error) = result.failed.first {
                     showError("Undo Failed", error: error)
                 }
@@ -496,8 +627,8 @@ struct BrowserView: View {
     /// directory can be saved on quit.
     private func configureWindow(_ window: NSWindow) {
         window.tabbingMode = .preferred
-        WindowTabRegistry.shared.register(window) { [tab] in
-            tab.navigationHistory.currentURL
+        WindowTabRegistry.shared.register(window) { [activeTab] in
+            activeTab.navigationHistory.currentURL
         }
     }
 

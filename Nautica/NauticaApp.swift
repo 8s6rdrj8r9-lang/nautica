@@ -46,6 +46,8 @@ struct NauticaApp: App {
                     .keyboardShortcut("v", modifiers: [.command, .option])
                 Divider()
                 Button("Rename…") { browserActions?.renameSelection() }
+                Button("Batch Rename…") { browserActions?.batchRenameSelection() }
+                    .keyboardShortcut("r", modifiers: [.command, .option])
                 Button("Move to Trash") { browserActions?.trashSelection() }
                     .keyboardShortcut(KeyEquivalent(Character("\u{7F}")), modifiers: .command)
             }
@@ -80,6 +82,8 @@ struct NauticaApp: App {
                 Button("Toggle Hidden Files") { browserActions?.toggleHiddenFiles() }
                     .keyboardShortcut(".", modifiers: [.command, .shift])
                 Divider()
+                Button("Toggle Dual Pane") { browserActions?.toggleDualPane() }
+                    .keyboardShortcut("d", modifiers: [.command, .shift])
                 Button("Tree Panel") { browserActions?.toggleTreePanel() }
                     .keyboardShortcut("0", modifiers: [.command, .option])
             }

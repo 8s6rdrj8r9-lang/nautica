@@ -90,6 +90,36 @@ actor FileOperationService {
         return target
     }
 
+    /// Renames multiple items sequentially, recording transfers for undo.
+    func renameItems(_ renames: [(url: URL, newName: String)], progress: Progress? = nil) async -> FileOperationResult {
+        var result = FileOperationResult()
+        progress?.totalUnitCount = Int64(renames.count)
+        progress?.completedUnitCount = 0
+
+        for pair in renames {
+            guard progress?.isCancelled != true else { break }
+            let trimmed = pair.newName.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty, trimmed != pair.url.lastPathComponent else {
+                progress?.completedUnitCount += 1
+                continue
+            }
+            let target = pair.url.deletingLastPathComponent().appendingPathComponent(trimmed)
+            if FileManager.default.fileExists(atPath: target.path) {
+                result.failed.append((pair.url, NSError(domain: NSCocoaErrorDomain, code: NSFileWriteFileExistsError)))
+                progress?.completedUnitCount += 1
+                continue
+            }
+            do {
+                try coordinateMove(from: pair.url, to: target)
+                result.transfers.append(.init(original: pair.url, destination: target))
+            } catch {
+                result.failed.append((pair.url, error))
+            }
+            progress?.completedUnitCount += 1
+        }
+        return result
+    }
+
     // MARK: - Private
 
     private func transfer(_ urls: [URL], to destination: URL, move: Bool, progress: Progress) -> FileOperationResult {
