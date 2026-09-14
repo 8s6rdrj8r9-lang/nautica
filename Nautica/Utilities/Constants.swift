@@ -18,6 +18,7 @@ enum Constants {
     static let showExtensionsKey = "showExtensions"
     static let confirmTrashKey = "confirmTrash"
     static let showHiddenFilesKey = "showHiddenFiles"
+    static let splitLayoutKey = "splitLayout"
     static let defaultViewModeKey = "defaultViewMode"
     static let defaultIconSizeKey = "defaultIconSize"
     static let sidebarWidthKey = "sidebarWidth"

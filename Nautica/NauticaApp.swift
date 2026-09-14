@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Constants.showExtensionsKey: true,
             Constants.confirmTrashKey: true,
             Constants.useSystemAccentKey: true,
+            Constants.splitLayoutKey: SplitLayout.quad4.rawValue,
         ])
         TabRestoreQueue.shared.enqueue(contentsOf: WindowTabRegistry.shared.restoredURLs())
         // Create the tag database on first launch (Prompt 11).
@@ -91,11 +92,15 @@ struct NauticaApp: App {
                         .keyboardShortcut("3", modifiers: [.command, .option])
                     Button("4 Panes (Grid)") { browserActions?.setSplitLayout(.quad4) }
                         .keyboardShortcut("4", modifiers: [.command, .option])
+                    Button("4 Columns (Horizontal)") { browserActions?.setSplitLayout(.horizontal4) }
+                        .keyboardShortcut("5", modifiers: [.command, .option])
+                    Button("4 Rows (Vertical)") { browserActions?.setSplitLayout(.vertical4) }
+                        .keyboardShortcut("6", modifiers: [.command, .option])
                     Divider()
                     Button("Next Pane") { browserActions?.cycleNextPane() }
                         .keyboardShortcut(.tab, modifiers: .option)
                 }
-                Button("Toggle Dual Pane") { browserActions?.setSplitLayout(.horizontal2) }
+                Button("Toggle Dual Pane") { browserActions?.toggleDualPane() }
                     .keyboardShortcut("d", modifiers: [.command, .shift])
                 Button("Tree Panel") { browserActions?.toggleTreePanel() }
                     .keyboardShortcut("0", modifiers: [.command, .option])

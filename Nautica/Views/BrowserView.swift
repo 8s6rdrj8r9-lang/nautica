@@ -30,6 +30,8 @@ struct BrowserActions {
     var toggleHiddenFiles: () -> Void
     /// Sets multi-pane split layout (F-004).
     var setSplitLayout: (SplitLayout) -> Void
+    /// Toggles between single pane and dual pane.
+    var toggleDualPane: () -> Void
     /// Cycles to the next pane (Option+Tab).
     var cycleNextPane: () -> Void
     /// Toggles the right-hand tree panel.
@@ -63,9 +65,18 @@ private final class UndoBox {
 /// (`TabState`) that owns navigation history, directory listing, selection,
 /// and view mode (Prompt 8).
 struct BrowserView: View {
-    @State private var splitLayout: SplitLayout = .single
+    @AppStorage(Constants.splitLayoutKey) private var splitLayoutRaw: Int = SplitLayout.quad4.rawValue
+    private var splitLayout: SplitLayout {
+        get { SplitLayout(rawValue: splitLayoutRaw) ?? .quad4 }
+        nonmutating set { _splitLayoutRaw.wrappedValue = newValue.rawValue }
+    }
     @State private var activePaneIndex: Int = 0
-    @State private var panes: [TabState] = [TabState(url: Constants.defaultWindowURL())]
+    @State private var panes: [TabState] = [
+        TabState(url: FileManager.default.homeURL),
+        TabState(url: FileManager.default.homeURL.appendingPathComponent("Documents")),
+        TabState(url: FileManager.default.homeURL.appendingPathComponent("Downloads")),
+        TabState(url: FileManager.default.homeURL.appendingPathComponent("Desktop"))
+    ]
 
     @State private var sidebarModel = SidebarModel()
     @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
@@ -145,6 +156,7 @@ struct BrowserView: View {
             setViewMode: setViewMode,
             toggleHiddenFiles: toggleHiddenFiles,
             setSplitLayout: setSplitLayout,
+            toggleDualPane: toggleDualPane,
             cycleNextPane: cycleNextPane,
             toggleTreePanel: { showTreePanel.toggle() }
         ))
@@ -201,6 +213,8 @@ struct BrowserView: View {
                     paneView(for: panes[0], index: 0)
                     paneView(for: panes[1], index: 1)
                 }
+            } else if let first = panes.first {
+                paneView(for: first, index: 0)
             }
 
         case .vertical2:
@@ -209,6 +223,8 @@ struct BrowserView: View {
                     paneView(for: panes[0], index: 0)
                     paneView(for: panes[1], index: 1)
                 }
+            } else if let first = panes.first {
+                paneView(for: first, index: 0)
             }
 
         case .quad4:
@@ -223,6 +239,32 @@ struct BrowserView: View {
                         paneView(for: panes[3], index: 3)
                     }
                 }
+            } else if let first = panes.first {
+                paneView(for: first, index: 0)
+            }
+
+        case .horizontal4:
+            if panes.count >= 4 {
+                HSplitView {
+                    paneView(for: panes[0], index: 0)
+                    paneView(for: panes[1], index: 1)
+                    paneView(for: panes[2], index: 2)
+                    paneView(for: panes[3], index: 3)
+                }
+            } else if let first = panes.first {
+                paneView(for: first, index: 0)
+            }
+
+        case .vertical4:
+            if panes.count >= 4 {
+                VSplitView {
+                    paneView(for: panes[0], index: 0)
+                    paneView(for: panes[1], index: 1)
+                    paneView(for: panes[2], index: 2)
+                    paneView(for: panes[3], index: 3)
+                }
+            } else if let first = panes.first {
+                paneView(for: first, index: 0)
             }
         }
     }
@@ -256,6 +298,11 @@ struct BrowserView: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(Color(NSColor.windowBackgroundColor))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    activePaneIndex = index
+                    syncToolbar()
+                }
                 Divider()
             }
 
@@ -290,6 +337,12 @@ struct BrowserView: View {
         .onTapGesture {
             activePaneIndex = index
             syncToolbar()
+        }
+        .onChange(of: currentTab.selectionModel.selectedIDs) {
+            if !currentTab.selectionModel.selectedIDs.isEmpty && activePaneIndex != index {
+                activePaneIndex = index
+                syncToolbar()
+            }
         }
     }
 
@@ -406,10 +459,24 @@ struct BrowserView: View {
             newTab.directoryContents.reload()
             panes.append(newTab)
         }
+        for pane in activePanes {
+            if pane.directoryContents.items.isEmpty && pane.directoryContents.error == nil {
+                pane.directoryContents.reload()
+            }
+        }
         if activePaneIndex >= requiredCount {
             activePaneIndex = 0
         }
         syncToolbar()
+    }
+
+    /// Toggles between single pane and dual pane.
+    private func toggleDualPane() {
+        if splitLayout == .single {
+            setSplitLayout(.horizontal2)
+        } else {
+            setSplitLayout(.single)
+        }
     }
 
     /// Cycles to the next pane (Option+Tab).
@@ -500,7 +567,9 @@ struct BrowserView: View {
         }
         Task {
             let result = await FileOperationService.shared.trashItems(urls)
-            activeTab.directoryContents.reload()
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
             activeTab.selectionModel.deselectAll()
             registerRestoreUndo(name: "Move to Trash", transfers: result.transfers)
             if let (_, error) = result.failed.first { showError("Move to Trash Failed", error: error) }
@@ -561,7 +630,9 @@ struct BrowserView: View {
             } catch {
                 await MainActor.run { showError("Rename Failed", error: error) }
             }
-            activeTab.directoryContents.reload()
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
         }
     }
 

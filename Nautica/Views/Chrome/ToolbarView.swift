@@ -137,6 +137,8 @@ extension BrowserToolbar: NSToolbarDelegate {
                     NSImage(systemSymbolName: "rectangle.split.2x1", accessibilityDescription: "2 Columns")!,
                     NSImage(systemSymbolName: "rectangle.split.1x2", accessibilityDescription: "2 Rows")!,
                     NSImage(systemSymbolName: "rectangle.split.2x2", accessibilityDescription: "4 Grid")!,
+                    NSImage(systemSymbolName: "rectangle.split.3x1", accessibilityDescription: "4 Columns")!,
+                    NSImage(systemSymbolName: "rectangle.grid.1x2", accessibilityDescription: "4 Rows")!,
                 ],
                 trackingMode: .selectOne,
                 target: self,
