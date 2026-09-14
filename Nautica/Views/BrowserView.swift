@@ -421,8 +421,9 @@ struct BrowserView: View {
 
         case .horizontal2:
             if panes.count >= 2 {
-                HSplitView {
+                HorizontalSplit {
                     paneView(for: panes[0], index: 0)
+                } right: {
                     paneView(for: panes[1], index: 1)
                 }
             } else if let first = panes.first {
@@ -431,8 +432,9 @@ struct BrowserView: View {
 
         case .vertical2:
             if panes.count >= 2 {
-                VSplitView {
+                VerticalSplit {
                     paneView(for: panes[0], index: 0)
+                } bottom: {
                     paneView(for: panes[1], index: 1)
                 }
             } else if let first = panes.first {
@@ -441,13 +443,16 @@ struct BrowserView: View {
 
         case .quad4:
             if panes.count >= 4 {
-                VSplitView {
-                    HSplitView {
+                VerticalSplit {
+                    HorizontalSplit {
                         paneView(for: panes[0], index: 0)
+                    } right: {
                         paneView(for: panes[1], index: 1)
                     }
-                    HSplitView {
+                } bottom: {
+                    HorizontalSplit {
                         paneView(for: panes[2], index: 2)
+                    } right: {
                         paneView(for: panes[3], index: 3)
                     }
                 }
@@ -457,11 +462,18 @@ struct BrowserView: View {
 
         case .horizontal4:
             if panes.count >= 4 {
-                HSplitView {
+                HorizontalSplit {
                     paneView(for: panes[0], index: 0)
-                    paneView(for: panes[1], index: 1)
-                    paneView(for: panes[2], index: 2)
-                    paneView(for: panes[3], index: 3)
+                } right: {
+                    HorizontalSplit {
+                        paneView(for: panes[1], index: 1)
+                    } right: {
+                        HorizontalSplit {
+                            paneView(for: panes[2], index: 2)
+                        } right: {
+                            paneView(for: panes[3], index: 3)
+                        }
+                    }
                 }
             } else if let first = panes.first {
                 paneView(for: first, index: 0)
@@ -469,11 +481,18 @@ struct BrowserView: View {
 
         case .vertical4:
             if panes.count >= 4 {
-                VSplitView {
+                VerticalSplit {
                     paneView(for: panes[0], index: 0)
-                    paneView(for: panes[1], index: 1)
-                    paneView(for: panes[2], index: 2)
-                    paneView(for: panes[3], index: 3)
+                } bottom: {
+                    VerticalSplit {
+                        paneView(for: panes[1], index: 1)
+                    } bottom: {
+                        VerticalSplit {
+                            paneView(for: panes[2], index: 2)
+                        } bottom: {
+                            paneView(for: panes[3], index: 3)
+                        }
+                    }
                 }
             } else if let first = panes.first {
                 paneView(for: first, index: 0)
@@ -1118,6 +1137,130 @@ struct BrowserView: View {
     }
 }
 
+/// Pure SwiftUI horizontal split container that does not introduce AppKit
+/// NSTrackingSeparatorToolbarItem into the window titlebar.
+private struct HorizontalSplit<Left: View, Right: View>: View {
+    @State private var splitFraction: CGFloat = 0.5
+    @GestureState private var dragOffset: CGFloat = 0
+    let left: Left
+    let right: Right
+
+    init(@ViewBuilder left: () -> Left, @ViewBuilder right: () -> Right) {
+        self.left = left()
+        self.right = right()
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let totalWidth = geo.size.width
+            let minWidth: CGFloat = 160
+            let dividerWidth: CGFloat = 1
+            let availableWidth = max(0, totalWidth - dividerWidth)
+            let baseLeftWidth = availableWidth * splitFraction
+            let leftWidth = min(max(minWidth, baseLeftWidth + dragOffset), max(minWidth, availableWidth - minWidth))
+
+            HStack(spacing: 0) {
+                left
+                    .frame(width: leftWidth)
+
+                Rectangle()
+                    .fill(Color(NSColor.separatorColor))
+                    .frame(width: dividerWidth)
+                    .overlay(
+                        Rectangle()
+                            .fill(Color.clear)
+                            .frame(width: 9)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture()
+                                    .updating($dragOffset) { value, state, _ in
+                                        state = value.translation.width
+                                    }
+                                    .onEnded { value in
+                                        let finalWidth = min(max(minWidth, baseLeftWidth + value.translation.width), max(minWidth, availableWidth - minWidth))
+                                        if availableWidth > 0 {
+                                            splitFraction = finalWidth / availableWidth
+                                        }
+                                    }
+                            )
+                    )
+                    .onHover { inside in
+                        if inside {
+                            NSCursor.resizeLeftRight.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
+
+                right
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+}
+
+/// Pure SwiftUI vertical split container that does not introduce AppKit
+/// NSTrackingSeparatorToolbarItem into the window titlebar.
+private struct VerticalSplit<Top: View, Bottom: View>: View {
+    @State private var splitFraction: CGFloat = 0.5
+    @GestureState private var dragOffset: CGFloat = 0
+    let top: Top
+    let bottom: Bottom
+
+    init(@ViewBuilder top: () -> Top, @ViewBuilder bottom: () -> Bottom) {
+        self.top = top()
+        self.bottom = bottom()
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let totalHeight = geo.size.height
+            let minHeight: CGFloat = 120
+            let dividerHeight: CGFloat = 1
+            let availableHeight = max(0, totalHeight - dividerHeight)
+            let baseTopHeight = availableHeight * splitFraction
+            let topHeight = min(max(minHeight, baseTopHeight + dragOffset), max(minHeight, availableHeight - minHeight))
+
+            VStack(spacing: 0) {
+                top
+                    .frame(height: topHeight)
+
+                Rectangle()
+                    .fill(Color(NSColor.separatorColor))
+                    .frame(height: dividerHeight)
+                    .overlay(
+                        Rectangle()
+                            .fill(Color.clear)
+                            .frame(height: 9)
+                            .contentShape(Rectangle())
+                            .gesture(
+                                DragGesture()
+                                    .updating($dragOffset) { value, state, _ in
+                                        state = value.translation.height
+                                    }
+                                    .onEnded { value in
+                                        let finalHeight = min(max(minHeight, baseTopHeight + value.translation.height), max(minHeight, availableHeight - minHeight))
+                                        if availableHeight > 0 {
+                                            splitFraction = finalHeight / availableHeight
+                                        }
+                                    }
+                            )
+                    )
+                    .onHover { inside in
+                        if inside {
+                            NSCursor.resizeUpDown.push()
+                        } else {
+                            NSCursor.pop()
+                        }
+                    }
+
+                bottom
+                    .frame(maxHeight: .infinity)
+            }
+        }
+    }
+}
+
 /// Configures the hosting NSWindow once it exists (one-time idempotent pass).
 private struct WindowAccessor: NSViewRepresentable {
     let onWindow: (NSWindow) -> Void
@@ -1135,6 +1278,14 @@ private struct WindowAccessor: NSViewRepresentable {
     private func configure(_ view: NSView) {
         guard let window = view.window else { return }
         onWindow(window)
+        // Ensure no tracking separator splits the toolbar for the content panes
+        if let toolbar = window.toolbar {
+            for (index, item) in toolbar.items.enumerated().reversed() {
+                if item is NSTrackingSeparatorToolbarItem {
+                    toolbar.removeItem(at: index)
+                }
+            }
+        }
     }
 }
 
