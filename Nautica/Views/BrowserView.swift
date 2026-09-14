@@ -531,9 +531,11 @@ struct BrowserView: View {
                 .padding(.vertical, 4)
                 .background(Color(NSColor.controlBackgroundColor))
                 .contentShape(Rectangle())
+                .onHover { isHovered in
+                    if isHovered { activatePane(index) }
+                }
                 .onTapGesture {
-                    activePaneIndex = index
-                    syncToolbar()
+                    activatePane(index)
                 }
                 Divider()
             }
@@ -556,7 +558,9 @@ struct BrowserView: View {
                     onNavigate: { url in navigate(to: url, in: currentTab) },
                     onRenameRequest: renameSelection,
                     onCopySelection: copySelectionToPasteboard,
-                    onTrashSelection: trashSelection
+                    onTrashSelection: trashSelection,
+                    isFocused: isFocused,
+                    onMouseEnter: { activatePane(index) }
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 0)
@@ -566,16 +570,23 @@ struct BrowserView: View {
         }
         .frame(minWidth: 160, minHeight: 120)
         .contentShape(Rectangle())
+        .onHover { isHovered in
+            if isHovered { activatePane(index) }
+        }
         .onTapGesture {
-            activePaneIndex = index
-            syncToolbar()
+            activatePane(index)
         }
         .onChange(of: currentTab.selectionModel.selectedIDs) {
-            if !currentTab.selectionModel.selectedIDs.isEmpty && activePaneIndex != index {
-                activePaneIndex = index
-                syncToolbar()
+            if !currentTab.selectionModel.selectedIDs.isEmpty {
+                activatePane(index)
             }
         }
+    }
+
+    private func activatePane(_ index: Int) {
+        guard activePaneIndex != index, panes.indices.contains(index) else { return }
+        activePaneIndex = index
+        syncToolbar()
     }
 
     /// Single navigation entry point: sidebar, path bar, and double-click on a

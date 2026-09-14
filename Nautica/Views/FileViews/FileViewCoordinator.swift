@@ -30,11 +30,16 @@ struct FileViewCoordinator: NSViewRepresentable {
     /// Context-menu actions routed to BrowserView.
     var onCopySelection: (() -> Void)?
     var onTrashSelection: (() -> Void)?
+    var isFocused: Bool = false
+    var onMouseEnter: (() -> Void)?
 
     func makeNSView(context: Context) -> KeyHandlingView {
         let container = KeyHandlingView()
         container.onKeyDown = { [weak coordinator = context.coordinator] event in
             coordinator?.handleKeyDown(event) ?? false
+        }
+        container.onMouseEnter = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onMouseEnter?()
         }
 
         let iconController = IconViewController(
@@ -202,11 +207,33 @@ struct FileViewCoordinator: NSViewRepresentable {
     }
 }
 
-/// NSView subclass that forwards key events to a SwiftUI-friendly closure.
+/// NSView subclass that forwards key events and hover/mouse-enter to SwiftUI-friendly closures.
 final class KeyHandlingView: NSView {
     var onKeyDown: ((NSEvent) -> Bool)?
+    var onMouseEnter: (() -> Void)?
+    private var trackingArea: NSTrackingArea?
 
     override var acceptsFirstResponder: Bool { true }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let trackingArea {
+            removeTrackingArea(trackingArea)
+        }
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(area)
+        trackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        super.mouseEntered(with: event)
+        onMouseEnter?()
+    }
 
     override func keyDown(with event: NSEvent) {
         if onKeyDown?(event) != true {
