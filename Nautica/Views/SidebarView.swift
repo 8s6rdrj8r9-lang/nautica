@@ -46,7 +46,7 @@ struct SidebarView: View {
         .listStyle(.sidebar)
         .font(.system(size: fontSize))
         .environment(\.defaultMinListRowHeight, 0)
-        .navigationSplitViewColumnWidth(min: effectiveWidth, ideal: effectiveWidth, max: effectiveWidth)
+        .navigationSplitViewColumnWidth(min: 170, ideal: effectiveWidth, max: 280)
         .task {
             tags = (try? await TagService.shared.allTags()) ?? []
         }

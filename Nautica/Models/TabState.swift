@@ -19,7 +19,7 @@ final class TabState: Identifiable, Hashable {
         // New tabs start in the default view mode from Settings (Prompt 14).
         viewMode = ViewMode(
             rawValue: UserDefaults.standard.string(forKey: Constants.defaultViewModeKey) ?? ""
-        ) ?? .icon
+        ) ?? .list
     }
 
     static func == (lhs: TabState, rhs: TabState) -> Bool { lhs.id == rhs.id }

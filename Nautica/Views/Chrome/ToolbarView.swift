@@ -44,7 +44,7 @@ final class BrowserToolbar: NSObject {
     var canGoBack = false
     var canGoForward = false
     var currentURL = FileManager.default.homeURL
-    var splitLayout: SplitLayout = .quad4
+    var splitLayout: SplitLayout = .single
     var viewMode: ViewMode = .list
     var iconSize: CGFloat = 64
     var showsHiddenFiles = false
@@ -63,7 +63,7 @@ final class BrowserToolbar: NSObject {
     private weak var hiddenFilesButton: NSButton?
 
     override init() {
-        toolbar = NSToolbar(identifier: "NauticaBrowserToolbar")
+        toolbar = NSToolbar(identifier: "NauticaMainToolbar.v5")
         super.init()
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
@@ -77,7 +77,14 @@ final class BrowserToolbar: NSObject {
         backItem?.isEnabled = canGoBack
         forwardItem?.isEnabled = canGoForward
         pathBarHostingView?.rootView = makePathBarView()
-        splitLayoutControl?.selectedSegment = splitLayout.rawValue
+        switch splitLayout {
+        case .single:
+            splitLayoutControl?.selectedSegment = 0
+        case .horizontal2, .vertical2:
+            splitLayoutControl?.selectedSegment = 1
+        case .quad4, .horizontal4, .vertical4:
+            splitLayoutControl?.selectedSegment = 2
+        }
         viewModeControl?.selectedSegment = viewMode == .icon ? 0 : 1
         iconSizeSlider?.doubleValue = Double(iconSize)
         iconSizeSlider?.isEnabled = viewMode == .icon
@@ -98,9 +105,14 @@ final class BrowserToolbar: NSObject {
     @objc private func forwardAction() { onForward?() }
 
     @objc private func splitLayoutAction(_ sender: NSSegmentedControl) {
-        if let layout = SplitLayout(rawValue: sender.selectedSegment) {
-            onSplitLayoutChanged?(layout)
+        let layout: SplitLayout
+        switch sender.selectedSegment {
+        case 0: layout = .single
+        case 1: layout = .horizontal2
+        case 2: layout = .quad4
+        default: layout = .single
         }
+        onSplitLayoutChanged?(layout)
     }
 
     @objc private func viewModeAction(_ sender: NSSegmentedControl) {
@@ -150,9 +162,20 @@ extension BrowserToolbar: NSToolbarDelegate {
                  itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
                  willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
         switch itemIdentifier {
+        case .toggleSidebar:
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.label = "Sidebar"
+            item.paletteLabel = "Sidebar"
+            item.toolTip = "Hide or show the sidebar"
+            item.image = NSImage(systemSymbolName: "sidebar.leading", accessibilityDescription: "Toggle Sidebar")
+            item.action = #selector(NSSplitViewController.toggleSidebar(_:))
+            item.visibilityPriority = .high
+            return item
+
         case .navigationGroup:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Navigate"
+            item.paletteLabel = "Navigate"
             let control = NSSegmentedControl(
                 images: [
                     NSImage(systemSymbolName: "chevron.backward", accessibilityDescription: "Back")!,
@@ -165,7 +188,11 @@ extension BrowserToolbar: NSToolbarDelegate {
             control.segmentStyle = .separated
             control.setEnabled(canGoBack, forSegment: 0)
             control.setEnabled(canGoForward, forSegment: 1)
+            control.sizeToFit()
             item.view = control
+            item.minSize = control.fittingSize
+            item.maxSize = control.fittingSize
+            item.visibilityPriority = .high
             navigationControl = control
             return item
 
@@ -192,27 +219,35 @@ extension BrowserToolbar: NSToolbarDelegate {
         case .splitLayout:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Panes"
+            item.paletteLabel = "Panes"
             let control = NSSegmentedControl(
                 images: [
                     NSImage(systemSymbolName: "rectangle", accessibilityDescription: "Single Pane")!,
-                    NSImage(systemSymbolName: "rectangle.split.2x1", accessibilityDescription: "2 Columns")!,
-                    NSImage(systemSymbolName: "rectangle.split.1x2", accessibilityDescription: "2 Rows")!,
-                    NSImage(systemSymbolName: "rectangle.split.2x2", accessibilityDescription: "4 Grid")!,
-                    NSImage(systemSymbolName: "rectangle.split.3x1", accessibilityDescription: "4 Columns")!,
-                    NSImage(systemSymbolName: "rectangle.grid.1x2", accessibilityDescription: "4 Rows")!,
+                    NSImage(systemSymbolName: "rectangle.split.2x1", accessibilityDescription: "2 Panes")!,
+                    NSImage(systemSymbolName: "rectangle.split.2x2", accessibilityDescription: "4 Panes")!,
                 ],
                 trackingMode: .selectOne,
                 target: self,
                 action: #selector(splitLayoutAction(_:))
             )
-            control.selectedSegment = splitLayout.rawValue
+            control.segmentStyle = .separated
+            switch splitLayout {
+            case .single: control.selectedSegment = 0
+            case .horizontal2, .vertical2: control.selectedSegment = 1
+            case .quad4, .horizontal4, .vertical4: control.selectedSegment = 2
+            }
+            control.sizeToFit()
             item.view = control
+            item.minSize = control.fittingSize
+            item.maxSize = control.fittingSize
+            item.visibilityPriority = .high
             splitLayoutControl = control
             return item
 
         case .viewMode:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "View"
+            item.paletteLabel = "View"
             let control = NSSegmentedControl(
                 images: [
                     NSImage(systemSymbolName: "square.grid.2x2", accessibilityDescription: "Icon View")!,
@@ -222,14 +257,20 @@ extension BrowserToolbar: NSToolbarDelegate {
                 target: self,
                 action: #selector(viewModeAction(_:))
             )
+            control.segmentStyle = .separated
             control.selectedSegment = viewMode == .icon ? 0 : 1
+            control.sizeToFit()
             item.view = control
+            item.minSize = control.fittingSize
+            item.maxSize = control.fittingSize
+            item.visibilityPriority = .high
             viewModeControl = control
             return item
 
         case .sortMenu:
             let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Group"
+            item.paletteLabel = "Group"
             item.image = NSImage(systemSymbolName: "square.grid.3x1.below.line.grid.1x2", accessibilityDescription: "Sort")
                 ?? NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: "Sort")
             let menu = NSMenu(title: "Sort")
@@ -244,11 +285,13 @@ extension BrowserToolbar: NSToolbarDelegate {
             ascItem.target = self
             menu.addItem(ascItem)
             item.menu = menu
+            item.visibilityPriority = .standard
             return item
 
         case .share:
             let item = NSToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Share"
+            item.paletteLabel = "Share"
             item.image = NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: "Share")
             item.target = self
             item.action = #selector(shareAction)
@@ -257,6 +300,7 @@ extension BrowserToolbar: NSToolbarDelegate {
         case .action:
             let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Action"
+            item.paletteLabel = "Action"
             item.image = NSImage(systemSymbolName: "ellipsis.circle", accessibilityDescription: "Action")
             let menu = NSMenu(title: "Action")
             menu.addItem(withTitle: "New Folder", action: #selector(newFolderAction), keyEquivalent: "")
@@ -270,13 +314,17 @@ extension BrowserToolbar: NSToolbarDelegate {
             menu.addItem(withTitle: "Toggle Path Bar", action: #selector(togglePathBarAction), keyEquivalent: "")
             for m in menu.items { m.target = self }
             item.menu = menu
+            item.visibilityPriority = .standard
             return item
 
         case .search:
             let item = NSSearchToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Search"
+            item.paletteLabel = "Search"
+            item.preferredWidthForSearchField = 160
             item.searchField.target = self
             item.searchField.action = #selector(searchAction(_:))
+            item.visibilityPriority = .standard
             return item
 
         case .pathBar:
@@ -320,11 +368,11 @@ extension BrowserToolbar: NSToolbarDelegate {
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.navigationGroup, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search]
+        [.toggleSidebar, .navigationGroup, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .action, .search]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.navigationGroup, .back, .forward, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search, .pathBar, .iconSize, .hiddenFiles]
+        [.toggleSidebar, .navigationGroup, .back, .forward, .flexibleSpace, .viewMode, .splitLayout, .sortMenu, .share, .action, .search, .pathBar, .iconSize, .hiddenFiles]
     }
 }
 

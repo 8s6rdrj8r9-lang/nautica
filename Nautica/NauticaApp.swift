@@ -11,7 +11,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Constants.showExtensionsKey: true,
             Constants.confirmTrashKey: true,
             Constants.useSystemAccentKey: true,
-            Constants.splitLayoutKey: SplitLayout.quad4.rawValue,
+            Constants.splitLayoutKey: SplitLayout.single.rawValue,
+            Constants.defaultViewModeKey: ViewMode.list.rawValue,
         ])
         TabRestoreQueue.shared.enqueue(contentsOf: WindowTabRegistry.shared.restoredURLs())
         // Create the tag database on first launch (Prompt 11).
@@ -36,6 +37,7 @@ struct NauticaApp: App {
         WindowGroup(id: "browser") {
             MainWindow()
         }
+        .defaultSize(width: 1060, height: 680)
         .modelContainer(for: FolderViewState.self)
         .commands {
             CommandGroup(replacing: .pasteboard) {

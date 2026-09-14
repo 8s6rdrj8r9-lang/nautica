@@ -67,11 +67,12 @@ private final class UndoBox {
 /// (`TabState`) that owns navigation history, directory listing, selection,
 /// and view mode (Prompt 8).
 struct BrowserView: View {
-    @AppStorage(Constants.splitLayoutKey) private var splitLayoutRaw: Int = SplitLayout.quad4.rawValue
+    @AppStorage(Constants.splitLayoutKey) private var splitLayoutRaw: Int = SplitLayout.single.rawValue
     private var splitLayout: SplitLayout {
-        get { SplitLayout(rawValue: splitLayoutRaw) ?? .quad4 }
+        get { SplitLayout(rawValue: splitLayoutRaw) ?? .single }
         nonmutating set { _splitLayoutRaw.wrappedValue = newValue.rawValue }
     }
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var activePaneIndex: Int = 0
     @State private var panes: [TabState] = [
         TabState(url: FileManager.default.homeURL),
@@ -97,12 +98,13 @@ struct BrowserView: View {
     @State private var isOperationRunning = false
     /// Persistent banner while Full Disk Access is missing (Prompt 15).
     @State private var showPermissionBanner = false
+    @AppStorage("dismissedFullDiskBanner") private var dismissedFullDiskBanner = false
     /// "Go to Folder…" sheet state (Prompt 16).
     @State private var showGoToFolderSheet = false
     @State private var goToFolderText = ""
     @AppStorage("showPathBar") private var showPathBar = true
     /// Right-hand directory tree panel.
-    @State private var showTreePanel = true
+    @State private var showTreePanel = false
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
     /// Per-folder view state persistence (Prompt 12); created in onAppear
@@ -121,15 +123,17 @@ struct BrowserView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             SidebarView(model: sidebarModel, selectedURL: activeTab.navigationHistory.currentURL) { url in
                 navigate(to: url)
             } onFavoriteAdded: { _ in
                 // Persistence handled by SidebarModel; hook for later prompts.
             }
+            .frame(minWidth: 170, idealWidth: 190, maxWidth: 260)
+            .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 260)
         } detail: {
             VStack(spacing: 0) {
-                if showPermissionBanner {
+                if showPermissionBanner && !dismissedFullDiskBanner {
                     permissionBanner
                 }
                 splitLayoutView
@@ -151,11 +155,12 @@ struct BrowserView: View {
                 }
             }
         }
+        .navigationSplitViewStyle(.balanced)
         .inspector(isPresented: $showTreePanel) {
             TreePanelView(model: sidebarModel, onNavigate: navigate(to:))
                 .inspectorColumnWidth(min: 200, ideal: 260, max: 400)
         }
-        .frame(minWidth: 800, minHeight: 600)
+        .frame(minWidth: 720, minHeight: 450)
         .background(WindowAccessor(toolbar: toolbar.toolbar, onWindow: configureWindow))
         .focusedSceneValue(\.browserURL, activeTab.navigationHistory.currentURL)
         .focusedSceneValue(\.browserActions, BrowserActions(
@@ -296,28 +301,29 @@ struct BrowserView: View {
             if splitLayout != .single {
                 HStack(spacing: 8) {
                     Image(systemName: "folder")
+                        .font(.system(size: 13))
                         .foregroundStyle(isFocused ? Color.accentColor : .secondary)
                     Text(currentTab.navigationHistory.currentURL.lastPathComponent.isEmpty
                          ? "/"
                          : currentTab.navigationHistory.currentURL.lastPathComponent)
-                        .font(.caption.weight(.medium))
+                        .font(.system(size: 12, weight: isFocused ? .semibold : .regular))
                         .foregroundStyle(isFocused ? .primary : .secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                     Spacer()
                     if isFocused {
                         Text("Active")
-                            .font(.caption2.bold())
+                            .font(.system(size: 10, weight: .semibold))
                             .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.accentColor.opacity(0.15))
+                            .padding(.vertical, 1.5)
+                            .background(Color.accentColor.opacity(0.14))
                             .foregroundStyle(Color.accentColor)
                             .clipShape(Capsule())
                     }
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(Color(NSColor.windowBackgroundColor))
+                .padding(.vertical, 4)
+                .background(Color(NSColor.controlBackgroundColor))
                 .contentShape(Rectangle())
                 .onTapGesture {
                     activePaneIndex = index
@@ -826,6 +832,12 @@ struct BrowserView: View {
         window.titlebarAppearsTransparent = false
         window.toolbarStyle = .unified
         window.isMovableByWindowBackground = true
+        if window.frame.size.width < 960 || window.frame.size.height < 580 {
+            var frame = window.frame
+            frame.size.width = max(frame.size.width, 1060)
+            frame.size.height = max(frame.size.height, 680)
+            window.setFrame(frame, display: true, animate: false)
+        }
         WindowTabRegistry.shared.register(window) { [activeTab] in
             activeTab.navigationHistory.currentURL
         }
@@ -844,18 +856,35 @@ struct BrowserView: View {
 
     /// Persistent banner shown while Full Disk Access is missing (Prompt 15).
     private var permissionBanner: some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle")
-            Text("Nautica doesn't have Full Disk Access, so some folders may be unavailable.")
-                .font(.callout)
+        HStack(spacing: 10) {
+            Image(systemName: "info.circle")
+                .foregroundStyle(.secondary)
+            Text("Nautica has limited disk access. Some system folders may require Full Disk Access.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             Spacer()
-            Button("Open System Settings") {
+            Button("Settings…") {
                 FullDiskAccess.openSystemSettings()
             }
+            .buttonStyle(.link)
+            .font(.subheadline)
+
+            Button {
+                withAnimation { dismissedFullDiskBanner = true }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(4)
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .help("Dismiss")
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(.yellow.opacity(0.15))
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
+        .background(Color(NSColor.controlBackgroundColor))
+        .overlay(Divider(), alignment: .bottom)
     }
 }
 
