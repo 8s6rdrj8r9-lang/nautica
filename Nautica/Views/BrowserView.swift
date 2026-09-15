@@ -39,6 +39,8 @@ struct BrowserActions {
     var cycleNextPane: () -> Void
     /// Toggles the bottom path bar (Option+Command+P).
     var togglePathBar: () -> Void
+    /// Toggles the left sidebar.
+    var toggleSidebar: () -> Void
     /// Toggles the right-hand tree panel.
     var toggleTreePanel: () -> Void
     /// Toggles the right-hand inspector.
@@ -139,7 +141,6 @@ struct BrowserView: View {
             } onFavoriteAdded: { _ in
                 // Persistence handled by SidebarModel; hook for later prompts.
             }
-            .frame(minWidth: 170, idealWidth: 190, maxWidth: 260)
             .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 260)
         } detail: {
             VStack(spacing: 0) {
@@ -233,6 +234,7 @@ struct BrowserView: View {
             toggleDualPane: toggleDualPane,
             cycleNextPane: cycleNextPane,
             togglePathBar: { showPathBar.toggle() },
+            toggleSidebar: toggleSidebar,
             toggleTreePanel: {
                 if showRightSidebar && rightSidebarTab == .tree {
                     showRightSidebar = false
@@ -741,6 +743,12 @@ struct BrowserView: View {
             setSplitLayout(.horizontal2)
         } else {
             setSplitLayout(.single)
+        }
+    }
+
+    private func toggleSidebar() {
+        withAnimation {
+            columnVisibility = (columnVisibility == .detailOnly) ? .all : .detailOnly
         }
     }
 
@@ -1343,14 +1351,6 @@ private struct WindowAccessor: NSViewRepresentable {
     private func configure(_ view: NSView) {
         guard let window = view.window else { return }
         onWindow(window)
-        // Ensure no tracking separator splits the toolbar for the content panes
-        if let toolbar = window.toolbar {
-            for (index, item) in toolbar.items.enumerated().reversed() {
-                if item is NSTrackingSeparatorToolbarItem {
-                    toolbar.removeItem(at: index)
-                }
-            }
-        }
     }
 }
 
