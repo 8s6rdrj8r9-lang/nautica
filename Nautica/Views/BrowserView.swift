@@ -567,23 +567,23 @@ struct BrowserView: View {
                     Text(currentTab.navigationHistory.currentURL.lastPathComponent.isEmpty
                          ? "/"
                          : currentTab.navigationHistory.currentURL.lastPathComponent)
-                        .font(.system(size: 12, weight: isFocused ? .semibold : .regular))
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(isFocused ? .primary : .secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                     Spacer()
-                    if isFocused {
-                        Text("Active")
-                            .font(.system(size: 10, weight: .semibold))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 1.5)
-                            .background(Color.accentColor.opacity(0.14))
-                            .foregroundStyle(Color.accentColor)
-                            .clipShape(Capsule())
-                    }
+                    Text("Active")
+                        .font(.system(size: 10, weight: .semibold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 1.5)
+                        .background(Color.accentColor.opacity(0.14))
+                        .foregroundStyle(Color.accentColor)
+                        .clipShape(Capsule())
+                        .opacity(isFocused ? 1 : 0)
+                        .accessibilityHidden(!isFocused)
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 4)
+                .frame(height: 26)
                 .background(Color(NSColor.controlBackgroundColor))
                 .contentShape(Rectangle())
                 .onHover { isHovered in
@@ -618,8 +618,8 @@ struct BrowserView: View {
                     onMouseEnter: { activatePane(index) }
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 0)
-                        .stroke(splitLayout != .single && isFocused ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
+                    Rectangle()
+                        .strokeBorder(splitLayout != .single && isFocused ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1.5)
                 )
             }
         }
