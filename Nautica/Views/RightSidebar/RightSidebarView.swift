@@ -1,9 +1,10 @@
 import SwiftUI
 
-/// Container for the right sidebar (inspector), offering tabbed access to Recents,
-/// the Directory Tree, and File Info.
+/// Container for the right sidebar (inspector), offering tabbed access across all 8 panels:
+/// Recents, Tree, Info, Drop Shelf, Quick Actions, Git Status, Media & EXIF, and Terminal.
 struct RightSidebarView: View {
     @Binding var selectedTab: RightSidebarTab
+    @Binding var stagedURLs: [URL]
     let sidebarModel: SidebarModel
     let selectedItems: [FileItem]
     let currentFolderURL: URL
@@ -11,25 +12,37 @@ struct RightSidebarView: View {
     var onNavigate: (URL) -> Void
     var onQuickLook: () -> Void
     var onOpenTerminal: (URL) -> Void
+    var onReloadDirectory: () -> Void
+    var onPerformCopy: ([URL], URL) -> Void
+    var onPerformMove: ([URL], URL) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            // Tab Switcher Header
-            Picker("Inspector View", selection: $selectedTab) {
+            // macOS Inspector Icon Tab Bar
+            HStack(spacing: 2) {
                 ForEach(RightSidebarTab.allCases) { tab in
-                    Label(tab.title, systemImage: tab.icon)
-                        .tag(tab)
-                        .help(tab.tooltip)
+                    Button(action: { selectedTab = tab }) {
+                        Image(systemName: tab.icon)
+                            .font(.system(size: 12, weight: selectedTab == tab ? .semibold : .regular))
+                            .foregroundStyle(selectedTab == tab ? Color.accentColor : Color.secondary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 24)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(selectedTab == tab ? Color.accentColor.opacity(0.18) : Color.clear)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .help("\(tab.title) — \(tab.tooltip)")
                 }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(Color(NSColor.controlBackgroundColor))
 
             Divider()
 
-            // Active Panel View
+            // Active Panel
             switch selectedTab {
             case .recents:
                 RecentsPanelView(
@@ -52,9 +65,44 @@ struct RightSidebarView: View {
                     onQuickLook: onQuickLook,
                     onOpenTerminal: onOpenTerminal
                 )
+
+            case .shelf:
+                DropShelfPanelView(
+                    stagedURLs: $stagedURLs,
+                    currentFolderURL: currentFolderURL,
+                    selectedItems: selectedItems,
+                    onPerformCopy: onPerformCopy,
+                    onPerformMove: onPerformMove
+                )
+
+            case .actions:
+                QuickActionsPanelView(
+                    selectedItems: selectedItems,
+                    currentFolderURL: currentFolderURL,
+                    onReloadDirectory: onReloadDirectory,
+                    onOpenTerminal: onOpenTerminal
+                )
+
+            case .git:
+                GitStatusPanelView(
+                    currentFolderURL: currentFolderURL,
+                    onOpenTerminal: onOpenTerminal
+                )
+
+            case .media:
+                MediaMetadataPanelView(
+                    selectedItem: selectedItems.first,
+                    onQuickLook: onQuickLook
+                )
+
+            case .terminal:
+                MiniTerminalPanelView(
+                    currentFolderURL: currentFolderURL,
+                    onOpenExternalTerminal: onOpenTerminal
+                )
             }
         }
-        .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+        .frame(minWidth: 230, maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
     }
 }

@@ -5,6 +5,11 @@ enum RightSidebarTab: String, CaseIterable, Identifiable {
     case recents = "recents"
     case tree = "tree"
     case info = "info"
+    case shelf = "shelf"
+    case actions = "actions"
+    case git = "git"
+    case media = "media"
+    case terminal = "terminal"
 
     var id: String { rawValue }
 
@@ -13,6 +18,11 @@ enum RightSidebarTab: String, CaseIterable, Identifiable {
         case .recents: return "clock"
         case .tree: return "list.bullet.indent"
         case .info: return "info.circle"
+        case .shelf: return "tray.and.arrow.down"
+        case .actions: return "wand.and.stars"
+        case .git: return "arrow.triangle.branch"
+        case .media: return "camera"
+        case .terminal: return "terminal"
         }
     }
 
@@ -21,6 +31,11 @@ enum RightSidebarTab: String, CaseIterable, Identifiable {
         case .recents: return "Recents"
         case .tree: return "Tree"
         case .info: return "Info"
+        case .shelf: return "Drop Shelf"
+        case .actions: return "Quick Actions"
+        case .git: return "Git"
+        case .media: return "Media"
+        case .terminal: return "Terminal"
         }
     }
 
@@ -29,6 +44,11 @@ enum RightSidebarTab: String, CaseIterable, Identifiable {
         case .recents: return "Recently visited folders"
         case .tree: return "Directory tree hierarchy"
         case .info: return "File metadata and preview"
+        case .shelf: return "Drag and drop staging shelf"
+        case .actions: return "Batch utilities and tools"
+        case .git: return "Git repository status and commits"
+        case .media: return "EXIF and media specifications"
+        case .terminal: return "Embedded command console"
         }
     }
 }

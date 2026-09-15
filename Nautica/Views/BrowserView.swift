@@ -113,6 +113,7 @@ struct BrowserView: View {
     /// Right-hand inspector panel.
     @AppStorage("showRightSidebar") private var showRightSidebar = true
     @AppStorage("Nautica.RightSidebar.ActiveTab") private var rightSidebarTab: RightSidebarTab = .recents
+    @State private var stagedURLs: [URL] = []
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openWindow) private var openWindow
@@ -173,6 +174,7 @@ struct BrowserView: View {
         .inspector(isPresented: $showRightSidebar) {
             RightSidebarView(
                 selectedTab: $rightSidebarTab,
+                stagedURLs: $stagedURLs,
                 sidebarModel: sidebarModel,
                 selectedItems: selectedItems,
                 currentFolderURL: activeTab.navigationHistory.currentURL,
@@ -186,9 +188,24 @@ struct BrowserView: View {
                             emulator: TerminalService.shared.defaultTerminal()
                         )
                     }
+                },
+                onReloadDirectory: {
+                    for pane in activePanes { pane.directoryContents.reload() }
+                },
+                onPerformCopy: { sources, destination in
+                    runFileOperation("Copying Files") { progress in
+                        await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
+                    }
+                },
+                onPerformMove: { sources, destination in
+                    runFileOperation("Moving Files") { progress in
+                        await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
+                    } onCompletion: { result in
+                        registerRestoreUndo(name: "Move", transfers: result.transfers)
+                    }
                 }
             )
-            .inspectorColumnWidth(min: 220, ideal: 280, max: 420)
+            .inspectorColumnWidth(min: 240, ideal: 290, max: 440)
         }
         .frame(minWidth: 720, minHeight: 450)
         .background(WindowAccessor(onWindow: configureWindow))

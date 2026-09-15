@@ -115,10 +115,23 @@ struct NauticaApp: App {
                     .keyboardShortcut("p", modifiers: [.command, .option])
                 Button("Toggle Inspector") { browserActions?.toggleInspector() }
                     .keyboardShortcut("i", modifiers: [.command, .option])
-                Button("Directory Tree") { browserActions?.toggleTreePanel() }
-                    .keyboardShortcut("0", modifiers: [.command, .option])
-                Button("Recent Folders") { browserActions?.showInspectorTab(.recents) }
-                    .keyboardShortcut("r", modifiers: [.command, .option])
+                Menu("Inspector Panels") {
+                    Button("Recent Folders") { browserActions?.showInspectorTab(.recents) }
+                        .keyboardShortcut("r", modifiers: [.command, .option])
+                    Button("Directory Tree") { browserActions?.showInspectorTab(.tree) }
+                        .keyboardShortcut("0", modifiers: [.command, .option])
+                    Button("File Info") { browserActions?.showInspectorTab(.info) }
+                    Button("Drop Shelf") { browserActions?.showInspectorTab(.shelf) }
+                        .keyboardShortcut("s", modifiers: [.command, .option])
+                    Button("Quick Actions") { browserActions?.showInspectorTab(.actions) }
+                        .keyboardShortcut("a", modifiers: [.command, .option])
+                    Button("Git Status") { browserActions?.showInspectorTab(.git) }
+                        .keyboardShortcut("g", modifiers: [.command, .option])
+                    Button("Media & EXIF") { browserActions?.showInspectorTab(.media) }
+                        .keyboardShortcut("m", modifiers: [.command, .option])
+                    Button("Terminal Console") { browserActions?.showInspectorTab(.terminal) }
+                        .keyboardShortcut("t", modifiers: [.command, .option])
+                }
             }
             CommandMenu("Go") {
                 Button("Back") { browserActions?.goBack() }
