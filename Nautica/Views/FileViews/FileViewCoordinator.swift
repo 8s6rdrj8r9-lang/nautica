@@ -53,6 +53,7 @@ struct FileViewCoordinator: NSViewRepresentable {
     var onUnlockVault: ((URL) -> Void)?
     var onLockVault: ((URL) -> Void)?
     var onCreateVault: (() -> Void)?
+    var onCheckVaultHealth: ((URL) -> Void)?
     var onQuickCopyToOtherPane: (() -> Void)?
     var onQuickMoveToOtherPane: (() -> Void)?
     var onCyclePane: (() -> Void)?
@@ -109,6 +110,9 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.onCreateVault = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onCreateVault?()
         }
+        iconController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onCheckVaultHealth?(url)
+        }
         iconController.onColumnCountChanged = { [weak coordinator = context.coordinator] count in
             coordinator?.liveColumnCount = count
         }
@@ -156,6 +160,9 @@ struct FileViewCoordinator: NSViewRepresentable {
         listController.onCreateVault = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onCreateVault?()
         }
+        listController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onCheckVaultHealth?(url)
+        }
         context.coordinator.listViewController = listController
 
         let listView = listController.view
@@ -200,6 +207,9 @@ struct FileViewCoordinator: NSViewRepresentable {
         }
         columnController.onCreateVault = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onCreateVault?()
+        }
+        columnController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onCheckVaultHealth?(url)
         }
         context.coordinator.columnViewController = columnController
 
@@ -249,6 +259,9 @@ struct FileViewCoordinator: NSViewRepresentable {
         galleryController.onCreateVault = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onCreateVault?()
         }
+        galleryController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onCheckVaultHealth?(url)
+        }
         context.coordinator.galleryViewController = galleryController
 
         let galleryView = galleryController.view
@@ -295,12 +308,14 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.onUnlockVault = onUnlockVault
         iconController.onLockVault = onLockVault
         iconController.onCreateVault = onCreateVault
+        iconController.onCheckVaultHealth = onCheckVaultHealth
         listController.onNavigate = onNavigate
         listController.onGitDiff = onGitDiff
         listController.onGitCommit = onGitCommit
         listController.onUnlockVault = onUnlockVault
         listController.onLockVault = onLockVault
         listController.onCreateVault = onCreateVault
+        listController.onCheckVaultHealth = onCheckVaultHealth
         columnController.onNavigate = onNavigate
         columnController.onQuickLook = onQuickLook
         columnController.onGitDiff = onGitDiff
@@ -308,6 +323,7 @@ struct FileViewCoordinator: NSViewRepresentable {
         columnController.onUnlockVault = onUnlockVault
         columnController.onLockVault = onLockVault
         columnController.onCreateVault = onCreateVault
+        columnController.onCheckVaultHealth = onCheckVaultHealth
         galleryController.onNavigate = onNavigate
         galleryController.onQuickLook = onQuickLook
         galleryController.onGitDiff = onGitDiff
@@ -315,6 +331,7 @@ struct FileViewCoordinator: NSViewRepresentable {
         galleryController.onUnlockVault = onUnlockVault
         galleryController.onLockVault = onLockVault
         galleryController.onCreateVault = onCreateVault
+        galleryController.onCheckVaultHealth = onCheckVaultHealth
 
         let isIcon = viewMode == .icon
         let isList = viewMode == .list

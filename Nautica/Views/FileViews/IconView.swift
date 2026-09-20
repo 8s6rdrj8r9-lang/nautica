@@ -198,6 +198,7 @@ final class IconViewController: NSViewController {
     var onUnlockVault: ((URL) -> Void)?
     var onLockVault: ((URL) -> Void)?
     var onCreateVault: (() -> Void)?
+    var onCheckVaultHealth: ((URL) -> Void)?
     /// Reports the current column count for grid-aware arrow navigation.
     var onColumnCountChanged: ((Int) -> Void)?
 
@@ -734,6 +735,10 @@ final class IconViewController: NSViewController {
             },
             createVault: { [weak self] in
                 self?.onCreateVault?()
+            },
+            checkVaultHealth: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onCheckVaultHealth?(first.url)
             }
         )
     }

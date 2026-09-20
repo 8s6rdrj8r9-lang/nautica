@@ -13,6 +13,8 @@ struct SettingsView: View {
                 .tabItem { Label("Appearance", systemImage: "paintbrush") }
             TerminalSettingsTab()
                 .tabItem { Label("Terminal", systemImage: "terminal") }
+            VaultSecuritySettingsTab()
+                .tabItem { Label("Security & Vaults", systemImage: "lock.shield") }
             AdvancedSettingsTab()
                 .tabItem { Label("Advanced", systemImage: "wrench.and.screwdriver") }
         }
@@ -146,6 +148,102 @@ private struct TerminalSettingsTab: View {
         }
         .formStyle(.grouped)
         .padding()
+    }
+}
+
+// MARK: - Security & Vaults
+
+private struct MountedVaultItem: Identifiable {
+    var id: URL { url }
+    let url: URL
+    let mountPoint: URL
+}
+
+private struct VaultSecuritySettingsTab: View {
+    @AppStorage(Constants.vaultAutoLockOnSleepKey) private var autoLockOnSleep = true
+    @AppStorage(Constants.vaultAutoLockOnScreenLockKey) private var autoLockOnScreenLock = true
+    @AppStorage(Constants.vaultInactivityTimeoutKey) private var inactivityTimeout = 15
+    @ObservedObject private var automation = VaultAutomationService.shared
+    @State private var isLockingAll = false
+
+    private var mountedVaults: [MountedVaultItem] {
+        automation.activeVaults.map { MountedVaultItem(url: $0.url, mountPoint: $0.mountPoint) }
+    }
+
+    var body: some View {
+        Form {
+            Section("Vault Auto-Lock Behavior") {
+                Toggle("Auto-lock vaults when Mac goes to sleep", isOn: $autoLockOnSleep)
+                Toggle("Auto-lock vaults when screen is locked", isOn: $autoLockOnScreenLock)
+                Picker("Auto-lock when inactive for:", selection: $inactivityTimeout) {
+                    Text("Never").tag(0)
+                    Text("5 minutes").tag(5)
+                    Text("15 minutes").tag(15)
+                    Text("30 minutes").tag(30)
+                    Text("1 hour").tag(60)
+                }
+            }
+
+            Section("Mounted Vaults (\(mountedVaults.count))") {
+                if mountedVaults.isEmpty {
+                    Text("No file vaults are currently mounted.")
+                        .foregroundStyle(.secondary)
+                        .font(.callout)
+                } else {
+                    List {
+                        ForEach(mountedVaults) { vault in
+                            HStack {
+                                Image(systemName: "lock.fill")
+                                    .foregroundStyle(.tint)
+                                VStack(alignment: .leading) {
+                                    Text(vault.url.lastPathComponent)
+                                        .font(.body.weight(.medium))
+                                    Text(vault.mountPoint.path)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Button("Lock") {
+                                    Task {
+                                        _ = try? await VaultService.shared.lockVault(at: vault.url)
+                                        VaultAutomationService.shared.refreshActiveVaults()
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                    .frame(minHeight: 120, maxHeight: 200)
+
+                    HStack {
+                        Spacer()
+                        Button(role: .destructive) {
+                            isLockingAll = true
+                            Task {
+                                _ = await VaultService.shared.lockAllVaults()
+                                VaultAutomationService.shared.refreshActiveVaults()
+                                isLockingAll = false
+                            }
+                        } label: {
+                            if isLockingAll {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Label("Lock All Vaults", systemImage: "lock.slash")
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(isLockingAll)
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+        .onAppear {
+            automation.refreshActiveVaults()
+        }
     }
 }
 

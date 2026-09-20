@@ -13,8 +13,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Constants.useSystemAccentKey: true,
             Constants.splitLayoutKey: SplitLayout.single.rawValue,
             Constants.defaultViewModeKey: ViewMode.list.rawValue,
+            Constants.vaultAutoLockOnSleepKey: true,
+            Constants.vaultAutoLockOnScreenLockKey: true,
+            Constants.vaultInactivityTimeoutKey: 15,
         ])
         TabRestoreQueue.shared.enqueue(contentsOf: WindowTabRegistry.shared.restoredURLs())
+        VaultAutomationService.shared.startMonitoring()
         // Create the tag database on first launch (Prompt 11).
         Task { try? await TagService.shared.setupDatabase() }
     }
@@ -65,6 +69,8 @@ struct NauticaApp: App {
             CommandGroup(after: .newItem) {
                 Button("New Encrypted File Vault…") { browserActions?.openCreateVault() }
                     .keyboardShortcut("n", modifiers: [.command, .option])
+                Button("Lock All File Vaults") { browserActions?.lockAllVaults() }
+                    .keyboardShortcut("l", modifiers: [.command, .option, .shift])
                 Button("New Folder") { browserActions?.newFolder() }
                     .keyboardShortcut("n", modifiers: [.command, .shift])
                 Button("New Folder with Selection") { browserActions?.newFolderWithSelection() }

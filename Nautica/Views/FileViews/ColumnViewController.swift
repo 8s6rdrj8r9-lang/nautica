@@ -22,6 +22,7 @@ final class ColumnViewController: NSViewController {
     var onUnlockVault: ((URL) -> Void)?
     var onLockVault: ((URL) -> Void)?
     var onCreateVault: (() -> Void)?
+    var onCheckVaultHealth: ((URL) -> Void)?
 
     private let scrollView = NSScrollView()
     private let columnsStack = NSStackView()
@@ -759,6 +760,9 @@ extension ColumnViewController: NSTableViewDataSource, NSTableViewDelegate {
                 },
                 createVault: { [weak self] in
                     self?.onCreateVault?()
+                },
+                checkVaultHealth: { [weak self] in
+                    self?.onCheckVaultHealth?(item.url)
                 }
             )
         )

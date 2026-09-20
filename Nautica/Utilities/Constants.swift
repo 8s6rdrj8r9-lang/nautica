@@ -32,6 +32,10 @@ enum Constants {
     static let iconSpacingKey = "iconSpacing"
     static let useSystemAccentKey = "useSystemAccent"
     static let checkForUpdatesKey = "checkForUpdates"
+    // Vault Security & Auto-Lock (Phase 16)
+    static let vaultAutoLockOnSleepKey = "vaultAutoLockOnSleep"
+    static let vaultAutoLockOnScreenLockKey = "vaultAutoLockOnScreenLock"
+    static let vaultInactivityTimeoutKey = "vaultInactivityTimeout"
 
     /// Initial folder for a new window, per the General preference.
     static func defaultWindowURL() -> URL {

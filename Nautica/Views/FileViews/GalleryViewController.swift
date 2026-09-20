@@ -25,6 +25,7 @@ final class GalleryViewController: NSViewController {
     var onUnlockVault: ((URL) -> Void)?
     var onLockVault: ((URL) -> Void)?
     var onCreateVault: (() -> Void)?
+    var onCheckVaultHealth: ((URL) -> Void)?
 
     private let splitContainer = NSView()
     private let previewContainer = NSView()
@@ -588,6 +589,9 @@ final class GalleryViewController: NSViewController {
             },
             createVault: { [weak self] in
                 self?.onCreateVault?()
+            },
+            checkVaultHealth: { [weak self] in
+                self?.onCheckVaultHealth?(item.url)
             }
         )
 

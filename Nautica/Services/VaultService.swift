@@ -335,6 +335,63 @@ public final class VaultService: @unchecked Sendable {
         return (false, nil)
     }
 
+    /// Returns all currently mounted encrypted vaults with their image URL and mount point URL.
+    public func mountedVaults() -> [(url: URL, mountPoint: URL)] {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
+        process.arguments = ["info", "-plist"]
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe()
+
+        var results: [(url: URL, mountPoint: URL)] = []
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+               let images = plist["images"] as? [[String: Any]] {
+                for image in images {
+                    guard let imagePath = image["image-path"] as? String else { continue }
+                    let imageURL = URL(fileURLWithPath: imagePath)
+                    guard isVault(at: imageURL) else { continue }
+
+                    if let entities = image["system-entities"] as? [[String: Any]] {
+                        for entity in entities {
+                            if let mount = entity["mount-point"] as? String {
+                                results.append((imageURL, URL(fileURLWithPath: mount)))
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        } catch {
+            return []
+        }
+
+        return results
+    }
+
+    /// Cleanly unmounts and locks all currently mounted vaults. Returns any failures encountered.
+    @discardableResult
+    public func lockAllVaults() async -> [URL: Error] {
+        let vaults = mountedVaults()
+        var failures: [URL: Error] = [:]
+
+        for vault in vaults {
+            do {
+                try await lockVault(at: vault.url)
+            } catch {
+                failures[vault.url] = error
+            }
+        }
+
+        return failures
+    }
+
     // MARK: - Biometrics (Touch ID / LocalAuthentication)
 
     public func canUseBiometrics() -> Bool {

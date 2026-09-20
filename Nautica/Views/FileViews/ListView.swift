@@ -157,6 +157,7 @@ final class ListViewController: NSViewController {
     var onUnlockVault: ((URL) -> Void)?
     var onLockVault: ((URL) -> Void)?
     var onCreateVault: (() -> Void)?
+    var onCheckVaultHealth: ((URL) -> Void)?
     /// Comma-separated tag names for an item. Stub seam for TagService.
     var tagsProvider: (FileItem) -> String = { _ in "" }
 
@@ -786,6 +787,10 @@ final class ListViewController: NSViewController {
             },
             createVault: { [weak self] in
                 self?.onCreateVault?()
+            },
+            checkVaultHealth: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onCheckVaultHealth?(first.url)
             }
         )
     }

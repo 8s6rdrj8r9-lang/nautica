@@ -89,8 +89,9 @@ struct BrowserActions {
     var gitCreateBranch: () -> Void
     // Metadata Editor (Phase 13).
     var openMetadataEditor: () -> Void
-    // File Vaults & Encrypted Containers (Phase 14).
+    // File Vaults & Encrypted Containers (Phase 14 & 16).
     var openCreateVault: () -> Void
+    var lockAllVaults: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -167,6 +168,8 @@ struct BrowserView: View {
     @State private var showCreateVaultSheet = false
     @State private var showUnlockVaultSheet = false
     @State private var unlockVaultTargetURL: URL? = nil
+    @State private var showVaultHealthSheet = false
+    @State private var vaultHealthTargetURL: URL? = nil
     @State private var conflictSheetData: ConflictSheetData?
     @State private var searchScope: SearchScope = .folder(Constants.defaultWindowURL())
     @State private var searchFilter: SearchFilter = .nameAndContent
@@ -278,6 +281,11 @@ struct BrowserView: View {
                         pane.directoryContents.reload()
                     }
                 }
+            }
+        }
+        .sheet(isPresented: $showVaultHealthSheet) {
+            if let targetURL = vaultHealthTargetURL {
+                VaultHealthSheet(vaultURL: targetURL)
             }
         }
         .sheet(item: $conflictSheetData) { data in
@@ -769,6 +777,10 @@ struct BrowserView: View {
                     },
                     onCreateVault: {
                         showCreateVaultSheet = true
+                    },
+                    onCheckVaultHealth: { url in
+                        vaultHealthTargetURL = url
+                        showVaultHealthSheet = true
                     },
                     onQuickCopyToOtherPane: { copyToInactivePane() },
                     onQuickMoveToOtherPane: { moveToInactivePane() },
@@ -1991,6 +2003,15 @@ struct BrowserView: View {
             },
             openCreateVault: {
                 showCreateVaultSheet = true
+            },
+            lockAllVaults: {
+                Task {
+                    _ = await VaultService.shared.lockAllVaults()
+                    VaultAutomationService.shared.refreshActiveVaults()
+                    for pane in activePanes {
+                        pane.directoryContents.reload()
+                    }
+                }
             }
         )
     }

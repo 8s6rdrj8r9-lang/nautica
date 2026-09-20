@@ -59,6 +59,7 @@ enum FileContextMenu {
         var unlockVault: (() -> Void)? = nil
         var lockVault: (() -> Void)? = nil
         var createVault: (() -> Void)? = nil
+        var checkVaultHealth: (() -> Void)? = nil
     }
 
     static func makeMenu(for items: [FileItem], actions: Actions) -> NSMenu {
@@ -102,6 +103,14 @@ enum FileContextMenu {
                     }
                     menu.addItem(unlockItem)
                 }
+
+                let healthItem = NSMenuItem(title: "Check Vault Health…") { _ in
+                    actions.checkVaultHealth?()
+                }
+                if let icon = NSImage(systemSymbolName: "cross.case", accessibilityDescription: nil) {
+                    healthItem.image = icon
+                }
+                menu.addItem(healthItem)
             }
         } else if items.isEmpty {
             let newVaultItem = NSMenuItem(title: "New Encrypted File Vault…") { _ in
