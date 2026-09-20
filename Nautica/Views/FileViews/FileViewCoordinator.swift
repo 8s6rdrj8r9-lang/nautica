@@ -50,6 +50,9 @@ struct FileViewCoordinator: NSViewRepresentable {
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
+    var onUnlockVault: ((URL) -> Void)?
+    var onLockVault: ((URL) -> Void)?
+    var onCreateVault: (() -> Void)?
     var onQuickCopyToOtherPane: (() -> Void)?
     var onQuickMoveToOtherPane: (() -> Void)?
     var onCyclePane: (() -> Void)?
@@ -97,6 +100,15 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.onGitCommit = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onGitCommit?()
         }
+        iconController.onUnlockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onUnlockVault?(url)
+        }
+        iconController.onLockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onLockVault?(url)
+        }
+        iconController.onCreateVault = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCreateVault?()
+        }
         iconController.onColumnCountChanged = { [weak coordinator = context.coordinator] count in
             coordinator?.liveColumnCount = count
         }
@@ -135,6 +147,15 @@ struct FileViewCoordinator: NSViewRepresentable {
         listController.onGitCommit = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onGitCommit?()
         }
+        listController.onUnlockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onUnlockVault?(url)
+        }
+        listController.onLockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onLockVault?(url)
+        }
+        listController.onCreateVault = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCreateVault?()
+        }
         context.coordinator.listViewController = listController
 
         let listView = listController.view
@@ -170,6 +191,15 @@ struct FileViewCoordinator: NSViewRepresentable {
         }
         columnController.onGitCommit = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onGitCommit?()
+        }
+        columnController.onUnlockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onUnlockVault?(url)
+        }
+        columnController.onLockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onLockVault?(url)
+        }
+        columnController.onCreateVault = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCreateVault?()
         }
         context.coordinator.columnViewController = columnController
 
@@ -209,6 +239,15 @@ struct FileViewCoordinator: NSViewRepresentable {
         }
         galleryController.onGitCommit = { [weak coordinator = context.coordinator] in
             coordinator?.parent.onGitCommit?()
+        }
+        galleryController.onUnlockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onUnlockVault?(url)
+        }
+        galleryController.onLockVault = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onLockVault?(url)
+        }
+        galleryController.onCreateVault = { [weak coordinator = context.coordinator] in
+            coordinator?.parent.onCreateVault?()
         }
         context.coordinator.galleryViewController = galleryController
 
@@ -253,17 +292,29 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.onNavigate = onNavigate
         iconController.onGitDiff = onGitDiff
         iconController.onGitCommit = onGitCommit
+        iconController.onUnlockVault = onUnlockVault
+        iconController.onLockVault = onLockVault
+        iconController.onCreateVault = onCreateVault
         listController.onNavigate = onNavigate
         listController.onGitDiff = onGitDiff
         listController.onGitCommit = onGitCommit
+        listController.onUnlockVault = onUnlockVault
+        listController.onLockVault = onLockVault
+        listController.onCreateVault = onCreateVault
         columnController.onNavigate = onNavigate
         columnController.onQuickLook = onQuickLook
         columnController.onGitDiff = onGitDiff
         columnController.onGitCommit = onGitCommit
+        columnController.onUnlockVault = onUnlockVault
+        columnController.onLockVault = onLockVault
+        columnController.onCreateVault = onCreateVault
         galleryController.onNavigate = onNavigate
         galleryController.onQuickLook = onQuickLook
         galleryController.onGitDiff = onGitDiff
         galleryController.onGitCommit = onGitCommit
+        galleryController.onUnlockVault = onUnlockVault
+        galleryController.onLockVault = onLockVault
+        galleryController.onCreateVault = onCreateVault
 
         let isIcon = viewMode == .icon
         let isList = viewMode == .list

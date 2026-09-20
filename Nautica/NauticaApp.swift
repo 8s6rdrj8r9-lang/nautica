@@ -63,6 +63,8 @@ struct NauticaApp: App {
                 Button("Put Back") { browserActions?.putBack() }
             }
             CommandGroup(after: .newItem) {
+                Button("New Encrypted File Vault…") { browserActions?.openCreateVault() }
+                    .keyboardShortcut("n", modifiers: [.command, .option])
                 Button("New Folder") { browserActions?.newFolder() }
                     .keyboardShortcut("n", modifiers: [.command, .shift])
                 Button("New Folder with Selection") { browserActions?.newFolderWithSelection() }

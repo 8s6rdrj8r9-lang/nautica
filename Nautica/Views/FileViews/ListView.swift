@@ -154,6 +154,9 @@ final class ListViewController: NSViewController {
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
+    var onUnlockVault: ((URL) -> Void)?
+    var onLockVault: ((URL) -> Void)?
+    var onCreateVault: (() -> Void)?
     /// Comma-separated tag names for an item. Stub seam for TagService.
     var tagsProvider: (FileItem) -> String = { _ in "" }
 
@@ -471,7 +474,14 @@ final class ListViewController: NSViewController {
         let row = tableView.clickedRow
         guard row >= 0, row < currentItems.count else { return }
         let item = currentItems[row]
-        if ArchiveService.shared.isArchive(url: item.url) {
+        if VaultService.shared.isVault(at: item.url) {
+            let status = VaultService.shared.isVaultMounted(at: item.url)
+            if status.isMounted, let mount = status.mountURL {
+                onNavigate?(mount)
+            } else {
+                onUnlockVault?(item.url)
+            }
+        } else if ArchiveService.shared.isArchive(url: item.url) {
             Task {
                 do {
                     _ = try await ArchiveService.shared.extract(archiveURL: item.url)
@@ -517,11 +527,19 @@ final class ListViewController: NSViewController {
         return FileContextMenu.Actions(
             open: { [weak self] in
                 guard let self else { return }
-                for item in contextMenuItems where !item.isDirectory {
-                    NSWorkspace.shared.open(item.url)
-                }
-                if let folder = contextMenuItems.first(where: \.isDirectory) {
-                    onNavigate?(folder.url)
+                for item in contextMenuItems {
+                    if VaultService.shared.isVault(at: item.url) {
+                        let status = VaultService.shared.isVaultMounted(at: item.url)
+                        if status.isMounted, let mount = status.mountURL {
+                            self.onNavigate?(mount)
+                        } else {
+                            self.onUnlockVault?(item.url)
+                        }
+                    } else if item.isDirectory {
+                        self.onNavigate?(item.url)
+                    } else {
+                        NSWorkspace.shared.open(item.url)
+                    }
                 }
             },
             openWith: { [weak self] appURL in
@@ -757,7 +775,18 @@ final class ListViewController: NSViewController {
             } : nil,
             gitCommit: isGit ? { [weak self] in
                 self?.onGitCommit?()
-            } : nil
+            } : nil,
+            unlockVault: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onUnlockVault?(first.url)
+            },
+            lockVault: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onLockVault?(first.url)
+            },
+            createVault: { [weak self] in
+                self?.onCreateVault?()
+            }
         )
     }
 

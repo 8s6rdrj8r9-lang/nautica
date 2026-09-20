@@ -22,6 +22,9 @@ final class GalleryViewController: NSViewController {
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
+    var onUnlockVault: ((URL) -> Void)?
+    var onLockVault: ((URL) -> Void)?
+    var onCreateVault: (() -> Void)?
 
     private let splitContainer = NSView()
     private let previewContainer = NSView()
@@ -174,7 +177,14 @@ final class GalleryViewController: NSViewController {
             }
             itemView.onDoubleClick = { [weak self] in
                 guard let self else { return }
-                if ArchiveService.shared.isArchive(url: item.url) {
+                if VaultService.shared.isVault(at: item.url) {
+                    let status = VaultService.shared.isVaultMounted(at: item.url)
+                    if status.isMounted, let mount = status.mountURL {
+                        self.onNavigate?(mount)
+                    } else {
+                        self.onUnlockVault?(item.url)
+                    }
+                } else if ArchiveService.shared.isArchive(url: item.url) {
                     Task {
                         do {
                             _ = try await ArchiveService.shared.extract(archiveURL: item.url)
@@ -371,7 +381,18 @@ final class GalleryViewController: NSViewController {
         let isGit = GitService.shared.isGitRepository(at: directoryContents.url)
         let actions = FileContextMenu.Actions(
             open: { [weak self] in
-                if item.isDirectory { self?.onNavigate?(item.url) } else { NSWorkspace.shared.open(item.url) }
+                if VaultService.shared.isVault(at: item.url) {
+                    let status = VaultService.shared.isVaultMounted(at: item.url)
+                    if status.isMounted, let mount = status.mountURL {
+                        self?.onNavigate?(mount)
+                    } else {
+                        self?.onUnlockVault?(item.url)
+                    }
+                } else if item.isDirectory {
+                    self?.onNavigate?(item.url)
+                } else {
+                    NSWorkspace.shared.open(item.url)
+                }
             },
             openWith: { appURL in
                 NSWorkspace.shared.open([item.url], withApplicationAt: appURL, configuration: .init())
@@ -558,7 +579,16 @@ final class GalleryViewController: NSViewController {
             } : nil,
             gitCommit: isGit ? { [weak self] in
                 self?.onGitCommit?()
-            } : nil
+            } : nil,
+            unlockVault: { [weak self] in
+                self?.onUnlockVault?(item.url)
+            },
+            lockVault: { [weak self] in
+                self?.onLockVault?(item.url)
+            },
+            createVault: { [weak self] in
+                self?.onCreateVault?()
+            }
         )
 
         let menu = FileContextMenu.makeMenu(for: [item], actions: actions)

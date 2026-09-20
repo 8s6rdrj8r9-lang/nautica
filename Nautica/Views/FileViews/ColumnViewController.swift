@@ -19,6 +19,9 @@ final class ColumnViewController: NSViewController {
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
+    var onUnlockVault: ((URL) -> Void)?
+    var onLockVault: ((URL) -> Void)?
+    var onCreateVault: (() -> Void)?
 
     private let scrollView = NSScrollView()
     private let columnsStack = NSStackView()
@@ -314,7 +317,14 @@ final class ColumnViewController: NSViewController {
         let row = tableView.selectedRow
         guard row >= 0, row < columnData[columnIndex].count else { return }
         let item = columnData[columnIndex][row]
-        if ArchiveService.shared.isArchive(url: item.url) {
+        if VaultService.shared.isVault(at: item.url) {
+            let status = VaultService.shared.isVaultMounted(at: item.url)
+            if status.isMounted, let mount = status.mountURL {
+                onNavigate?(mount)
+            } else {
+                onUnlockVault?(item.url)
+            }
+        } else if ArchiveService.shared.isArchive(url: item.url) {
             Task {
                 do {
                     _ = try await ArchiveService.shared.extract(archiveURL: item.url)
@@ -740,7 +750,16 @@ extension ColumnViewController: NSTableViewDataSource, NSTableViewDelegate {
                 } : nil,
                 gitCommit: isGit ? { [weak self] in
                     self?.onGitCommit?()
-                } : nil
+                } : nil,
+                unlockVault: { [weak self] in
+                    self?.onUnlockVault?(item.url)
+                },
+                lockVault: { [weak self] in
+                    self?.onLockVault?(item.url)
+                },
+                createVault: { [weak self] in
+                    self?.onCreateVault?()
+                }
             )
         )
     }

@@ -195,6 +195,9 @@ final class IconViewController: NSViewController {
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
+    var onUnlockVault: ((URL) -> Void)?
+    var onLockVault: ((URL) -> Void)?
+    var onCreateVault: (() -> Void)?
     /// Reports the current column count for grid-aware arrow navigation.
     var onColumnCountChanged: ((Int) -> Void)?
 
@@ -292,8 +295,10 @@ final class IconViewController: NSViewController {
                 }
                 self.contextMenuItems = self.selectedItems()
                 return FileContextMenu.makeMenu(for: self.contextMenuItems, actions: self.contextMenuActions())
+            } else {
+                self.contextMenuItems = []
+                return FileContextMenu.makeMenu(for: [], actions: self.contextMenuActions())
             }
-            return nil
         }
 
         applyItems(directoryContents.items)
@@ -462,7 +467,14 @@ final class IconViewController: NSViewController {
     }
 
     private func open(_ item: FileItem) {
-        if ArchiveService.shared.isArchive(url: item.url) {
+        if VaultService.shared.isVault(at: item.url) {
+            let status = VaultService.shared.isVaultMounted(at: item.url)
+            if status.isMounted, let mount = status.mountURL {
+                onNavigate?(mount)
+            } else {
+                onUnlockVault?(item.url)
+            }
+        } else if ArchiveService.shared.isArchive(url: item.url) {
             Task {
                 do {
                     _ = try await ArchiveService.shared.extract(archiveURL: item.url)
@@ -711,16 +723,35 @@ final class IconViewController: NSViewController {
             } : nil,
             gitCommit: isGit ? { [weak self] in
                 self?.onGitCommit?()
-            } : nil
+            } : nil,
+            unlockVault: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onUnlockVault?(first.url)
+            },
+            lockVault: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onLockVault?(first.url)
+            },
+            createVault: { [weak self] in
+                self?.onCreateVault?()
+            }
         )
     }
 
     private func openSelection() {
-        for item in contextMenuItems where !item.isDirectory {
-            NSWorkspace.shared.open(item.url)
-        }
-        if let folder = contextMenuItems.first(where: \.isDirectory) {
-            onNavigate?(folder.url)
+        for item in contextMenuItems {
+            if VaultService.shared.isVault(at: item.url) {
+                let status = VaultService.shared.isVaultMounted(at: item.url)
+                if status.isMounted, let mount = status.mountURL {
+                    onNavigate?(mount)
+                } else {
+                    onUnlockVault?(item.url)
+                }
+            } else if item.isDirectory {
+                onNavigate?(item.url)
+            } else {
+                NSWorkspace.shared.open(item.url)
+            }
         }
     }
 

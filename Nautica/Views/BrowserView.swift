@@ -89,6 +89,8 @@ struct BrowserActions {
     var gitCreateBranch: () -> Void
     // Metadata Editor (Phase 13).
     var openMetadataEditor: () -> Void
+    // File Vaults & Encrypted Containers (Phase 14).
+    var openCreateVault: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -162,6 +164,9 @@ struct BrowserView: View {
     @State private var showGitDiffSheet = false
     @State private var showGitCommitSheet = false
     @State private var gitDiffTargetURL: URL? = nil
+    @State private var showCreateVaultSheet = false
+    @State private var showUnlockVaultSheet = false
+    @State private var unlockVaultTargetURL: URL? = nil
     @State private var conflictSheetData: ConflictSheetData?
     @State private var searchScope: SearchScope = .folder(Constants.defaultWindowURL())
     @State private var searchFilter: SearchFilter = .nameAndContent
@@ -258,6 +263,23 @@ struct BrowserView: View {
                 activeTab.directoryContents.reload()
             }
         )
+        .sheet(isPresented: $showCreateVaultSheet) {
+            CreateVaultSheet(parentDirectory: activeTab.navigationHistory.currentURL) { _ in
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
+            }
+        }
+        .sheet(isPresented: $showUnlockVaultSheet) {
+            if let targetURL = unlockVaultTargetURL {
+                UnlockVaultSheet(vaultURL: targetURL) { mountPoint in
+                    navigate(to: mountPoint)
+                    for pane in activePanes {
+                        pane.directoryContents.reload()
+                    }
+                }
+            }
+        }
         .sheet(item: $conflictSheetData) { data in
             ConflictResolutionSheet(
                 model: data.model,
@@ -737,6 +759,16 @@ struct BrowserView: View {
                     },
                     onGitCommit: {
                         showGitCommitSheet = true
+                    },
+                    onUnlockVault: { url in
+                        unlockVaultTargetURL = url
+                        showUnlockVaultSheet = true
+                    },
+                    onLockVault: { url in
+                        lockVault(at: url)
+                    },
+                    onCreateVault: {
+                        showCreateVaultSheet = true
                     },
                     onQuickCopyToOtherPane: { copyToInactivePane() },
                     onQuickMoveToOtherPane: { moveToInactivePane() },
@@ -1377,7 +1409,15 @@ struct BrowserView: View {
     private func openSelection(in tab: TabState) {
         let selected = tab.directoryContents.items.filter { tab.selectionModel.isSelected($0.id) }
         guard let first = selected.first else { return }
-        if ArchiveService.shared.isArchive(url: first.url) {
+        if VaultService.shared.isVault(at: first.url) {
+            let status = VaultService.shared.isVaultMounted(at: first.url)
+            if status.isMounted, let mountPoint = status.mountURL {
+                navigate(to: mountPoint, in: tab)
+            } else {
+                unlockVaultTargetURL = first.url
+                showUnlockVaultSheet = true
+            }
+        } else if ArchiveService.shared.isArchive(url: first.url) {
             Task {
                 do {
                     _ = try await ArchiveService.shared.extract(archiveURL: first.url)
@@ -1402,6 +1442,19 @@ struct BrowserView: View {
         } else {
             for item in selected where !item.isDirectory {
                 NSWorkspace.shared.open(item.url)
+            }
+        }
+    }
+
+    private func lockVault(at url: URL) {
+        Task {
+            do {
+                try await VaultService.shared.lockVault(at: url)
+                await MainActor.run {
+                    for pane in activePanes { pane.directoryContents.reload() }
+                }
+            } catch {
+                await MainActor.run { showError("Lock Vault Failed", error: error) }
             }
         }
     }
@@ -1935,6 +1988,9 @@ struct BrowserView: View {
             openMetadataEditor: {
                 showRightSidebar = true
                 rightSidebarTab = .media
+            },
+            openCreateVault: {
+                showCreateVaultSheet = true
             }
         )
     }

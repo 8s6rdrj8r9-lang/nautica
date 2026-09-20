@@ -56,6 +56,9 @@ enum FileContextMenu {
         var gitDiscard: (() -> Void)? = nil
         var gitDiff: (() -> Void)? = nil
         var gitCommit: (() -> Void)? = nil
+        var unlockVault: (() -> Void)? = nil
+        var lockVault: (() -> Void)? = nil
+        var createVault: (() -> Void)? = nil
     }
 
     static func makeMenu(for items: [FileItem], actions: Actions) -> NSMenu {
@@ -68,19 +71,46 @@ enum FileContextMenu {
         menu.addItem(openWithItem(for: items, actions: actions))
 
         if items.count == 1, ArchiveService.shared.isArchive(url: items[0].url), let extract = actions.extract {
-            let extractItem = NSMenuItem(title: "Extract “\(items[0].name)”") { _ in extract() }
-            if let icon = NSImage(systemSymbolName: "archivebox.arrow.down", accessibilityDescription: nil) {
-                extractItem.image = icon
-            }
-            menu.addItem(extractItem)
+            menu.addItem(NSMenuItem(title: "Extract “\(items[0].name)”") { _ in extract() })
         }
-
-        if items.count == 1, ArchiveService.shared.isDiskImage(url: items[0].url), let mount = actions.mountDiskImage {
-            let mountItem = NSMenuItem(title: "Mount Disk Image") { _ in mount() }
+        if items.count == 1, ArchiveService.shared.isDiskImage(url: items[0].url), let mountDiskImage = actions.mountDiskImage {
+            let mountItem = NSMenuItem(title: "Open Disk Image") { _ in mountDiskImage() }
             if let icon = NSImage(systemSymbolName: "opticaldiscdrive", accessibilityDescription: nil) {
                 mountItem.image = icon
             }
             menu.addItem(mountItem)
+        }
+
+        if items.count == 1 {
+            let item = items[0]
+            if VaultService.shared.isVault(at: item.url) {
+                let status = VaultService.shared.isVaultMounted(at: item.url)
+                if status.isMounted {
+                    let lockItem = NSMenuItem(title: "Lock File Vault (Eject)") { _ in
+                        actions.lockVault?()
+                    }
+                    if let icon = NSImage(systemSymbolName: "lock.slash", accessibilityDescription: nil) {
+                        lockItem.image = icon
+                    }
+                    menu.addItem(lockItem)
+                } else {
+                    let unlockItem = NSMenuItem(title: "Unlock File Vault…") { _ in
+                        actions.unlockVault?()
+                    }
+                    if let icon = NSImage(systemSymbolName: "lock.open", accessibilityDescription: nil) {
+                        unlockItem.image = icon
+                    }
+                    menu.addItem(unlockItem)
+                }
+            }
+        } else if items.isEmpty {
+            let newVaultItem = NSMenuItem(title: "New Encrypted File Vault…") { _ in
+                actions.createVault?()
+            }
+            if let icon = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: nil) {
+                newVaultItem.image = icon
+            }
+            menu.addItem(newVaultItem)
         }
 
         if let openInTerminal = actions.openInTerminal {
