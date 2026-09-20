@@ -82,7 +82,7 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             Text("Full Disk Access")
                 .font(.title)
-            Text("To browse every folder — including protected ones like Mail and Safari data — macOS asks you to grant Nautica Full Disk Access. Your files never leave this Mac.")
+            Text("To browse every folder — including Cloud Storage (OneDrive, Google Drive, Dropbox) and protected system directories — macOS asks you to grant Nautica Full Disk Access. Your files never leave this Mac.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             Button("Open System Settings") {

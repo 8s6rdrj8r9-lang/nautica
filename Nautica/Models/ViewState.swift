@@ -11,6 +11,7 @@ final class FolderViewState {
     var sortKey: String
     var sortAscending: Bool
     var showHiddenFiles: Bool
+    var groupBy: String?
     /// List-view column widths in points, keyed by column identifier.
     var columnWidths: [String: Double]?
     /// Ordered list-view column identifiers.
@@ -23,6 +24,7 @@ final class FolderViewState {
          sortKey: String = "name",
          sortAscending: Bool = true,
          showHiddenFiles: Bool = false,
+         groupBy: String? = nil,
          columnWidths: [String: Double]? = nil,
          columnOrder: [String]? = nil,
          lastVisited: Date = .now) {
@@ -32,6 +34,7 @@ final class FolderViewState {
         self.sortKey = sortKey
         self.sortAscending = sortAscending
         self.showHiddenFiles = showHiddenFiles
+        self.groupBy = groupBy
         self.columnWidths = columnWidths
         self.columnOrder = columnOrder
         self.lastVisited = lastVisited

@@ -2,9 +2,40 @@ import Foundation
 
 /// Defines the strategy used to compute new names for a collection of files.
 enum BatchRenameMode: String, CaseIterable, Identifiable {
-    case sequence = "Sequence"
+    case format = "Format"
     case findReplace = "Find & Replace"
     case addText = "Add Text"
+    case changeCase = "Change Case"
+
+    // Backward-compatibility alias for Phase 1 tests
+    static var sequence: BatchRenameMode { .format }
+
+    var id: String { rawValue }
+}
+
+/// Format style for sequential / counter numbering.
+enum FormatType: String, CaseIterable, Identifiable {
+    case nameAndCounter = "Name and Counter"
+    case counterAndName = "Counter and Name"
+    case customPattern = "Custom Pattern (#)"
+
+    var id: String { rawValue }
+}
+
+/// Where to add text in Add Text mode.
+enum AddTextPosition: String, CaseIterable, Identifiable {
+    case beforeName = "Before Name"
+    case afterName = "After Name"
+
+    var id: String { rawValue }
+}
+
+/// Target casing for Change Case mode.
+enum CaseTarget: String, CaseIterable, Identifiable {
+    case lowercase = "all lowercase"
+    case uppercase = "ALL UPPERCASE"
+    case titleCase = "Title Case"
+    case sentenceCase = "Sentence case"
 
     var id: String { rawValue }
 }
@@ -24,10 +55,11 @@ struct BatchRenamePreviewItem: Identifiable, Equatable {
 /// Computes batch rename previews and validates against collisions and illegal characters.
 @Observable
 final class BatchRenameModel {
-    var mode: BatchRenameMode = .sequence
+    var mode: BatchRenameMode = .format
 
-    // MARK: - Sequence Mode Options
-    /// Pattern supporting '#' placeholders (e.g. "vacation_###.jpg" or "photo_").
+    // MARK: - Format / Counter Options
+    var formatType: FormatType = .nameAndCounter
+    var customFormatName: String = ""
     var sequencePattern: String = "file_###"
     var startIndex: Int = 1
     var paddingDigits: Int = 3
@@ -37,10 +69,17 @@ final class BatchRenameModel {
     var findText: String = ""
     var replaceText: String = ""
     var caseSensitive: Bool = false
+    var useRegex: Bool = false
 
     // MARK: - Add Text Options
+    var addTextPosition: AddTextPosition = .beforeName
+    var addTextString: String = ""
     var prefixText: String = ""
     var suffixText: String = ""
+
+    // MARK: - Change Case Options
+    var caseTarget: CaseTarget = .lowercase
+    var applyToExtension: Bool = false
 
     let items: [FileItem]
 
@@ -48,9 +87,22 @@ final class BatchRenameModel {
         self.items = items
         if let first = items.first {
             let ext = first.url.pathExtension
+            let base = (first.name as NSString).deletingPathExtension
+            customFormatName = base
             if !ext.isEmpty {
                 sequencePattern = "item_###.\(ext)"
             }
+        }
+    }
+
+    /// Returns non-nil if regular expression syntax is malformed.
+    var regexError: String? {
+        guard mode == .findReplace && useRegex && !findText.isEmpty else { return nil }
+        do {
+            _ = try NSRegularExpression(pattern: findText, options: caseSensitive ? [] : [.caseInsensitive])
+            return nil
+        } catch {
+            return error.localizedDescription
         }
     }
 
@@ -81,7 +133,9 @@ final class BatchRenameModel {
             let newName = results[i].newName
             let originalName = results[i].originalName
 
-            if newName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            if let regexErr = regexError {
+                results[i].conflictReason = "Regex: \(regexErr)"
+            } else if newName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 results[i].conflictReason = "Name cannot be empty"
             } else if newName.contains("/") || newName.contains(":") {
                 results[i].conflictReason = "Cannot contain '/' or ':'"
@@ -103,7 +157,7 @@ final class BatchRenameModel {
     }
 
     var canApply: Bool {
-        !hasConflicts && previewItems.contains { $0.isChanged }
+        !hasConflicts && regexError == nil && previewItems.contains { $0.isChanged }
     }
 
     // MARK: - Private Computation
@@ -114,53 +168,116 @@ final class BatchRenameModel {
         let baseName = (original as NSString).deletingPathExtension
 
         switch mode {
-        case .sequence:
-            return computeSequenceName(original: original, baseName: baseName, ext: ext, number: number)
+        case .format:
+            return computeFormatName(original: original, baseName: baseName, ext: ext, number: number)
 
         case .findReplace:
             guard !findText.isEmpty else { return original }
-            if caseSensitive {
-                return original.replacingOccurrences(of: findText, with: replaceText)
+            if useRegex {
+                do {
+                    let options: NSRegularExpression.Options = caseSensitive ? [] : [.caseInsensitive]
+                    let regex = try NSRegularExpression(pattern: findText, options: options)
+                    let range = NSRange(original.startIndex..<original.endIndex, in: original)
+                    return regex.stringByReplacingMatches(in: original, options: [], range: range, withTemplate: replaceText)
+                } catch {
+                    return original
+                }
             } else {
-                return original.replacingOccurrences(of: findText, with: replaceText, options: .caseInsensitive)
+                if caseSensitive {
+                    return original.replacingOccurrences(of: findText, with: replaceText)
+                } else {
+                    return original.replacingOccurrences(of: findText, with: replaceText, options: .caseInsensitive)
+                }
             }
 
         case .addText:
             var result = baseName
-            if !prefixText.isEmpty {
-                result = prefixText + result
+            // Handle both legacy prefix/suffix and new addText controls
+            if !prefixText.isEmpty { result = prefixText + result }
+            if !suffixText.isEmpty { result = result + suffixText }
+
+            if !addTextString.isEmpty {
+                switch addTextPosition {
+                case .beforeName:
+                    result = addTextString + result
+                case .afterName:
+                    result = result + addTextString
+                }
             }
-            if !suffixText.isEmpty {
-                result = result + suffixText
-            }
+
             if !ext.isEmpty {
                 result = result + "." + ext
             }
             return result
+
+        case .changeCase:
+            let transformedBase: String
+            switch caseTarget {
+            case .lowercase:
+                transformedBase = baseName.lowercased()
+            case .uppercase:
+                transformedBase = baseName.uppercased()
+            case .titleCase:
+                transformedBase = baseName.capitalized
+            case .sentenceCase:
+                transformedBase = Self.toSentenceCase(baseName)
+            }
+
+            var finalExt = ext
+            if applyToExtension && !ext.isEmpty {
+                switch caseTarget {
+                case .lowercase: finalExt = ext.lowercased()
+                case .uppercase: finalExt = ext.uppercased()
+                case .titleCase: finalExt = ext.capitalized
+                case .sentenceCase: finalExt = ext.lowercased()
+                }
+            }
+
+            return finalExt.isEmpty ? transformedBase : "\(transformedBase).\(finalExt)"
         }
     }
 
-    private func computeSequenceName(original: String, baseName: String, ext: String, number: Int) -> String {
-        let pattern = sequencePattern.trimmingCharacters(in: .whitespaces)
-        guard !pattern.isEmpty else { return original }
-
-        // If the pattern contains '#' placeholders (e.g. vacation_###.jpg)
-        if let firstHash = pattern.firstIndex(of: "#") {
-            let hashes = pattern[firstHash...].prefix(while: { $0 == "#" })
-            let hashCount = hashes.count
-            let hashEnd = pattern.index(firstHash, offsetBy: hashCount)
-            let numberString = String(format: "%0*d", hashCount, number)
-            var formatted = pattern
-            formatted.replaceSubrange(firstHash..<hashEnd, with: numberString)
-            return formatted
+    private func computeFormatName(original: String, baseName: String, ext: String, number: Int) -> String {
+        // If legacy sequence pattern has '#' placeholders, respect it
+        if sequencePattern.contains("#") && formatType == .customPattern {
+            return computeSequenceWithHashes(original: original, pattern: sequencePattern, number: number)
         }
 
-        // Otherwise append the number to the pattern
-        let numberString = String(format: "%0*d", max(1, paddingDigits), number)
-        var result = pattern + numberString
-        if keepExtension && !ext.isEmpty && !pattern.hasSuffix("." + ext) {
-            result += "." + ext
+        let numStr = String(format: "%0*d", max(1, paddingDigits), number)
+        let name = customFormatName.trimmingCharacters(in: .whitespaces)
+
+        var result: String
+        switch formatType {
+        case .nameAndCounter:
+            result = name.isEmpty ? numStr : "\(name)_\(numStr)"
+        case .counterAndName:
+            result = name.isEmpty ? numStr : "\(numStr)_\(name)"
+        case .customPattern:
+            return computeSequenceWithHashes(original: original, pattern: sequencePattern, number: number)
+        }
+
+        if keepExtension && !ext.isEmpty {
+            result += ".\(ext)"
         }
         return result
+    }
+
+    private func computeSequenceWithHashes(original: String, pattern: String, number: Int) -> String {
+        guard let firstHash = pattern.firstIndex(of: "#") else { return original }
+        let hashes = pattern[firstHash...].prefix(while: { $0 == "#" })
+        let hashCount = hashes.count
+        let hashEnd = pattern.index(firstHash, offsetBy: hashCount)
+        let numberString = String(format: "%0*d", hashCount, number)
+        var formatted = pattern
+        formatted.replaceSubrange(firstHash..<hashEnd, with: numberString)
+        return formatted
+    }
+
+    static func toSentenceCase(_ text: String) -> String {
+        guard !text.isEmpty else { return text }
+        let lower = text.lowercased()
+        let first = lower.prefix(1).uppercased()
+        let rest = lower.dropFirst()
+        return first + rest
     }
 }

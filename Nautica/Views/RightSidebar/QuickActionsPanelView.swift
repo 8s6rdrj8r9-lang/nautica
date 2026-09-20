@@ -25,6 +25,15 @@ struct QuickActionsPanelView: View {
         return ["png", "jpg", "jpeg", "webp", "tiff", "gif", "heic"].contains(ext)
     }
 
+    private var hasImages: Bool {
+        let exts: Set<String> = ["png", "jpg", "jpeg", "webp", "tiff", "gif", "heic"]
+        return selectedItems.contains { exts.contains($0.url.pathExtension.lowercased()) }
+    }
+
+    private var hasPDFs: Bool {
+        selectedItems.contains { $0.url.pathExtension.lowercased() == "pdf" }
+    }
+
     private var isZipFile: Bool {
         guard let item = selectedItems.first, selectedItems.count == 1 else { return false }
         return item.url.pathExtension.lowercased() == "zip"
@@ -115,13 +124,58 @@ struct QuickActionsPanelView: View {
                     Divider()
                 }
 
-                // Section 4: Image Conversion
+                // Section 4: Document & Image Actions (Rotate & PDF)
+                if hasImages || hasPDFs {
+                    actionSection("Document & Image Actions") {
+                        if hasImages {
+                            HStack(spacing: 6) {
+                                Button(action: rotateSelectedImagesLeft) {
+                                    Label("Rotate Left", systemImage: "rotate.left")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .controlSize(.small)
+
+                                Button(action: rotateSelectedImagesRight) {
+                                    Label("Rotate Right", systemImage: "rotate.right")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .controlSize(.small)
+                            }
+                        }
+
+                        Button(action: createPDFFromSelection) {
+                            Label("Create PDF", systemImage: "doc.richtext")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .controlSize(.small)
+                    }
+
+                    Divider()
+                }
+
+                // Section 5: Image Conversion
                 if isImageFile, let item = selectedItems.first {
                     actionSection("Image Conversion") {
                         HStack(spacing: 6) {
                             convertImageButton("PNG", format: .png, source: item.url)
                             convertImageButton("JPEG", format: .jpeg, source: item.url)
                             convertImageButton("TIFF", format: .tiff, source: item.url)
+                        }
+                    }
+
+                    Divider()
+                }
+
+                // Section 6: Shortcuts
+                let shortcuts = QuickActionService.shared.shortcuts()
+                if !shortcuts.isEmpty && !selectedItems.isEmpty {
+                    actionSection("Shortcuts") {
+                        ForEach(shortcuts.prefix(5), id: \.self) { shortcut in
+                            Button(action: { runShortcut(shortcut) }) {
+                                Label(shortcut, systemImage: "bolt.fill")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .controlSize(.small)
                         }
                     }
 
@@ -248,6 +302,57 @@ struct QuickActionsPanelView: View {
             try? data.write(to: outputURL)
             flashStatus("Converted to .\(ext)")
             onReloadDirectory()
+        }
+    }
+
+    private func rotateSelectedImagesLeft() {
+        let urls = selectedItems.map(\.url)
+        Task {
+            for url in urls {
+                await QuickActionService.shared.rotateImage(at: url, degrees: 270)
+            }
+            await MainActor.run {
+                flashStatus("Rotated image(s) 90° CCW")
+                onReloadDirectory()
+            }
+        }
+    }
+
+    private func rotateSelectedImagesRight() {
+        let urls = selectedItems.map(\.url)
+        Task {
+            for url in urls {
+                await QuickActionService.shared.rotateImage(at: url, degrees: 90)
+            }
+            await MainActor.run {
+                flashStatus("Rotated image(s) 90° CW")
+                onReloadDirectory()
+            }
+        }
+    }
+
+    private func createPDFFromSelection() {
+        let urls = selectedItems.map(\.url)
+        Task {
+            if let _ = try? await QuickActionService.shared.createPDF(from: urls, in: currentFolderURL) {
+                await MainActor.run {
+                    flashStatus("Created PDF document")
+                    onReloadDirectory()
+                }
+            }
+        }
+    }
+
+    private func runShortcut(_ name: String) {
+        guard let first = selectedItems.first else { return }
+        Task {
+            if let result = try? await QuickActionService.shared.runShortcut(name: name, inputFile: first.url) {
+                await MainActor.run {
+                    let preview = result.output?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                    flashStatus("Shortcut done: \(preview.isEmpty ? name : String(preview.prefix(20)))")
+                    onReloadDirectory()
+                }
+            }
         }
     }
 

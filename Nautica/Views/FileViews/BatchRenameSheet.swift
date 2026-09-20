@@ -36,12 +36,14 @@ struct BatchRenameSheet: View {
             GroupBox {
                 VStack(alignment: .leading, spacing: 10) {
                     switch model.mode {
-                    case .sequence:
-                        sequenceControls
+                    case .format:
+                        formatControls
                     case .findReplace:
                         findReplaceControls
                     case .addText:
                         addTextControls
+                    case .changeCase:
+                        changeCaseControls
                     }
                 }
                 .padding(6)
@@ -121,18 +123,42 @@ struct BatchRenameSheet: View {
             }
         }
         .padding(20)
-        .frame(minWidth: 540, minHeight: 460)
+        .frame(minWidth: 560, minHeight: 480)
     }
 
     // MARK: - Mode Controls
 
     @ViewBuilder
-    private var sequenceControls: some View {
+    private var formatControls: some View {
         HStack(spacing: 12) {
-            Text("Pattern:")
+            Text("Format:")
                 .frame(width: 80, alignment: .trailing)
-            TextField("e.g. photo_### or vacation_", text: $model.sequencePattern)
-                .textFieldStyle(.roundedBorder)
+            Picker("Format Style", selection: $model.formatType) {
+                ForEach(FormatType.allCases) { type in
+                    Text(type.rawValue).tag(type)
+                }
+            }
+            .pickerStyle(.menu)
+        }
+
+        if model.formatType == .customPattern {
+            HStack(spacing: 12) {
+                Text("Pattern:")
+                    .frame(width: 80, alignment: .trailing)
+                TextField("e.g. vacation_###", text: $model.sequencePattern)
+                    .textFieldStyle(.roundedBorder)
+            }
+            Text("Tip: Use '#' for digit positions (e.g. vacation_### gives vacation_001)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.leading, 92)
+        } else {
+            HStack(spacing: 12) {
+                Text("Custom Name:")
+                    .frame(width: 80, alignment: .trailing)
+                TextField("Name", text: $model.customFormatName)
+                    .textFieldStyle(.roundedBorder)
+            }
         }
 
         HStack(spacing: 12) {
@@ -142,18 +168,13 @@ struct BatchRenameSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .frame(width: 70)
 
-            Spacer()
-
-            if !model.sequencePattern.contains("#") {
+            if model.formatType != .customPattern {
                 Stepper("Digits: \(model.paddingDigits)", value: $model.paddingDigits, in: 1...6)
             }
 
+            Spacer()
             Toggle("Keep extension", isOn: $model.keepExtension)
         }
-        Text("Tip: Use '#' for digit positions (e.g. vacation_###.jpg gives vacation_001.jpg)")
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .padding(.leading, 92)
     }
 
     @ViewBuilder
@@ -172,26 +193,67 @@ struct BatchRenameSheet: View {
                 .textFieldStyle(.roundedBorder)
         }
 
-        HStack {
+        HStack(spacing: 16) {
             Spacer().frame(width: 80)
             Toggle("Match case", isOn: $model.caseSensitive)
+            Toggle("Regular Expression", isOn: $model.useRegex)
+            Spacer()
+        }
+
+        if model.useRegex {
+            HStack {
+                Spacer().frame(width: 80)
+                Text("Supports regex capture groups in replace (e.g. $1, $2)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            if let error = model.regexError {
+                HStack {
+                    Spacer().frame(width: 80)
+                    Label(error, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                    Spacer()
+                }
+            }
         }
     }
 
     @ViewBuilder
     private var addTextControls: some View {
         HStack(spacing: 12) {
-            Text("Prefix:")
+            Text("Add:")
                 .frame(width: 80, alignment: .trailing)
-            TextField("Add before name", text: $model.prefixText)
+            TextField("Text to add", text: $model.addTextString)
                 .textFieldStyle(.roundedBorder)
+            Picker("Position", selection: $model.addTextPosition) {
+                ForEach(AddTextPosition.allCases) { pos in
+                    Text(pos.rawValue).tag(pos)
+                }
+            }
+            .pickerStyle(.menu)
+            .frame(width: 140)
+        }
+    }
+
+    @ViewBuilder
+    private var changeCaseControls: some View {
+        HStack(spacing: 12) {
+            Text("Case:")
+                .frame(width: 80, alignment: .trailing)
+            Picker("Case Style", selection: $model.caseTarget) {
+                ForEach(CaseTarget.allCases) { c in
+                    Text(c.rawValue).tag(c)
+                }
+            }
+            .pickerStyle(.menu)
         }
 
-        HStack(spacing: 12) {
-            Text("Suffix:")
-                .frame(width: 80, alignment: .trailing)
-            TextField("Add before extension", text: $model.suffixText)
-                .textFieldStyle(.roundedBorder)
+        HStack {
+            Spacer().frame(width: 80)
+            Toggle("Apply to extension", isOn: $model.applyToExtension)
+            Spacer()
         }
     }
 }

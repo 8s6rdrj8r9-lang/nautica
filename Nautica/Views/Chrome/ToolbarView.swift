@@ -39,6 +39,7 @@ final class BrowserToolbar: NSObject {
     var onIconSizeChanged: ((CGFloat) -> Void)?
     var onToggleHiddenFiles: (() -> Void)?
     var onSortChanged: ((SortKey, Bool) -> Void)?
+    var onGroupByChanged: ((GroupByCriterion) -> Void)?
     var onShare: (() -> Void)?
     var onNewFolder: (() -> Void)?
     var onGetInfo: (() -> Void)?
@@ -64,6 +65,7 @@ final class BrowserToolbar: NSObject {
     var showsHiddenFiles = false
     var currentSortKey: SortKey = .name
     var sortAscending: Bool = true
+    var currentGroupBy: GroupByCriterion = .none
 
     let toolbar: NSToolbar
 
@@ -99,7 +101,7 @@ final class BrowserToolbar: NSObject {
         case .quad4, .horizontal4, .vertical4:
             splitLayoutControl?.selectedSegment = 2
         }
-        viewModeControl?.selectedSegment = viewMode == .icon ? 0 : 1
+        viewModeControl?.selectedSegment = viewMode == .icon ? 0 : (viewMode == .list ? 1 : (viewMode == .column ? 2 : 3))
         iconSizeSlider?.doubleValue = Double(iconSize)
         iconSizeSlider?.isEnabled = viewMode == .icon
         hiddenFilesButton?.state = showsHiddenFiles ? .on : .off
@@ -130,7 +132,15 @@ final class BrowserToolbar: NSObject {
     }
 
     @objc private func viewModeAction(_ sender: NSSegmentedControl) {
-        onViewModeChanged?(sender.selectedSegment == 0 ? .icon : .list)
+        let mode: ViewMode
+        switch sender.selectedSegment {
+        case 0: mode = .icon
+        case 1: mode = .list
+        case 2: mode = .column
+        case 3: mode = .gallery
+        default: mode = .list
+        }
+        onViewModeChanged?(mode)
     }
 
     @objc private func iconSizeAction(_ sender: NSSlider) {
@@ -149,6 +159,13 @@ final class BrowserToolbar: NSObject {
     @objc private func toggleSortAscending(_ sender: NSMenuItem) {
         sortAscending.toggle()
         onSortChanged?(currentSortKey, sortAscending)
+    }
+
+    @objc private func groupByAction(_ sender: NSMenuItem) {
+        if let criterion = sender.representedObject as? GroupByCriterion {
+            currentGroupBy = criterion
+            onGroupByChanged?(criterion)
+        }
     }
 
     @objc private func shareAction() { onShare?() }
@@ -277,13 +294,15 @@ extension BrowserToolbar: NSToolbarDelegate {
                 images: [
                     NSImage(systemSymbolName: "square.grid.2x2", accessibilityDescription: "Icon View")!,
                     NSImage(systemSymbolName: "list.bullet", accessibilityDescription: "List View")!,
+                    NSImage(systemSymbolName: "rectangle.split.3x1", accessibilityDescription: "Column View")!,
+                    NSImage(systemSymbolName: "photo.on.rectangle", accessibilityDescription: "Gallery View")!,
                 ],
                 trackingMode: .selectOne,
                 target: self,
                 action: #selector(viewModeAction(_:))
             )
             control.segmentStyle = .separated
-            control.selectedSegment = viewMode == .icon ? 0 : 1
+            control.selectedSegment = viewMode == .icon ? 0 : (viewMode == .list ? 1 : (viewMode == .column ? 2 : 3))
             control.sizeToFit()
             item.view = control
             item.minSize = control.fittingSize
@@ -296,9 +315,22 @@ extension BrowserToolbar: NSToolbarDelegate {
             let item = NSMenuToolbarItem(itemIdentifier: itemIdentifier)
             item.label = "Group"
             item.paletteLabel = "Group"
-            item.image = NSImage(systemSymbolName: "square.grid.3x1.below.line.grid.1x2", accessibilityDescription: "Sort")
-                ?? NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: "Sort")
-            let menu = NSMenu(title: "Sort")
+            item.image = NSImage(systemSymbolName: "square.grid.3x1.below.line.grid.1x2", accessibilityDescription: "Group and Sort")
+                ?? NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: "Group and Sort")
+            let menu = NSMenu(title: "Group and Sort")
+
+            let arrangeMenu = NSMenu(title: "Arrange By")
+            for criterion in GroupByCriterion.allCases {
+                let menuItem = NSMenuItem(title: criterion.title, action: #selector(groupByAction(_:)), keyEquivalent: "")
+                menuItem.target = self
+                menuItem.representedObject = criterion
+                arrangeMenu.addItem(menuItem)
+            }
+            let arrangeSubmenuItem = NSMenuItem(title: "Arrange By", action: nil, keyEquivalent: "")
+            arrangeSubmenuItem.submenu = arrangeMenu
+            menu.addItem(arrangeSubmenuItem)
+            menu.addItem(NSMenuItem.separator())
+
             for key in SortKey.allCases {
                 let menuItem = NSMenuItem(title: "Sort by \(key.title)", action: #selector(sortKeyAction(_:)), keyEquivalent: "")
                 menuItem.target = self

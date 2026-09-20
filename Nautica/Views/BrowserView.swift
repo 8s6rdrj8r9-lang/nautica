@@ -19,6 +19,12 @@ struct BrowserActions {
     var renameSelection: () -> Void
     var batchRenameSelection: () -> Void
     var newFolder: () -> Void
+    var newFolderWithSelection: () -> Void
+    var duplicateSelection: () -> Void
+    var makeAlias: () -> Void
+    var showOriginal: () -> Void
+    var undo: () -> Void
+    var redo: () -> Void
     var getInfo: () -> Void
     var quickLook: () -> Void
     // Navigation (Go menu, Prompt 16).
@@ -28,9 +34,14 @@ struct BrowserActions {
     var navigateTo: (URL) -> Void
     /// "Go to Folder…" prompt.
     var promptGoToFolder: () -> Void
+    /// "Connect to Server…" prompt (Cmd+K).
+    var promptConnectToServer: () -> Void
     // View menu (Prompt 16).
     var setViewMode: (ViewMode) -> Void
     var toggleHiddenFiles: () -> Void
+    var setGroupBy: (GroupByCriterion) -> Void
+    var showViewOptions: () -> Void
+    var putBack: () -> Void
     /// Sets multi-pane split layout (F-004).
     var setSplitLayout: (SplitLayout) -> Void
     /// Toggles between single pane and dual pane.
@@ -47,6 +58,35 @@ struct BrowserActions {
     var toggleInspector: () -> Void
     /// Shows a specific inspector tab.
     var showInspectorTab: (RightSidebarTab) -> Void
+    // Window and Tab operations (Phase 8).
+    var duplicateTab: () -> Void
+    var closeOtherTabs: () -> Void
+    var closeTabsToTheRight: () -> Void
+    var moveTabToNewWindow: () -> Void
+    var mergeAllWindows: () -> Void
+    // Dual-pane Commander operations (Phase 8).
+    var copyToInactivePane: () -> Void
+    var moveToInactivePane: () -> Void
+    var toggleSyncNavigation: () -> Void
+    // Instant in-folder filter bar (Phase 9).
+    var toggleFilterBar: () -> Void
+    // macOS Color Labels & Finder Tags (Phase 9).
+    var toggleTag: (TagColor) -> Void
+    var clearTags: () -> Void
+    // Cloud storage operations (Phase 10).
+    var downloadCloudSelection: () -> Void
+    var evictCloudSelection: () -> Void
+    // Checksums & Duplicate Finder (Phase 11).
+    var copySHA256Checksum: () -> Void
+    var findDuplicatesInFolder: () -> Void
+    // Git integration (Phase 12).
+    var gitDiffSelection: () -> Void
+    var gitStageSelection: () -> Void
+    var gitUnstageSelection: () -> Void
+    var gitDiscardSelection: () -> Void
+    var gitCommit: () -> Void
+    var gitSwitchBranch: (String) -> Void
+    var gitCreateBranch: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -95,6 +135,7 @@ struct BrowserView: View {
     /// Session-level default for the hidden-files toggle.
     @State private var showHiddenFiles = UserDefaults.standard.bool(forKey: Constants.showHiddenFilesKey)
     @State private var searchText = ""
+    @State private var searchCriteria: [SearchCriterion] = []
     /// Rename sheet state (Prompt 10).
     @State private var renameTarget: FileItem?
     @State private var renameText = ""
@@ -111,11 +152,24 @@ struct BrowserView: View {
     /// "Go to Folder…" sheet state (Prompt 16).
     @State private var showGoToFolderSheet = false
     @State private var goToFolderText = ""
+    @State private var showConnectToServerSheet = false
+    @State private var showCompressPasswordSheet = false
+    @State private var compressPasswordTargets: [URL] = []
+    @State private var showDuplicateFinderSheet = false
+    @State private var duplicateFinderTargetDirectory: URL? = nil
+    @State private var showGitDiffSheet = false
+    @State private var showGitCommitSheet = false
+    @State private var gitDiffTargetURL: URL? = nil
+    @State private var conflictSheetData: ConflictSheetData?
+    @State private var searchScope: SearchScope = .folder(Constants.defaultWindowURL())
+    @State private var searchFilter: SearchFilter = .nameAndContent
+    @State private var isSearchActive = false
     @AppStorage("showPathBar") private var showPathBar = true
     /// Right-hand inspector panel.
     @AppStorage("showRightSidebar") private var showRightSidebar = true
     @AppStorage("Nautica.RightSidebar.ActiveTab") private var rightSidebarTab: RightSidebarTab = .recents
     @State private var stagedURLs: [URL] = []
+    @State private var showFilterBar = false
     @Environment(\.undoManager) private var undoManager
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openWindow) private var openWindow
@@ -134,121 +188,27 @@ struct BrowserView: View {
         Array(panes.prefix(splitLayout.paneCount))
     }
 
+    private var inactivePane: TabState? {
+        guard splitLayout != .single, splitLayout.paneCount > 1 else { return nil }
+        let otherIndex = (activePaneIndex == 0) ? 1 : 0
+        guard otherIndex < splitLayout.paneCount && panes.indices.contains(otherIndex) else { return nil }
+        return panes[otherIndex]
+    }
+
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            SidebarView(model: sidebarModel, selectedURL: activeTab.navigationHistory.currentURL) { url in
-                navigate(to: url)
-            } onFavoriteAdded: { _ in
-                // Persistence handled by SidebarModel; hook for later prompts.
-            }
-            .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 260)
+            sidebarContentView
         } detail: {
-            VStack(spacing: 0) {
-                if showPermissionBanner && !dismissedFullDiskBanner {
-                    permissionBanner
-                }
-                splitLayoutView
-
-                if showPathBar {
-                    Divider()
-                    HStack(spacing: 8) {
-                        PathBarView(currentURL: activeTab.navigationHistory.currentURL) { url in
-                            navigate(to: url)
-                        } onAddFavorite: { url in
-                            sidebarModel.addFavorite(url: url)
-                        }
-                        Spacer()
-                        statusBarInfo
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .background(Color(NSColor.windowBackgroundColor))
-                }
-            }
-            .navigationTitle(windowTitle)
-            .toolbar {
-                mainToolbarContent
-            }
-            .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
+            detailContentView
         }
         .navigationSplitViewStyle(.balanced)
         .inspector(isPresented: $showRightSidebar) {
-            RightSidebarView(
-                selectedTab: $rightSidebarTab,
-                stagedURLs: $stagedURLs,
-                sidebarModel: sidebarModel,
-                selectedItems: selectedItems,
-                currentFolderURL: activeTab.navigationHistory.currentURL,
-                currentFolderItemCount: activeTab.directoryContents.items.count,
-                onNavigate: { url in navigate(to: url) },
-                onQuickLook: { quickLook() },
-                onOpenTerminal: { url in
-                    Task {
-                        try? await TerminalService.shared.openTerminal(
-                            at: url,
-                            emulator: TerminalService.shared.defaultTerminal()
-                        )
-                    }
-                },
-                onReloadDirectory: {
-                    for pane in activePanes { pane.directoryContents.reload() }
-                },
-                onPerformCopy: { sources, destination in
-                    runFileOperation("Copying Files") { progress in
-                        await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
-                    }
-                },
-                onPerformMove: { sources, destination in
-                    runFileOperation("Moving Files") { progress in
-                        await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
-                    } onCompletion: { result in
-                        registerRestoreUndo(name: "Move", transfers: result.transfers)
-                    }
-                }
-            )
-            .inspectorColumnWidth(min: 240, ideal: 290, max: 440)
+            inspectorContentView
         }
         .frame(minWidth: 720, minHeight: 450)
         .background(WindowAccessor(onWindow: configureWindow))
         .focusedSceneValue(\.browserURL, activeTab.navigationHistory.currentURL)
-        .focusedSceneValue(\.browserActions, BrowserActions(
-            copySelection: copySelectionToPasteboard,
-            paste: { pasteFromPasteboard(move: false) },
-            moveHere: { pasteFromPasteboard(move: true) },
-            trashSelection: trashSelection,
-            renameSelection: renameSelection,
-            batchRenameSelection: batchRenameSelection,
-            newFolder: newFolder,
-            getInfo: getInfo,
-            quickLook: { quickLook() },
-            goBack: goBack,
-            goForward: goForward,
-            goToEnclosingFolder: {
-                navigate(to: activeTab.navigationHistory.currentURL.deletingLastPathComponent())
-            },
-            navigateTo: navigate(to:),
-            promptGoToFolder: { showGoToFolderSheet = true },
-            setViewMode: setViewMode,
-            toggleHiddenFiles: toggleHiddenFiles,
-            setSplitLayout: setSplitLayout,
-            toggleDualPane: toggleDualPane,
-            cycleNextPane: cycleNextPane,
-            togglePathBar: { showPathBar.toggle() },
-            toggleSidebar: toggleSidebar,
-            toggleTreePanel: {
-                if showRightSidebar && rightSidebarTab == .tree {
-                    showRightSidebar = false
-                } else {
-                    rightSidebarTab = .tree
-                    showRightSidebar = true
-                }
-            },
-            toggleInspector: { showRightSidebar.toggle() },
-            showInspectorTab: { tab in
-                rightSidebarTab = tab
-                showRightSidebar = true
-            }
-        ))
+        .focusedSceneValue(\.browserActions, currentBrowserActions)
         .sheet(isPresented: showsOperationSheet) {
             if let operationProgress {
                 ProgressPanel(
@@ -270,6 +230,51 @@ struct BrowserView: View {
         .sheet(isPresented: $showGoToFolderSheet) {
             goToFolderSheet
         }
+        .sheet(isPresented: $showConnectToServerSheet) {
+            ConnectToServerSheet { mountedURL in
+                navigate(to: mountedURL)
+            }
+        }
+        .toolSheets(
+            showCompressPassword: $showCompressPasswordSheet,
+            compressPasswordCount: compressPasswordTargets.count,
+            onCompressPassword: { password in
+                compressSelectionWithPassword(password: password)
+            },
+            showDuplicateFinder: $showDuplicateFinderSheet,
+            duplicateFinderDirectory: duplicateFinderTargetDirectory ?? activeTab.navigationHistory.currentURL,
+            onTrashDuplicates: { urls in
+                trashDuplicateURLs(urls)
+            }
+        )
+        .gitSheets(
+            showDiff: $showGitDiffSheet,
+            showCommit: $showGitCommitSheet,
+            targetURL: gitDiffTargetURL,
+            repoURL: activeTab.navigationHistory.currentURL,
+            onReload: {
+                activeTab.directoryContents.reload()
+            }
+        )
+        .sheet(item: $conflictSheetData) { data in
+            ConflictResolutionSheet(
+                model: data.model,
+                onComplete: { resolutions in
+                    let model = data.model
+                    let sources = data.sources
+                    conflictSheetData = nil
+                    executeTransfer(
+                        sources: sources,
+                        destination: model.destination,
+                        move: model.isMove,
+                        resolutions: resolutions
+                    )
+                },
+                onCancel: {
+                    conflictSheetData = nil
+                }
+            )
+        }
         .onAppear {
             if viewStateService == nil {
                 viewStateService = ViewStateService(context: modelContext)
@@ -281,6 +286,9 @@ struct BrowserView: View {
         }
         .onChange(of: iconSize) { persistViewState() }
         .onChange(of: searchText) { performSearch(searchText) }
+        .onChange(of: searchScope) { performSearch(searchText) }
+        .onChange(of: searchFilter) { performSearch(searchText) }
+        .onChange(of: searchCriteria) { performSearch(searchText) }
         .task {
             for pane in activePanes {
                 pane.directoryContents.reload()
@@ -313,9 +321,10 @@ struct BrowserView: View {
             )) {
                 Image(systemName: "square.grid.2x2").tag(ViewMode.icon)
                 Image(systemName: "list.bullet").tag(ViewMode.list)
+                Image(systemName: "rectangle.split.3x1").tag(ViewMode.column)
             }
             .pickerStyle(.segmented)
-            .help("View as Icons or List (⌘1, ⌘2)")
+            .help("View as Icons, List, or Columns (⌘1, ⌘2, ⌘3)")
 
             Menu {
                 Button {
@@ -356,27 +365,45 @@ struct BrowserView: View {
             .help("Panes Layout")
 
             Menu {
-                ForEach(SortKey.allCases, id: \.self) { key in
-                    Button {
-                        activeTab.directoryContents.sort(by: key, ascending: activeTab.directoryContents.sortAscending)
-                        persistViewState()
-                    } label: {
-                        HStack {
-                            Text("Sort by \(key.title)")
-                            if activeTab.directoryContents.sortKey == key {
-                                Image(systemName: "checkmark")
+                Section("Arrange By") {
+                    ForEach(GroupByCriterion.allCases) { criterion in
+                        Button {
+                            activeTab.directoryContents.groupBy = criterion
+                            persistViewState()
+                        } label: {
+                            HStack {
+                                Text(criterion.title)
+                                if activeTab.directoryContents.groupBy == criterion {
+                                    Image(systemName: "checkmark")
+                                }
                             }
                         }
                     }
                 }
                 Divider()
-                Button {
-                    activeTab.directoryContents.sort(by: activeTab.directoryContents.sortKey, ascending: !activeTab.directoryContents.sortAscending)
-                    persistViewState()
-                } label: {
-                    HStack {
-                        Text(activeTab.directoryContents.sortAscending ? "Ascending" : "Descending")
-                        Image(systemName: activeTab.directoryContents.sortAscending ? "arrow.up" : "arrow.down")
+                Section("Sort By") {
+                    ForEach(SortKey.allCases, id: \.self) { key in
+                        Button {
+                            activeTab.directoryContents.sort(by: key, ascending: activeTab.directoryContents.sortAscending)
+                            persistViewState()
+                        } label: {
+                            HStack {
+                                Text("Sort by \(key.title)")
+                                if activeTab.directoryContents.sortKey == key {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                    Divider()
+                    Button {
+                        activeTab.directoryContents.sort(by: activeTab.directoryContents.sortKey, ascending: !activeTab.directoryContents.sortAscending)
+                        persistViewState()
+                    } label: {
+                        HStack {
+                            Text(activeTab.directoryContents.sortAscending ? "Ascending" : "Descending")
+                            Image(systemName: activeTab.directoryContents.sortAscending ? "arrow.up" : "arrow.down")
+                        }
                     }
                 }
             } label: {
@@ -438,6 +465,17 @@ struct BrowserView: View {
                     Label("Move to Trash", systemImage: "trash")
                 }
                 .disabled(selectedItems.isEmpty)
+
+                if let first = selectedItems.first, TrashOriginStore.shared.canPutBack(url: first.url) {
+                    Button(action: putBackSelection) {
+                        Label("Put Back", systemImage: "arrow.uturn.backward")
+                    }
+                }
+
+                Divider()
+                Button(action: toggleViewOptions) {
+                    Label("Show View Options", systemImage: "slider.horizontal.3")
+                }
 
                 Divider()
                 Button(action: openTerminal) {
@@ -574,6 +612,39 @@ struct BrowserView: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                     Spacer()
+
+                    if isFocused {
+                        HStack(spacing: 6) {
+                            Button {
+                                copyToInactivePane()
+                            } label: {
+                                Label("F5 Copy", systemImage: "arrow.right.doc.on.clipboard")
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .buttonStyle(.borderless)
+                            .help("Copy selected items to inactive pane (F5)")
+
+                            Button {
+                                moveToInactivePane()
+                            } label: {
+                                Label("F6 Move", systemImage: "arrow.right")
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .buttonStyle(.borderless)
+                            .help("Move selected items to inactive pane (F6)")
+
+                            Button {
+                                toggleSyncNavigation()
+                            } label: {
+                                Image(systemName: SyncNavigationManager.shared.isSyncNavigationEnabled ? "link.circle.fill" : "link.circle")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(SyncNavigationManager.shared.isSyncNavigationEnabled ? Color.accentColor : .secondary)
+                            }
+                            .buttonStyle(.borderless)
+                            .help("Toggle Synchronized Navigation (⌥⌘S)")
+                        }
+                    }
+
                     Text("Active")
                         .font(.system(size: 10, weight: .semibold))
                         .padding(.horizontal, 6)
@@ -613,9 +684,64 @@ struct BrowserView: View {
                     onQuickLook: { quickLook(for: currentTab) },
                     iconSize: iconSize,
                     onNavigate: { url in navigate(to: url, in: currentTab) },
+                    onNavigateToParent: {
+                        let current = currentTab.navigationHistory.currentURL
+                        let parent = current.deletingLastPathComponent()
+                        if parent.path != current.path {
+                            navigate(to: parent, in: currentTab)
+                        }
+                    },
+                    onOpenSelection: {
+                        openSelection(in: currentTab)
+                    },
+                    onCopyPath: {
+                        copyPathsToPasteboard(for: currentTab)
+                    },
+                    onToggleHiddenFiles: {
+                        showHiddenFiles.toggle()
+                        for pane in activePanes {
+                            pane.directoryContents.showHiddenFiles = showHiddenFiles
+                            pane.directoryContents.reload()
+                        }
+                    },
+                    onGoToFolder: {
+                        showGoToFolderSheet = true
+                    },
                     onRenameRequest: renameSelection,
                     onCopySelection: copySelectionToPasteboard,
                     onTrashSelection: trashSelection,
+                    onDuplicate: duplicateSelection,
+                    onMakeAlias: makeAliasSelection,
+                    onShowOriginal: showOriginalSelection,
+                    onPaste: { pasteFromPasteboard(move: false) },
+                    onMoveHere: { pasteFromPasteboard(move: true) },
+                    onNewFolderWithSelection: newFolderWithSelection,
+                    onUndo: { activeUndoManager?.undo() },
+                    onRedo: { activeUndoManager?.redo() },
+                    onGetInfo: getInfo,
+                    onPutBack: putBackSelection,
+                    onConnectToServer: { showConnectToServerSheet = true },
+                    onCompressWithPassword: { urls in
+                        compressPasswordTargets = urls
+                        showCompressPasswordSheet = true
+                    },
+                    onFindDuplicates: { url in
+                        duplicateFinderTargetDirectory = url
+                        showDuplicateFinderSheet = true
+                    },
+                    onGitDiff: { url in
+                        gitDiffTargetURL = url
+                        showGitDiffSheet = true
+                    },
+                    onGitCommit: {
+                        showGitCommitSheet = true
+                    },
+                    onQuickCopyToOtherPane: { copyToInactivePane() },
+                    onQuickMoveToOtherPane: { moveToInactivePane() },
+                    onCyclePane: { cycleNextPane() },
+                    onToggleTag: toggleColorTagOnSelection,
+                    onClearTags: clearTagsOnSelection,
+                    setViewMode: setViewMode,
                     isFocused: isFocused,
                     onMouseEnter: { activatePane(index) }
                 )
@@ -646,6 +772,17 @@ struct BrowserView: View {
         syncToolbar()
     }
 
+    private func syncInactivePaneIfEnabled(from previousURL: URL, to newURL: URL) {
+        guard SyncNavigationManager.shared.isSyncNavigationEnabled,
+              splitLayout != .single,
+              let other = inactivePane else { return }
+        let pairedCurrent = other.navigationHistory.currentURL
+        if let syncURL = SyncNavigationManager.shared.synchronizedURL(toURL: newURL, fromURL: previousURL, pairedCurrentURL: pairedCurrent) {
+            other.navigationHistory.navigate(to: syncURL)
+            show(syncURL, in: other)
+        }
+    }
+
     /// Single navigation entry point: sidebar, path bar, and double-click on a
     /// folder all route here. Pushes history, then shows the new location.
     private func navigate(to url: URL) {
@@ -653,8 +790,12 @@ struct BrowserView: View {
     }
 
     private func navigate(to url: URL, in targetTab: TabState) {
+        let previousURL = targetTab.navigationHistory.currentURL
         targetTab.navigationHistory.navigate(to: url)
         show(url, in: targetTab)
+        if targetTab === activeTab {
+            syncInactivePaneIfEnabled(from: previousURL, to: url)
+        }
     }
 
     /// Shows a location without touching the history stacks. Used by `navigate`
@@ -670,6 +811,12 @@ struct BrowserView: View {
         targetTab.selectionModel.deselectAll()
         if targetTab === activeTab {
             syncToolbar()
+            ViewOptionsService.shared.sync(
+                folderURL: url,
+                viewMode: targetTab.viewMode,
+                iconSize: CGFloat(iconSize),
+                groupBy: targetTab.directoryContents.groupBy
+            )
         }
     }
 
@@ -680,6 +827,11 @@ struct BrowserView: View {
         showHiddenFiles = state.showHiddenFiles
         activeTab.directoryContents.sortKey = SortKey(rawValue: state.sortKey) ?? .name
         activeTab.directoryContents.sortAscending = state.sortAscending
+        if let groupByRaw = state.groupBy, let criterion = GroupByCriterion(rawValue: groupByRaw) {
+            activeTab.directoryContents.groupBy = criterion
+        } else {
+            activeTab.directoryContents.groupBy = .none
+        }
     }
 
     /// Mirrors the current view settings into the folder's state and saves
@@ -690,17 +842,28 @@ struct BrowserView: View {
         state.sortKey = activeTab.directoryContents.sortKey.rawValue
         state.sortAscending = activeTab.directoryContents.sortAscending
         state.showHiddenFiles = showHiddenFiles
+        state.groupBy = activeTab.directoryContents.groupBy.rawValue
         viewStateService?.scheduleSave()
+        ViewOptionsService.shared.sync(
+            folderURL: activeTab.navigationHistory.currentURL,
+            viewMode: activeTab.viewMode,
+            iconSize: CGFloat(iconSize),
+            groupBy: activeTab.directoryContents.groupBy
+        )
     }
 
     private func goBack() {
+        let previousURL = activeTab.navigationHistory.currentURL
         guard let url = activeTab.navigationHistory.goBack() else { return }
         show(url, in: activeTab)
+        syncInactivePaneIfEnabled(from: previousURL, to: url)
     }
 
     private func goForward() {
+        let previousURL = activeTab.navigationHistory.currentURL
         guard let url = activeTab.navigationHistory.goForward() else { return }
         show(url, in: activeTab)
+        syncInactivePaneIfEnabled(from: previousURL, to: url)
     }
 
     private func setViewMode(_ mode: ViewMode) {
@@ -758,19 +921,233 @@ struct BrowserView: View {
         syncToolbar()
     }
 
+    private func duplicateTab() {
+        let currentURL = activeTab.navigationHistory.currentURL
+        TabRestoreQueue.shared.enqueue(currentURL)
+        openWindow(id: "browser")
+    }
+
+    private func closeOtherTabs() {
+        WindowTabManager.shared.closeOtherTabs()
+    }
+
+    private func closeTabsToTheRight() {
+        WindowTabManager.shared.closeTabsToTheRight()
+    }
+
+    private func moveTabToNewWindow() {
+        WindowTabManager.shared.moveTabToNewWindow()
+    }
+
+    private func mergeAllWindows() {
+        WindowTabManager.shared.mergeAllWindows()
+    }
+
+    private func transferToInactivePane(move: Bool) {
+        guard let destination = inactivePane?.navigationHistory.currentURL else { return }
+        let sources = selectedItems.map(\.url)
+        guard !sources.isEmpty else { return }
+        let collisions = FileOperationService.shared.detectCollisions(sources: sources, destination: destination)
+        if !collisions.isEmpty {
+            conflictSheetData = ConflictSheetData(
+                sources: sources,
+                model: ConflictResolutionModel(conflicts: collisions, isMove: move, destination: destination)
+            )
+            return
+        }
+        executeTransfer(sources: sources, destination: destination, move: move, resolutions: [:])
+    }
+
+    private func copyToInactivePane() {
+        transferToInactivePane(move: false)
+    }
+
+    private func moveToInactivePane() {
+        transferToInactivePane(move: true)
+    }
+
+    private func toggleSyncNavigation() {
+        SyncNavigationManager.shared.toggle()
+    }
+
     private func syncToolbar() {
         updateWindowTitle()
     }
 
     private func newFolder() {
-        let destination = activeTab.navigationHistory.currentURL.appendingPathComponent("untitled folder")
-        try? FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
-        for pane in activePanes { pane.directoryContents.reload() }
+        let parentURL = activeTab.navigationHistory.currentURL
+        let fm = FileManager.default
+        var folderName = "untitled folder"
+        var destination = parentURL.appendingPathComponent(folderName)
+        var counter = 2
+        while fm.fileExists(atPath: destination.path) {
+            folderName = "untitled folder \(counter)"
+            destination = parentURL.appendingPathComponent(folderName)
+            counter += 1
+        }
+        do {
+            try fm.createDirectory(at: destination, withIntermediateDirectories: true)
+            registerDeleteUndo(name: "New Folder", urls: [destination])
+            for pane in activePanes { pane.directoryContents.reload() }
+            activeTab.selectionModel.deselectAll()
+            if let newItem = activeTab.directoryContents.items.first(where: { $0.url == destination }) {
+                activeTab.selectionModel.select(newItem.id, modifierFlags: [])
+                renameTarget = newItem
+                renameText = newItem.name
+            }
+        } catch {
+            showError("Folder Creation Failed", error: error)
+        }
+    }
+
+    private func duplicateSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        runFileOperation(urls.count == 1 ? "Duplicating Item" : "Duplicating Items") { progress in
+            await FileOperationService.shared.duplicateItems(urls, progress: progress)
+        } onCompletion: { result in
+            registerDeleteUndo(name: "Duplicate", urls: result.succeeded)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+            if !result.succeeded.isEmpty {
+                let destSet = Set(result.succeeded)
+                activeTab.selectionModel.deselectAll()
+                for item in activeTab.directoryContents.items where destSet.contains(item.url) {
+                    activeTab.selectionModel.select(item.id, modifierFlags: [.command])
+                }
+            }
+        }
+    }
+
+    private func makeAliasSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        let destination = activeTab.navigationHistory.currentURL
+        runFileOperation(urls.count == 1 ? "Creating Alias" : "Creating Aliases") { _ in
+            await FileOperationService.shared.makeAliases(for: urls, in: destination)
+        } onCompletion: { result in
+            registerDeleteUndo(name: "Make Alias", urls: result.succeeded)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+            if !result.succeeded.isEmpty {
+                let destSet = Set(result.succeeded)
+                activeTab.selectionModel.deselectAll()
+                for item in activeTab.directoryContents.items where destSet.contains(item.url) {
+                    activeTab.selectionModel.select(item.id, modifierFlags: [.command])
+                }
+            }
+        }
+    }
+
+    private func showOriginalSelection() {
+        guard let item = selectedItems.first else { return }
+        let targetURL = item.resolvedTargetURL ?? FileOperationService.shared.resolveTarget(for: item.url)
+        guard let targetURL else { return }
+
+        let parentURL = targetURL.deletingLastPathComponent().standardizedFileURL
+        let currentParent = activeTab.navigationHistory.currentURL.standardizedFileURL
+
+        if currentParent.path == parentURL.path {
+            activeTab.selectionModel.deselectAll()
+            if let targetItem = activeTab.directoryContents.items.first(where: { $0.url.standardizedFileURL.path == targetURL.standardizedFileURL.path }) {
+                activeTab.selectionModel.select(targetItem.id, modifierFlags: [])
+            }
+        } else {
+            navigate(to: parentURL)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.activeTab.selectionModel.deselectAll()
+                if let targetItem = self.activeTab.directoryContents.items.first(where: { $0.url.standardizedFileURL.path == targetURL.standardizedFileURL.path }) {
+                    self.activeTab.selectionModel.select(targetItem.id, modifierFlags: [])
+                }
+            }
+        }
+    }
+
+    private func rotateSelection(by degrees: Int) {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            for url in urls {
+                await QuickActionService.shared.rotateImage(at: url, degrees: degrees)
+            }
+            await MainActor.run {
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
+            }
+        }
+    }
+
+    private func createPDFFromSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        let currentFolder = activeTab.navigationHistory.currentURL
+        Task {
+            if let pdfURL = try? await QuickActionService.shared.createPDF(from: urls, in: currentFolder) {
+                await MainActor.run {
+                    for pane in activePanes {
+                        pane.directoryContents.reload()
+                    }
+                    activeTab.selectionModel.deselectAll()
+                    if let newItem = activeTab.directoryContents.items.first(where: { $0.url.standardizedFileURL.path == pdfURL.standardizedFileURL.path }) {
+                        activeTab.selectionModel.select(newItem.id, modifierFlags: [])
+                    }
+                }
+            }
+        }
+    }
+
+    private func newFolderWithSelection() {
+        let itemsToMove = selectedItems
+        guard !itemsToMove.isEmpty else {
+            newFolder()
+            return
+        }
+        let parentURL = activeTab.navigationHistory.currentURL
+        let fm = FileManager.default
+
+        var folderName = "New Folder With Items"
+        var folderURL = parentURL.appendingPathComponent(folderName)
+        var counter = 2
+        while fm.fileExists(atPath: folderURL.path) {
+            folderName = "New Folder With Items \(counter)"
+            folderURL = parentURL.appendingPathComponent(folderName)
+            counter += 1
+        }
+
+        do {
+            try fm.createDirectory(at: folderURL, withIntermediateDirectories: true)
+        } catch {
+            showError("Folder Creation Failed", error: error)
+            return
+        }
+
+        let urls = itemsToMove.map(\.url)
+        runFileOperation("Moving Items to New Folder") { progress in
+            await FileOperationService.shared.moveItems(urls, to: folderURL, progress: progress)
+        } onCompletion: { result in
+            registerNewFolderWithSelectionUndo(folderURL: folderURL, originalTransfers: result.transfers)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+            activeTab.selectionModel.deselectAll()
+            if let newItem = activeTab.directoryContents.items.first(where: { $0.url == folderURL }) {
+                activeTab.selectionModel.select(newItem.id, modifierFlags: [])
+                renameTarget = newItem
+                renameText = newItem.name
+            }
+        }
     }
 
     private func getInfo() {
-        rightSidebarTab = .info
-        showRightSidebar = true
+        let urls = selectedItems.map(\.url)
+        if urls.isEmpty {
+            GetInfoService.shared.showInfo(for: [activeTab.navigationHistory.currentURL])
+        } else {
+            GetInfoService.shared.showInfo(for: urls)
+        }
     }
 
     private func openTerminal() {
@@ -818,31 +1195,45 @@ struct BrowserView: View {
     }
 
     private func performSearch(_ query: String) {
-        if query.isEmpty {
+        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty && searchCriteria.isEmpty {
+            SearchService.shared.stopSearch()
+            isSearchActive = false
             activeTab.directoryContents.reload()
         } else {
-            Task {
-                do {
-                    let all = try await FileSystemService.shared.contentsOfDirectory(
-                        at: activeTab.navigationHistory.currentURL,
-                        includingHidden: showHiddenFiles
-                    )
-                    let sorted = DirectoryContents.sort(
-                        all,
-                        by: activeTab.directoryContents.sortKey,
-                        ascending: activeTab.directoryContents.sortAscending
-                    )
-                    await MainActor.run {
-                        activeTab.directoryContents.items = sorted.filter {
-                            $0.name.localizedCaseInsensitiveContains(query)
-                        }
-                    }
-                } catch {
-                    await MainActor.run {
-                        activeTab.directoryContents.items = []
-                    }
-                }
+            isSearchActive = true
+            SearchService.shared.performSearch(
+                query: trimmed,
+                scope: searchScope,
+                filter: searchFilter,
+                criteria: searchCriteria,
+                includingHidden: showHiddenFiles
+            ) { [weak activeTab] results in
+                guard let activeTab else { return }
+                activeTab.directoryContents.items = results
             }
+        }
+    }
+
+    private func dismissSearch() {
+        searchText = ""
+        searchCriteria = []
+        isSearchActive = false
+        SearchService.shared.stopSearch()
+        activeTab.directoryContents.reload()
+    }
+
+    private func saveCurrentSearchAsSmartFolder(name: String) {
+        do {
+            let savedURL = try SearchService.shared.saveSmartFolder(
+                name: name,
+                query: searchText,
+                scope: searchScope,
+                criteria: searchCriteria
+            )
+            sidebarModel.addFavorite(url: savedURL)
+        } catch {
+            NSLog("Failed to save smart folder: %@", error.localizedDescription)
         }
     }
 
@@ -857,6 +1248,68 @@ struct BrowserView: View {
             return false
         }
         return img
+    }
+
+    private func toggleFilterBar() {
+        showFilterBar.toggle()
+        if !showFilterBar {
+            activeTab.directoryContents.clearFilter()
+        }
+    }
+
+    private func filterByTagFromSidebar(_ tag: TagItem) {
+        searchScope = .localComputer
+        searchCriteria = [SearchCriterion(attribute: .tags, tagValue: tag.name)]
+        isSearchActive = true
+        performSearch("")
+    }
+
+    private func toggleColorTagOnSelection(_ color: TagColor) {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            try? await TagService.shared.toggleColorTag(color, for: urls)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+        }
+    }
+
+    private func clearTagsOnSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            try? await TagService.shared.clearAllTags(for: urls)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+        }
+    }
+
+    private func downloadCloudSelection() {
+        let targets = selectedItems.filter(\.canDownload)
+        guard !targets.isEmpty else { return }
+        Task {
+            for item in targets {
+                try? await CloudStorageService.downloadItem(at: item.url)
+            }
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+        }
+    }
+
+    private func evictCloudSelection() {
+        let targets = selectedItems.filter(\.canEvict)
+        guard !targets.isEmpty else { return }
+        Task {
+            for item in targets {
+                try? await CloudStorageService.evictItem(at: item.url)
+            }
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+        }
     }
 
     private let tagColors: [(String, String)] = [
@@ -910,6 +1363,67 @@ struct BrowserView: View {
         NSPasteboard.general.writeObjects(urls as [NSURL])
     }
 
+    /// Cmd+Opt+C: copy selected file POSIX path strings to pasteboard.
+    private func copyPathsToPasteboard(for tab: TabState) {
+        let selected = tab.directoryContents.items.filter { tab.selectionModel.isSelected($0.id) }
+        let text = selected.isEmpty ? tab.navigationHistory.currentURL.path : selected.map(\.url.path).joined(separator: "\n")
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+    }
+
+    /// Cmd+Down / Cmd+O / Return: open selected item (drill into directory or launch file).
+    private func openSelection(in tab: TabState) {
+        let selected = tab.directoryContents.items.filter { tab.selectionModel.isSelected($0.id) }
+        guard let first = selected.first else { return }
+        if ArchiveService.shared.isArchive(url: first.url) {
+            Task {
+                do {
+                    _ = try await ArchiveService.shared.extract(archiveURL: first.url)
+                    await MainActor.run {
+                        for pane in activePanes { pane.directoryContents.reload() }
+                    }
+                } catch {
+                    await MainActor.run { showError("Extraction Failed", error: error) }
+                }
+            }
+        } else if ArchiveService.shared.isDiskImage(url: first.url) {
+            Task {
+                do {
+                    let mountPoint = try await ArchiveService.shared.attachDiskImage(at: first.url)
+                    await MainActor.run { navigate(to: mountPoint, in: tab) }
+                } catch {
+                    await MainActor.run { showError("Mount Failed", error: error) }
+                }
+            }
+        } else if first.isDirectory {
+            navigate(to: first.url, in: tab)
+        } else {
+            for item in selected where !item.isDirectory {
+                NSWorkspace.shared.open(item.url)
+            }
+        }
+    }
+
+    private func compressSelectionWithPassword(password: String) {
+        let urls = compressPasswordTargets
+        guard !urls.isEmpty else { return }
+        let currentFolder = activeTab.navigationHistory.currentURL
+        Task {
+            do {
+                _ = try await ArchiveService.shared.createArchive(from: urls, in: currentFolder, password: password)
+                await MainActor.run {
+                    for pane in activePanes {
+                        pane.directoryContents.reload()
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    showError("Compression Failed", error: error)
+                }
+            }
+        }
+    }
+
     /// Cmd+V copies into the current folder; Cmd+Opt+V moves.
     private func pasteFromPasteboard(move: Bool) {
         let options: [NSPasteboard.ReadingOptionKey: Any] = [
@@ -920,15 +1434,36 @@ struct BrowserView: View {
         ) as? [URL], !urls.isEmpty else { return }
         let destination = activeTab.navigationHistory.currentURL
         let sources = urls
+        let collisions = FileOperationService.shared.detectCollisions(sources: sources, destination: destination)
+        if !collisions.isEmpty {
+            conflictSheetData = ConflictSheetData(
+                sources: sources,
+                model: ConflictResolutionModel(conflicts: collisions, isMove: move, destination: destination)
+            )
+            return
+        }
+        executeTransfer(sources: sources, destination: destination, move: move, resolutions: [:])
+    }
+
+    private func executeTransfer(
+        sources: [URL],
+        destination: URL,
+        move: Bool,
+        resolutions: [URL: ConflictResolutionChoice]
+    ) {
         runFileOperation(move ? "Moving Files" : "Copying Files") { progress in
             move
-                ? await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
-                : await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
+                ? await FileOperationService.shared.moveItems(sources, to: destination, progress: progress, resolutions: resolutions)
+                : await FileOperationService.shared.copyItems(sources, to: destination, progress: progress, resolutions: resolutions)
         } onCompletion: { result in
             // Undo of a move: put everything back where it came from.
             if move {
                 registerRestoreUndo(
                     name: "Move", transfers: result.transfers
+                )
+            } else {
+                registerDeleteUndo(
+                    name: "Copy", urls: result.succeeded
                 )
             }
         }
@@ -956,6 +1491,75 @@ struct BrowserView: View {
             registerRestoreUndo(name: "Move to Trash", transfers: result.transfers)
             if let (_, error) = result.failed.first { showError("Move to Trash Failed", error: error) }
         }
+    }
+
+    /// Finder "Put Back" (⌘⌫ in Trash / context menu): restores trashed items to original directories.
+    private func putBackSelection() {
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            let result = await TrashOriginStore.shared.putBack(urls: urls)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+            activeTab.selectionModel.deselectAll()
+            if let (_, error) = result.failed.first {
+                showError("Put Back Failed", error: error)
+            }
+        }
+    }
+
+    /// Copies SHA-256 checksum of the selected file to pasteboard (Phase 11).
+    private func copySHA256ChecksumForSelection() {
+        guard let item = selectedItems.first, !item.isDirectory else { return }
+        Task {
+            if let hash = try? await ChecksumService.shared.computeSHA256(url: item.url) {
+                await MainActor.run {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(hash, forType: .string)
+                }
+            }
+        }
+    }
+
+    /// Opens Duplicate Finder sheet for current folder (Phase 11).
+    private func findDuplicatesInCurrentFolder() {
+        duplicateFinderTargetDirectory = activeTab.navigationHistory.currentURL
+        showDuplicateFinderSheet = true
+    }
+
+    /// Trashes selected duplicates with full undo registration (Phase 11).
+    private func trashDuplicateURLs(_ urls: [URL]) {
+        guard !urls.isEmpty else { return }
+        Task {
+            let result = await FileOperationService.shared.trashItems(urls)
+            for pane in activePanes {
+                pane.directoryContents.reload()
+            }
+            registerRestoreUndo(name: "Trash Duplicates", transfers: result.transfers)
+            if let (_, error) = result.failed.first { showError("Move to Trash Failed", error: error) }
+        }
+    }
+
+    /// Finder "Show View Options" (⌘J): toggles floating HUD panel.
+    private func toggleViewOptions() {
+        ViewOptionsService.shared.toggle(
+            folderURL: activeTab.navigationHistory.currentURL,
+            viewMode: activeTab.viewMode,
+            iconSize: CGFloat(iconSize),
+            fontSize: activeTab.viewMode == .list ? 13 : 11,
+            groupBy: activeTab.directoryContents.groupBy,
+            onStateChanged: {
+                self.activeTab.viewMode = ViewOptionsService.shared.viewMode
+                self.iconSize = Double(ViewOptionsService.shared.iconSize)
+                self.activeTab.directoryContents.groupBy = ViewOptionsService.shared.groupBy
+                self.persistViewState()
+            },
+            onUseAsDefaults: {
+                UserDefaults.standard.set(Double(ViewOptionsService.shared.iconSize), forKey: Constants.defaultIconSizeKey)
+                UserDefaults.standard.set(ViewOptionsService.shared.viewMode.rawValue, forKey: Constants.defaultViewModeKey)
+            }
+        )
     }
 
     /// Return/Enter or context menu: single rename or batch rename sheet.
@@ -1008,7 +1612,10 @@ struct BrowserView: View {
         renameTarget = nil
         Task {
             do {
-                _ = try await FileOperationService.shared.renameItem(at: item.url, to: newName)
+                let newURL = try await FileOperationService.shared.renameItem(at: item.url, to: newName)
+                await MainActor.run {
+                    registerRenameUndo(originalURL: item.url, newURL: newURL)
+                }
             } catch {
                 await MainActor.run { showError("Rename Failed", error: error) }
             }
@@ -1103,9 +1710,14 @@ struct BrowserView: View {
     }
 
     /// Restore successful transfers to their exact original paths, including names.
+    private var activeUndoManager: UndoManager? {
+        undoManager ?? NSApp.keyWindow?.undoManager
+    }
+
+    /// Restore successful transfers to their exact original paths, including names.
     private func registerRestoreUndo(name: String, transfers: [FileOperationResult.Transfer]) {
-        guard let undoManager, !transfers.isEmpty else { return }
-        undoManager.registerUndo(withTarget: UndoBox {
+        guard let activeUndoManager, !transfers.isEmpty else { return }
+        activeUndoManager.registerUndo(withTarget: UndoBox {
             Task {
                 let result = await FileOperationService.shared.restoreItems(transfers)
                 for pane in activePanes {
@@ -1118,7 +1730,56 @@ struct BrowserView: View {
         }) { box in
             box.work()
         }
-        undoManager.setActionName(name)
+        activeUndoManager.setActionName(name)
+    }
+
+    /// Deletes items on undo (used for undoing copy, duplicate, or new folder creation).
+    private func registerDeleteUndo(name: String, urls: [URL]) {
+        guard let activeUndoManager, !urls.isEmpty else { return }
+        activeUndoManager.registerUndo(withTarget: UndoBox {
+            Task {
+                _ = await FileOperationService.shared.deleteItems(urls)
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
+            }
+        }) { box in
+            box.work()
+        }
+        activeUndoManager.setActionName(name)
+    }
+
+    /// Reverses a rename operation.
+    private func registerRenameUndo(originalURL: URL, newURL: URL) {
+        guard let activeUndoManager else { return }
+        activeUndoManager.registerUndo(withTarget: UndoBox {
+            Task {
+                _ = try? await FileOperationService.shared.renameItem(at: newURL, to: originalURL.lastPathComponent)
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
+            }
+        }) { box in
+            box.work()
+        }
+        activeUndoManager.setActionName("Rename")
+    }
+
+    /// Reverses a "New Folder with Selection" operation.
+    private func registerNewFolderWithSelectionUndo(folderURL: URL, originalTransfers: [FileOperationResult.Transfer]) {
+        guard let activeUndoManager else { return }
+        activeUndoManager.registerUndo(withTarget: UndoBox {
+            Task {
+                _ = await FileOperationService.shared.restoreItems(originalTransfers)
+                try? FileManager.default.removeItem(at: folderURL)
+                for pane in activePanes {
+                    pane.directoryContents.reload()
+                }
+            }
+        }) { box in
+            box.work()
+        }
+        activeUndoManager.setActionName("New Folder with Selection")
     }
 
     /// Consumes a pending URL queued for this window (restored tab on launch,
@@ -1129,17 +1790,444 @@ struct BrowserView: View {
     }
 
     private var statusBarInfo: some View {
-        let count = activeTab.directoryContents.items.count
+        let items = activeTab.directoryContents.items
+        let count = items.count
         let selectedCount = activeTab.selectionModel.selectedIDs.count
-        return HStack(spacing: 4) {
-            if selectedCount > 0 {
-                Text("\(selectedCount) of \(count) selected")
+
+        let availableSpaceString: String = {
+            let currentURL = activeTab.navigationHistory.currentURL
+            if let values = try? currentURL.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey, .volumeAvailableCapacityKey]) {
+                let bytes: Int64 = values.volumeAvailableCapacityForImportantUsage ?? Int64(values.volumeAvailableCapacity ?? 0)
+                if bytes > 0 {
+                    return ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file) + " available"
+                }
+            }
+            return ""
+        }()
+
+        let selectedSizeString: String = {
+            guard selectedCount > 0 else { return "" }
+            let selected = selectedItems
+            let totalBytes = selected.compactMap(\.size).reduce(0, +)
+            if totalBytes > 0 {
+                return ByteCountFormatter.string(fromByteCount: totalBytes, countStyle: .file)
+            }
+            return ""
+        }()
+
+        return HStack(spacing: 6) {
+            if isSearchActive || !searchText.isEmpty || !searchCriteria.isEmpty {
+                Text("Search: \(count) item\(count == 1 ? "" : "s")")
+            } else if selectedCount > 0 {
+                if !selectedSizeString.isEmpty {
+                    Text("\(selectedCount) of \(count) selected (\(selectedSizeString))")
+                } else {
+                    Text("\(selectedCount) of \(count) selected")
+                }
             } else {
                 Text("\(count) item\(count == 1 ? "" : "s")")
+            }
+            if !availableSpaceString.isEmpty {
+                Text("•")
+                    .foregroundStyle(.tertiary)
+                Text(availableSpaceString)
             }
         }
         .font(.caption)
         .foregroundStyle(.secondary)
+    }
+
+    @ViewBuilder
+    private var bottomBarView: some View {
+        if showPathBar {
+            Divider()
+            HStack(spacing: 8) {
+                PathBarView(currentURL: activeTab.navigationHistory.currentURL) { url in
+                    navigate(to: url)
+                } onAddFavorite: { url in
+                    sidebarModel.addFavorite(url: url)
+                }
+                Spacer()
+                statusBarGitBranchView
+                statusBarInfo
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+            .background(Color(NSColor.windowBackgroundColor))
+        }
+    }
+
+    private var currentBrowserActions: BrowserActions {
+        BrowserActions(
+            copySelection: copySelectionToPasteboard,
+            paste: { pasteFromPasteboard(move: false) },
+            moveHere: { pasteFromPasteboard(move: true) },
+            trashSelection: trashSelection,
+            renameSelection: renameSelection,
+            batchRenameSelection: batchRenameSelection,
+            newFolder: newFolder,
+            newFolderWithSelection: newFolderWithSelection,
+            duplicateSelection: duplicateSelection,
+            makeAlias: makeAliasSelection,
+            showOriginal: showOriginalSelection,
+            undo: { activeUndoManager?.undo() },
+            redo: { activeUndoManager?.redo() },
+            getInfo: getInfo,
+            quickLook: { quickLook() },
+            goBack: goBack,
+            goForward: goForward,
+            goToEnclosingFolder: {
+                navigate(to: activeTab.navigationHistory.currentURL.deletingLastPathComponent())
+            },
+            navigateTo: navigate(to:),
+            promptGoToFolder: { showGoToFolderSheet = true },
+            promptConnectToServer: { showConnectToServerSheet = true },
+            setViewMode: setViewMode,
+            toggleHiddenFiles: toggleHiddenFiles,
+            setGroupBy: { criterion in
+                activeTab.directoryContents.groupBy = criterion
+                persistViewState()
+            },
+            showViewOptions: toggleViewOptions,
+            putBack: putBackSelection,
+            setSplitLayout: setSplitLayout,
+            toggleDualPane: toggleDualPane,
+            cycleNextPane: cycleNextPane,
+            togglePathBar: { showPathBar.toggle() },
+            toggleSidebar: toggleSidebar,
+            toggleTreePanel: {
+                if showRightSidebar && rightSidebarTab == .tree {
+                    showRightSidebar = false
+                } else {
+                    rightSidebarTab = .tree
+                    showRightSidebar = true
+                }
+            },
+            toggleInspector: { showRightSidebar.toggle() },
+            showInspectorTab: { tab in
+                rightSidebarTab = tab
+                showRightSidebar = true
+            },
+            duplicateTab: duplicateTab,
+            closeOtherTabs: closeOtherTabs,
+            closeTabsToTheRight: closeTabsToTheRight,
+            moveTabToNewWindow: moveTabToNewWindow,
+            mergeAllWindows: mergeAllWindows,
+            copyToInactivePane: copyToInactivePane,
+            moveToInactivePane: moveToInactivePane,
+            toggleSyncNavigation: toggleSyncNavigation,
+            toggleFilterBar: toggleFilterBar,
+            toggleTag: toggleColorTagOnSelection,
+            clearTags: clearTagsOnSelection,
+            downloadCloudSelection: downloadCloudSelection,
+            evictCloudSelection: evictCloudSelection,
+            copySHA256Checksum: copySHA256ChecksumForSelection,
+            findDuplicatesInFolder: findDuplicatesInCurrentFolder,
+            gitDiffSelection: diffSelection,
+            gitStageSelection: stageSelection,
+            gitUnstageSelection: unstageSelection,
+            gitDiscardSelection: discardSelection,
+            gitCommit: { showGitCommitSheet = true },
+            gitSwitchBranch: { branch in switchGitBranch(to: branch) },
+            gitCreateBranch: promptCreateGitBranch
+        )
+    }
+
+    @ViewBuilder
+    private var statusBarGitBranchView: some View {
+        let currentURL = activeTab.navigationHistory.currentURL
+        if GitService.shared.isGitRepository(at: currentURL) {
+            let branch = GitService.shared.currentBranch(at: currentURL) ?? "HEAD"
+            let isDirty = GitService.shared.isDirty(at: currentURL)
+            let branches = GitService.shared.localBranches(at: currentURL)
+
+            Menu {
+                Section("Branch") {
+                    ForEach(branches, id: \.self) { name in
+                        Button {
+                            switchGitBranch(to: name)
+                        } label: {
+                            if name == branch {
+                                Label(name, systemImage: "checkmark")
+                            } else {
+                                Text(name)
+                            }
+                        }
+                    }
+                    Button("New Branch…") {
+                        promptCreateGitBranch()
+                    }
+                }
+
+                Section("Repository") {
+                    Button("Commit Changes…") {
+                        showGitCommitSheet = true
+                    }
+                    Button("View Diff…") {
+                        diffSelection()
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrow.triangle.branch")
+                        .imageScale(.small)
+                    Text(branch)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    if isDirty {
+                        Circle()
+                            .fill(Color.orange)
+                            .frame(width: 6, height: 6)
+                    }
+                }
+                .foregroundStyle(.primary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color(NSColor.controlBackgroundColor).opacity(0.6))
+                .cornerRadius(4)
+            }
+            .menuStyle(.borderlessButton)
+            .fixedSize()
+            .help("Git Branch: \(branch)\(isDirty ? " (Uncommitted Changes)" : "")")
+
+            Text("•")
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private func diffSelection() {
+        let currentURL = activeTab.navigationHistory.currentURL
+        guard GitService.shared.isGitRepository(at: currentURL) else { return }
+        let selected = selectedItems
+        if let first = selected.first {
+            gitDiffTargetURL = first.url
+            showGitDiffSheet = true
+        } else {
+            let statusMap = GitService.shared.statusMap(forDirectory: currentURL)
+            if let firstPath = statusMap.keys.first {
+                gitDiffTargetURL = currentURL.appendingPathComponent(firstPath)
+                showGitDiffSheet = true
+            } else {
+                gitDiffTargetURL = currentURL
+                showGitDiffSheet = true
+            }
+        }
+    }
+
+    private func stageSelection() {
+        let currentURL = activeTab.navigationHistory.currentURL
+        guard GitService.shared.isGitRepository(at: currentURL) else { return }
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            do {
+                try await GitService.shared.stage(urls: urls, at: currentURL)
+                await MainActor.run {
+                    activeTab.directoryContents.reload()
+                }
+            } catch {
+                await MainActor.run {
+                    _ = NSAlert(error: error).runModal()
+                }
+            }
+        }
+    }
+
+    private func unstageSelection() {
+        let currentURL = activeTab.navigationHistory.currentURL
+        guard GitService.shared.isGitRepository(at: currentURL) else { return }
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+        Task {
+            do {
+                try await GitService.shared.unstage(urls: urls, at: currentURL)
+                await MainActor.run {
+                    activeTab.directoryContents.reload()
+                }
+            } catch {
+                await MainActor.run {
+                    _ = NSAlert(error: error).runModal()
+                }
+            }
+        }
+    }
+
+    private func discardSelection() {
+        let currentURL = activeTab.navigationHistory.currentURL
+        guard GitService.shared.isGitRepository(at: currentURL) else { return }
+        let urls = selectedItems.map(\.url)
+        guard !urls.isEmpty else { return }
+
+        let alert = NSAlert()
+        alert.messageText = "Discard Changes?"
+        alert.informativeText = "Are you sure you want to discard changes in the selected \(urls.count == 1 ? "file" : "\(urls.count) files")? This cannot be undone."
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Discard Changes")
+        alert.addButton(withTitle: "Cancel")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        Task {
+            try? await GitService.shared.discardChanges(for: urls, at: currentURL)
+            await MainActor.run {
+                activeTab.directoryContents.reload()
+            }
+        }
+    }
+
+    private func switchGitBranch(to branch: String) {
+        let currentURL = activeTab.navigationHistory.currentURL
+        Task {
+            do {
+                try await GitService.shared.switchBranch(to: branch, at: currentURL)
+                await MainActor.run {
+                    activeTab.directoryContents.reload()
+                }
+            } catch {
+                await MainActor.run {
+                    _ = NSAlert(error: error).runModal()
+                }
+            }
+        }
+    }
+
+    private func promptCreateGitBranch() {
+        let alert = NSAlert()
+        alert.messageText = "Create New Branch"
+        alert.informativeText = "Enter the name for the new Git branch:"
+        alert.alertStyle = .informational
+        let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 220, height: 24))
+        input.placeholderString = "branch-name"
+        alert.accessoryView = input
+        alert.addButton(withTitle: "Create")
+        alert.addButton(withTitle: "Cancel")
+        alert.window.initialFirstResponder = input
+
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            let name = input.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !name.isEmpty else { return }
+            let currentURL = activeTab.navigationHistory.currentURL
+            Task {
+                do {
+                    try await GitService.shared.createBranch(named: name, at: currentURL)
+                    await MainActor.run {
+                        activeTab.directoryContents.reload()
+                    }
+                } catch {
+                    await MainActor.run {
+                        _ = NSAlert(error: error).runModal()
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var sidebarContentView: some View {
+        SidebarView(
+            model: sidebarModel,
+            selectedURL: activeTab.navigationHistory.currentURL,
+            onNavigate: { url in
+                navigate(to: url)
+            },
+            onFavoriteAdded: { _ in
+            },
+            onPerformCopy: { sources, destination in
+                runFileOperation("Copying Files") { progress in
+                    await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
+                }
+            },
+            onPerformMove: { sources, destination in
+                runFileOperation("Moving Files") { progress in
+                    await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
+                } onCompletion: { result in
+                    registerRestoreUndo(name: "Move", transfers: result.transfers)
+                }
+            },
+            onTagSelected: { tag in
+                filterByTagFromSidebar(tag)
+            }
+        )
+        .navigationSplitViewColumnWidth(min: 170, ideal: 190, max: 260)
+    }
+
+    @ViewBuilder
+    private var detailContentView: some View {
+        VStack(spacing: 0) {
+            if showPermissionBanner && !dismissedFullDiskBanner {
+                permissionBanner
+            }
+            if isSearchActive || !searchText.isEmpty || !searchCriteria.isEmpty {
+                ScopeBarView(
+                    currentFolderURL: activeTab.navigationHistory.currentURL,
+                    resultCount: activeTab.directoryContents.items.count,
+                    isGathering: SearchService.shared.isGathering,
+                    scope: $searchScope,
+                    filter: $searchFilter,
+                    criteria: $searchCriteria,
+                    onCriteriaChanged: {
+                        performSearch(searchText)
+                    },
+                    onSaveSmartFolder: { name in
+                        saveCurrentSearchAsSmartFolder(name: name)
+                    },
+                    onDismissSearch: {
+                        dismissSearch()
+                    }
+                )
+            }
+            if showFilterBar {
+                FilterBarView(directoryContents: activeTab.directoryContents) {
+                    showFilterBar = false
+                }
+            }
+            splitLayoutView
+
+            bottomBarView
+        }
+        .navigationTitle(windowTitle)
+        .toolbar {
+            mainToolbarContent
+        }
+        .searchable(text: $searchText, placement: .toolbar, prompt: "Search")
+    }
+
+    @ViewBuilder
+    private var inspectorContentView: some View {
+        RightSidebarView(
+            selectedTab: $rightSidebarTab,
+            stagedURLs: $stagedURLs,
+            sidebarModel: sidebarModel,
+            selectedItems: selectedItems,
+            currentFolderURL: activeTab.navigationHistory.currentURL,
+            currentFolderItemCount: activeTab.directoryContents.items.count,
+            onNavigate: { url in navigate(to: url) },
+            onQuickLook: { quickLook() },
+            onOpenTerminal: { url in
+                Task {
+                    try? await TerminalService.shared.openTerminal(
+                        at: url,
+                        emulator: TerminalService.shared.defaultTerminal()
+                    )
+                }
+            },
+            onReloadDirectory: {
+                for pane in activePanes { pane.directoryContents.reload() }
+            },
+            onPerformCopy: { sources, destination in
+                runFileOperation("Copying Files") { progress in
+                    await FileOperationService.shared.copyItems(sources, to: destination, progress: progress)
+                }
+            },
+            onPerformMove: { sources, destination in
+                runFileOperation("Moving Files") { progress in
+                    await FileOperationService.shared.moveItems(sources, to: destination, progress: progress)
+                } onCompletion: { result in
+                    registerRestoreUndo(name: "Move", transfers: result.transfers)
+                }
+            }
+        )
+        .inspectorColumnWidth(min: 240, ideal: 290, max: 440)
     }
 
     /// Enables native window tabbing and registers the window so its current
@@ -1181,7 +2269,7 @@ struct BrowserView: View {
         HStack(spacing: 10) {
             Image(systemName: "info.circle")
                 .foregroundStyle(.secondary)
-            Text("Nautica has limited disk access. Some system folders may require Full Disk Access.")
+            Text("Nautica has limited disk access. Cloud storage (OneDrive, Google Drive, Dropbox) and system folders may require Full Disk Access.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Spacer()
@@ -1334,6 +2422,13 @@ private struct VerticalSplit<Top: View, Bottom: View>: View {
     }
 }
 
+/// Data container for presenting the conflict resolution modal sheet.
+private struct ConflictSheetData: Identifiable {
+    let id = UUID()
+    let sources: [URL]
+    let model: ConflictResolutionModel
+}
+
 /// Configures the hosting NSWindow once it exists (one-time idempotent pass).
 private struct WindowAccessor: NSViewRepresentable {
     let onWindow: (NSWindow) -> Void
@@ -1351,6 +2446,59 @@ private struct WindowAccessor: NSViewRepresentable {
     private func configure(_ view: NSView) {
         guard let window = view.window else { return }
         onWindow(window)
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func gitSheets(
+        showDiff: Binding<Bool>,
+        showCommit: Binding<Bool>,
+        targetURL: URL?,
+        repoURL: URL,
+        onReload: @escaping () -> Void
+    ) -> some View {
+        self
+            .sheet(isPresented: showDiff) {
+                if let targetURL {
+                    GitDiffSheet(
+                        targetURL: targetURL,
+                        repositoryRoot: repoURL,
+                        onRefreshNeeded: onReload
+                    )
+                }
+            }
+            .sheet(isPresented: showCommit) {
+                GitCommitSheet(
+                    repositoryRoot: repoURL,
+                    onCommitCompleted: onReload
+                )
+            }
+    }
+
+    @ViewBuilder
+    func toolSheets(
+        showCompressPassword: Binding<Bool>,
+        compressPasswordCount: Int,
+        onCompressPassword: @escaping (String) -> Void,
+        showDuplicateFinder: Binding<Bool>,
+        duplicateFinderDirectory: URL,
+        onTrashDuplicates: @escaping ([URL]) -> Void
+    ) -> some View {
+        self
+            .sheet(isPresented: showCompressPassword) {
+                CompressPasswordSheet(itemCount: compressPasswordCount) { password in
+                    onCompressPassword(password)
+                }
+            }
+            .sheet(isPresented: showDuplicateFinder) {
+                DuplicateFinderSheet(
+                    targetDirectory: duplicateFinderDirectory,
+                    onTrashFiles: { urls in
+                        onTrashDuplicates(urls)
+                    }
+                )
+            }
     }
 }
 

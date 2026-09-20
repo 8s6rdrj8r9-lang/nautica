@@ -50,3 +50,40 @@ final class WindowTabRegistry {
             .filter { FileManager.default.fileExists(atPath: $0.path) }
     }
 }
+
+/// Manages window tab grouping, moving tabs to separate windows, merging windows,
+/// and tab closure actions. Main actor only.
+@MainActor
+final class WindowTabManager {
+    static let shared = WindowTabManager()
+
+    private init() {}
+
+    /// Moves the active tab into its own separate window.
+    func moveTabToNewWindow(for window: NSWindow? = NSApp.keyWindow) {
+        window?.moveTabToNewWindow(nil)
+    }
+
+    /// Merges all open browser windows into a single tabbed window.
+    func mergeAllWindows(for window: NSWindow? = NSApp.keyWindow) {
+        window?.mergeAllWindows(nil)
+    }
+
+    /// Closes all tabs in the active window's tab group except for the active tab.
+    func closeOtherTabs(for window: NSWindow? = NSApp.keyWindow) {
+        guard let window, let tabbed = window.tabbedWindows else { return }
+        for tab in tabbed where tab !== window {
+            tab.performClose(nil)
+        }
+    }
+
+    /// Closes all tabs in the tab group to the right of the active tab.
+    func closeTabsToTheRight(for window: NSWindow? = NSApp.keyWindow) {
+        guard let window, let tabbed = window.tabbedWindows,
+              let currentIndex = tabbed.firstIndex(where: { $0 === window }) else { return }
+        let toClose = tabbed.suffix(from: currentIndex + 1)
+        for tab in toClose {
+            tab.performClose(nil)
+        }
+    }
+}

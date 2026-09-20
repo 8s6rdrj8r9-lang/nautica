@@ -12,6 +12,11 @@ actor FileSystemService {
         .creationDateKey,
         .isHiddenKey,
         .contentTypeKey,
+        .isUbiquitousItemKey,
+        .ubiquitousItemDownloadingStatusKey,
+        .ubiquitousItemIsDownloadingKey,
+        .ubiquitousItemHasUnresolvedConflictsKey,
+        .tagNamesKey,
     ]
 
     /// Enumerates a directory via NSFileCoordinator, returning sorted items.
@@ -27,12 +32,13 @@ actor FileSystemService {
             error: &coordinationError
         ) { coordinatedURL in
             do {
+                let gitStatusMap = GitService.shared.statusMap(forDirectory: coordinatedURL)
                 let childURLs = try FileManager.default.contentsOfDirectory(
                     at: coordinatedURL,
                     includingPropertiesForKeys: Self.resourceKeys,
                     options: includingHidden ? [] : [.skipsHiddenFiles]
                 )
-                items = childURLs.compactMap { makeItem(from: $0, includingHidden: includingHidden) }
+                items = childURLs.compactMap { makeItem(from: $0, includingHidden: includingHidden, gitStatusMap: gitStatusMap) }
             } catch {
                 enumerationError = error
             }
@@ -48,7 +54,9 @@ actor FileSystemService {
 
     /// Builds a FileItem for a single URL, or nil if unreadable.
     func attributesOfItem(at url: URL) -> FileItem? {
-        makeItem(from: url, includingHidden: true)
+        let parent = url.deletingLastPathComponent()
+        let gitStatusMap = GitService.shared.statusMap(forDirectory: parent)
+        return makeItem(from: url, includingHidden: true, gitStatusMap: gitStatusMap)
     }
 
     func fileExists(at url: URL) -> Bool {
@@ -57,12 +65,16 @@ actor FileSystemService {
 
     // MARK: - Private
 
-    private func makeItem(from url: URL, includingHidden: Bool) -> FileItem? {
+    private func makeItem(from url: URL, includingHidden: Bool, gitStatusMap: [String: GitFileState]? = nil) -> FileItem? {
         guard let values = try? url.resourceValues(forKeys: Set(Self.resourceKeys)) else {
             return nil
         }
         let isHidden = values.isHidden ?? url.lastPathComponent.hasPrefix(".")
         if isHidden && !includingHidden { return nil }
+
+        let provider = CloudStorageService.provider(for: url)
+        let cloudStatus = CloudStorageService.cloudStatus(for: url, resourceValues: values)
+        let gitStatus = gitStatusMap?[url.standardizedFileURL.path] ?? gitStatusMap?[url.lastPathComponent]
 
         return FileItem(
             url: url,
@@ -72,7 +84,11 @@ actor FileSystemService {
             modificationDate: values.contentModificationDate,
             creationDate: values.creationDate,
             isHidden: isHidden,
-            kind: values.contentType?.localizedDescription ?? ""
+            kind: values.contentType?.localizedDescription ?? "",
+            cloudStatus: cloudStatus,
+            cloudProvider: provider,
+            tags: values.tagNames ?? [],
+            gitStatus: gitStatus
         )
     }
 }

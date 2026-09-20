@@ -3,18 +3,90 @@ import Foundation
 /// Observable container for a directory listing.
 @Observable
 final class DirectoryContents {
-    var url: URL
+    var url: URL {
+        didSet {
+            if oldValue != url {
+                startWatcher()
+            }
+        }
+    }
+    var rawItems: [FileItem] = []
     var items: [FileItem] = []
     var isLoading: Bool = false
     var showHiddenFiles: Bool = false
     var error: Error?
 
+    var filterText: String = "" {
+        didSet {
+            if oldValue != filterText { applyFilter() }
+        }
+    }
+    var filterTag: TagColor? = nil {
+        didSet {
+            if oldValue != filterTag { applyFilter() }
+        }
+    }
+
+    var isFiltering: Bool {
+        !filterText.trimmingCharacters(in: .whitespaces).isEmpty || filterTag != nil
+    }
+
+    var totalUnfilteredCount: Int {
+        rawItems.count
+    }
+
+    func clearFilter() {
+        filterText = ""
+        filterTag = nil
+    }
+
+    private func applyFilter() {
+        var result = rawItems
+        let query = filterText.trimmingCharacters(in: .whitespaces).lowercased()
+        if !query.isEmpty {
+            result = result.filter { item in
+                item.name.lowercased().contains(query)
+            }
+        }
+        if let filterTag {
+            result = result.filter { item in
+                item.tagColors.contains(filterTag)
+            }
+        }
+        items = Self.sort(result, by: sortKey, ascending: sortAscending)
+    }
+
+    @ObservationIgnored
+    private var watcher: DirectoryWatcherService?
+
     /// Active sort, shared by the icon and list views (folders always first).
     var sortKey: SortKey = .name
     var sortAscending: Bool = true
+    /// Active group criterion (Finder "Use Groups" / "Arrange By").
+    var groupBy: GroupByCriterion = .none {
+        didSet {
+            if oldValue != groupBy {
+                onGroupingChanged?()
+            }
+        }
+    }
+    var onGroupingChanged: (() -> Void)?
+
+    /// Classified groups based on current items and groupBy criterion.
+    func groupedSections() -> [FileItemGroup] {
+        GroupClassifier.classify(items, by: groupBy)
+    }
 
     init(url: URL) {
         self.url = url
+        startWatcher()
+    }
+
+    private func startWatcher() {
+        watcher?.stopWatching()
+        watcher = DirectoryWatcherService(url: url) { [weak self] in
+            self?.reload()
+        }
     }
 
     /// Re-enumerates the directory on a background actor and applies
@@ -28,8 +100,10 @@ final class DirectoryContents {
             do {
                 let contents = try await FileSystemService.shared
                     .contentsOfDirectory(at: url, includingHidden: includeHidden)
-                items = Self.sort(contents, by: sortKey, ascending: sortAscending)
+                rawItems = contents
+                applyFilter()
             } catch {
+                rawItems = []
                 items = []
                 self.error = error
             }
@@ -39,6 +113,7 @@ final class DirectoryContents {
 
     /// Sorts the current items in place by the given key path.
     func sort(by keyPath: KeyPath<FileItem, some Comparable>) {
+        rawItems.sort { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
         items.sort { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
     }
 
@@ -47,6 +122,7 @@ final class DirectoryContents {
     func sort(by key: SortKey, ascending: Bool) {
         sortKey = key
         sortAscending = ascending
+        rawItems = Self.sort(rawItems, by: key, ascending: ascending)
         items = Self.sort(items, by: key, ascending: ascending)
         onSortChanged?()
     }

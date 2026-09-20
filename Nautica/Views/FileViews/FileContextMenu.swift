@@ -21,6 +21,7 @@ extension NSMenuItem {
 
 /// The standard right-click menu shared by the icon and list views:
 /// Open, Open With, Quick Look, Get Info, Rename, Copy, Move to Trash, Share.
+@MainActor
 enum FileContextMenu {
     struct Actions {
         var open: () -> Void
@@ -32,22 +33,264 @@ enum FileContextMenu {
         var copy: () -> Void
         var trash: () -> Void
         var share: () -> Void
+        var compress: (() -> Void)? = nil
+        var extract: (() -> Void)? = nil
+        var mountDiskImage: (() -> Void)? = nil
+        var compressWithPassword: (() -> Void)? = nil
+        var createSymlink: (() -> Void)? = nil
+        var copyPath: (() -> Void)? = nil
+        var openInTerminal: (() -> Void)? = nil
+        var putBack: (() -> Void)? = nil
+        var makeAlias: (() -> Void)? = nil
+        var showOriginal: (() -> Void)? = nil
+        var rotateLeft: (() -> Void)? = nil
+        var rotateRight: (() -> Void)? = nil
+        var createPDF: (() -> Void)? = nil
+        var runShortcut: ((String) -> Void)? = nil
+        var toggleTag: ((TagColor) -> Void)? = nil
+        var clearTags: (() -> Void)? = nil
+        var copyChecksum: (() -> Void)? = nil
+        var findDuplicates: (() -> Void)? = nil
+        var gitStage: (() -> Void)? = nil
+        var gitUnstage: (() -> Void)? = nil
+        var gitDiscard: (() -> Void)? = nil
+        var gitDiff: (() -> Void)? = nil
+        var gitCommit: (() -> Void)? = nil
     }
 
     static func makeMenu(for items: [FileItem], actions: Actions) -> NSMenu {
         let menu = NSMenu()
+        if let putBack = actions.putBack, items.contains(where: { TrashOriginStore.shared.canPutBack(url: $0.url) }) {
+            menu.addItem(NSMenuItem(title: "Put Back", enabled: !items.isEmpty) { _ in putBack() })
+            menu.addItem(.separator())
+        }
         menu.addItem(NSMenuItem(title: "Open") { _ in actions.open() })
         menu.addItem(openWithItem(for: items, actions: actions))
+
+        if items.count == 1, ArchiveService.shared.isArchive(url: items[0].url), let extract = actions.extract {
+            let extractItem = NSMenuItem(title: "Extract “\(items[0].name)”") { _ in extract() }
+            if let icon = NSImage(systemSymbolName: "archivebox.arrow.down", accessibilityDescription: nil) {
+                extractItem.image = icon
+            }
+            menu.addItem(extractItem)
+        }
+
+        if items.count == 1, ArchiveService.shared.isDiskImage(url: items[0].url), let mount = actions.mountDiskImage {
+            let mountItem = NSMenuItem(title: "Mount Disk Image") { _ in mount() }
+            if let icon = NSImage(systemSymbolName: "opticaldiscdrive", accessibilityDescription: nil) {
+                mountItem.image = icon
+            }
+            menu.addItem(mountItem)
+        }
+
+        if let openInTerminal = actions.openInTerminal {
+            let emulator = TerminalService.shared.defaultTerminal()
+            let terminalItem = NSMenuItem(title: "Open in \(emulator.rawValue)", enabled: !items.isEmpty) { _ in
+                openInTerminal()
+            }
+            if let appURL = emulator.appURL {
+                let icon = NSWorkspace.shared.icon(forFile: appURL.path)
+                icon.size = NSSize(width: 16, height: 16)
+                terminalItem.image = icon
+            }
+            menu.addItem(terminalItem)
+        }
+        if items.count == 1, items[0].isAliasOrSymlink, let showOriginal = actions.showOriginal {
+            menu.addItem(NSMenuItem(title: "Show Original") { _ in showOriginal() })
+        }
         menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: "Get Info") { _ in actions.getInfo() })
         menu.addItem(NSMenuItem(title: "Quick Look") { _ in actions.quickLook() })
         let renameTitle = items.count > 1 ? "Batch Rename (\(items.count) Items)…" : "Rename…"
         menu.addItem(NSMenuItem(title: renameTitle, enabled: !items.isEmpty) { _ in actions.rename() })
+
+        // Tags submenu
+        let tagsItem = NSMenuItem(title: "Tags…", action: nil, keyEquivalent: "")
+        let tagsMenu = NSMenu()
+        for color in TagColor.allCases {
+            let item = NSMenuItem(title: color.name, enabled: !items.isEmpty) { _ in
+                actions.toggleTag?(color)
+            }
+            if let dot = TagDotsHelper.image(for: [color], diameter: 10) {
+                item.image = dot
+            }
+            item.keyEquivalent = "\(color.shortcutNumber)"
+            item.keyEquivalentModifierMask = .control
+            tagsMenu.addItem(item)
+        }
+        tagsMenu.addItem(.separator())
+        let clearTagsItem = NSMenuItem(title: "Clear All Tags", enabled: !items.isEmpty) { _ in
+            actions.clearTags?()
+        }
+        clearTagsItem.keyEquivalent = "0"
+        clearTagsItem.keyEquivalentModifierMask = .control
+        tagsMenu.addItem(clearTagsItem)
+        tagsItem.submenu = tagsMenu
+        menu.addItem(tagsItem)
+
         menu.addItem(.separator())
+
+        let compressTitle = items.count == 1 ? "Compress “\(items[0].name)”" : "Compress \(items.count) Items"
+        if let compress = actions.compress {
+            menu.addItem(NSMenuItem(title: compressTitle, enabled: !items.isEmpty) { _ in compress() })
+        }
+        if let compressWithPassword = actions.compressWithPassword {
+            menu.addItem(NSMenuItem(title: "Compress with Password…", enabled: !items.isEmpty) { _ in compressWithPassword() })
+        }
+        if let makeAlias = actions.makeAlias {
+            let aliasTitle = items.count == 1 ? "Make Alias" : "Make \(items.count) Aliases"
+            menu.addItem(NSMenuItem(title: aliasTitle, enabled: !items.isEmpty) { _ in makeAlias() })
+        }
+        if let createSymlink = actions.createSymlink {
+            menu.addItem(NSMenuItem(title: "Make Symlink", enabled: items.count == 1) { _ in createSymlink() })
+        }
+        if let copyPath = actions.copyPath {
+            menu.addItem(NSMenuItem(title: "Copy as Pathname", enabled: !items.isEmpty) { _ in copyPath() })
+        }
+        if let copyChecksum = actions.copyChecksum, items.count == 1, !items[0].isDirectory {
+            menu.addItem(NSMenuItem(title: "Copy SHA-256 Checksum") { _ in copyChecksum() })
+        }
+        if let findDuplicates = actions.findDuplicates {
+            if items.count == 1, items[0].isDirectory {
+                menu.addItem(NSMenuItem(title: "Find Duplicates in “\(items[0].name)”…") { _ in findDuplicates() })
+            } else if items.isEmpty {
+                menu.addItem(NSMenuItem(title: "Find Duplicates in Folder…") { _ in findDuplicates() })
+            }
+        }
+        if let qaItem = quickActionsItem(for: items, actions: actions) {
+            menu.addItem(qaItem)
+        }
+        menu.addItem(.separator())
+
         menu.addItem(NSMenuItem(title: "Copy") { _ in actions.copy() })
         menu.addItem(NSMenuItem(title: "Move to Trash") { _ in actions.trash() })
+
+        // Cloud file actions (Download Now / Free Up Space)
+        let cloudItems = items.filter(\.isCloudItem)
+        if !cloudItems.isEmpty {
+            let hasOnlineOnly = cloudItems.contains { $0.canDownload }
+            let hasDownloaded = cloudItems.contains { $0.canEvict }
+
+            let providerName = cloudItems.first?.cloudProvider.map {
+                CloudStorageService.formatDisplayName(for: $0.rawValue, provider: $0)
+            } ?? "Cloud"
+
+            if hasOnlineOnly {
+                menu.addItem(NSMenuItem(title: "Download from \(providerName)") { _ in
+                    Task {
+                        for item in cloudItems where item.canDownload {
+                            try? await CloudStorageService.downloadItem(at: item.url)
+                        }
+                    }
+                })
+            }
+            if hasDownloaded {
+                menu.addItem(NSMenuItem(title: "Remove Download (Free Up Space)") { _ in
+                    Task {
+                        for item in cloudItems where item.canEvict {
+                            try? await CloudStorageService.evictItem(at: item.url)
+                        }
+                    }
+                })
+            }
+        }
+
+        if let gitMenuItem = gitItem(for: items, actions: actions) {
+            menu.addItem(gitMenuItem)
+        }
+
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Share…") { _ in actions.share() })
+        menu.addItem(shareItem(for: items, actions: actions))
         return menu
+    }
+
+    private static func gitItem(for items: [FileItem], actions: Actions) -> NSMenuItem? {
+        guard actions.gitStage != nil || actions.gitUnstage != nil || actions.gitDiscard != nil || actions.gitDiff != nil || actions.gitCommit != nil else {
+            return nil
+        }
+        let submenu = NSMenu(title: "Git")
+        var hasAny = false
+
+        if let gitDiff = actions.gitDiff, !items.isEmpty {
+            let item = NSMenuItem(title: items.count == 1 ? "Diff “\(items[0].name)”…" : "Diff Selected…") { _ in
+                gitDiff()
+            }
+            if let img = NSImage(systemSymbolName: "doc.text.magnifyingglass", accessibilityDescription: nil) {
+                item.image = img
+            }
+            submenu.addItem(item)
+            hasAny = true
+        }
+
+        if let gitStage = actions.gitStage, !items.isEmpty {
+            let item = NSMenuItem(title: items.count == 1 ? "Stage “\(items[0].name)”" : "Stage \(items.count) Items") { _ in
+                gitStage()
+            }
+            if let img = NSImage(systemSymbolName: "plus.circle", accessibilityDescription: nil) {
+                item.image = img
+            }
+            submenu.addItem(item)
+            hasAny = true
+        }
+
+        if let gitUnstage = actions.gitUnstage, !items.isEmpty {
+            let item = NSMenuItem(title: items.count == 1 ? "Unstage “\(items[0].name)”" : "Unstage \(items.count) Items") { _ in
+                gitUnstage()
+            }
+            if let img = NSImage(systemSymbolName: "minus.circle", accessibilityDescription: nil) {
+                item.image = img
+            }
+            submenu.addItem(item)
+            hasAny = true
+        }
+
+        if let gitDiscard = actions.gitDiscard, !items.isEmpty {
+            let item = NSMenuItem(title: items.count == 1 ? "Discard Changes in “\(items[0].name)”…" : "Discard Changes in \(items.count) Items…") { _ in
+                gitDiscard()
+            }
+            if let img = NSImage(systemSymbolName: "arrow.uturn.backward", accessibilityDescription: nil) {
+                item.image = img
+            }
+            submenu.addItem(item)
+            hasAny = true
+        }
+
+        if let gitCommit = actions.gitCommit {
+            if hasAny {
+                submenu.addItem(.separator())
+            }
+            let item = NSMenuItem(title: "Commit Changes…") { _ in
+                gitCommit()
+            }
+            if let img = NSImage(systemSymbolName: "checkmark.circle", accessibilityDescription: nil) {
+                item.image = img
+            }
+            submenu.addItem(item)
+            hasAny = true
+        }
+
+        guard hasAny else { return nil }
+        let gitMenuItem = NSMenuItem(title: "Git", action: nil, keyEquivalent: "")
+        if let gitIcon = NSImage(systemSymbolName: "arrow.triangle.branch", accessibilityDescription: "Git") {
+            gitMenuItem.image = gitIcon
+        }
+        gitMenuItem.submenu = submenu
+        return gitMenuItem
+    }
+
+    private static func shareItem(for items: [FileItem], actions: Actions) -> NSMenuItem {
+        let urls = items.map(\.url)
+        guard !urls.isEmpty else {
+            let item = NSMenuItem(title: "Share…", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            return item
+        }
+        let picker = NSSharingServicePicker(items: urls)
+        let shareItem = picker.standardShareMenuItem
+        if let icon = NSImage(systemSymbolName: "square.and.arrow.up", accessibilityDescription: "Share") {
+            shareItem.image = icon
+        }
+        return shareItem
     }
 
     private static func openWithItem(for items: [FileItem], actions: Actions) -> NSMenuItem {
@@ -77,29 +320,75 @@ enum FileContextMenu {
         return menuItem
     }
 
-    /// Modal info panel for a single item.
-    static func showInfo(for item: FileItem) {
-        let alert = NSAlert()
-        alert.messageText = item.name
-        let icon = NSWorkspace.shared.icon(forFile: item.url.path)
-        icon.size = NSSize(width: 64, height: 64)
-        alert.icon = icon
+    private static func quickActionsItem(for items: [FileItem], actions: Actions) -> NSMenuItem? {
+        let submenu = NSMenu(title: "Quick Actions")
+        var hasAny = false
 
-        var lines = ["Path: \(item.url.path)"]
-        if !item.kind.isEmpty { lines.append("Kind: \(item.kind)") }
-        if let size = item.size {
-            lines.append("Size: \(ByteCountFormatter.string(fromByteCount: size, countStyle: .file))")
+        let imageExtensions: Set<String> = ["jpg", "jpeg", "png", "heic", "tiff", "tif", "bmp", "gif", "webp"]
+        let hasImages = items.contains { imageExtensions.contains($0.url.pathExtension.lowercased()) }
+        let hasPDFs = items.contains { $0.url.pathExtension.lowercased() == "pdf" }
+
+        if hasImages {
+            if let rotateLeft = actions.rotateLeft {
+                let item = NSMenuItem(title: "Rotate Left") { _ in rotateLeft() }
+                if let icon = NSImage(systemSymbolName: "rotate.left", accessibilityDescription: nil) {
+                    item.image = icon
+                }
+                submenu.addItem(item)
+                hasAny = true
+            }
+            if let rotateRight = actions.rotateRight {
+                let item = NSMenuItem(title: "Rotate Right") { _ in rotateRight() }
+                if let icon = NSImage(systemSymbolName: "rotate.right", accessibilityDescription: nil) {
+                    item.image = icon
+                }
+                submenu.addItem(item)
+                hasAny = true
+            }
         }
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        if let created = item.creationDate {
-            lines.append("Created: \(formatter.string(from: created))")
+
+        if (hasImages || hasPDFs) && !items.isEmpty {
+            if let createPDF = actions.createPDF {
+                let item = NSMenuItem(title: "Create PDF") { _ in createPDF() }
+                if let icon = NSImage(systemSymbolName: "doc.richtext", accessibilityDescription: nil) {
+                    item.image = icon
+                }
+                submenu.addItem(item)
+                hasAny = true
+            }
         }
-        if let modified = item.modificationDate {
-            lines.append("Modified: \(formatter.string(from: modified))")
+
+        let shortcuts = QuickActionService.shared.shortcuts()
+        if !shortcuts.isEmpty && !items.isEmpty {
+            if hasAny {
+                submenu.addItem(.separator())
+            }
+            for shortcut in shortcuts.prefix(10) {
+                let item = NSMenuItem(title: shortcut) { _ in
+                    actions.runShortcut?(shortcut)
+                }
+                if let icon = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: nil) {
+                    item.image = icon
+                }
+                submenu.addItem(item)
+                hasAny = true
+            }
         }
-        alert.informativeText = lines.joined(separator: "\n")
-        alert.runModal()
+
+        if !hasAny {
+            return nil
+        }
+
+        let mainItem = NSMenuItem(title: "Quick Actions", action: nil, keyEquivalent: "")
+        if let icon = NSImage(systemSymbolName: "wand.and.stars", accessibilityDescription: nil) {
+            mainItem.image = icon
+        }
+        mainItem.submenu = submenu
+        return mainItem
+    }
+
+    /// Shows floating Get Info panel for a single item.
+    static func showInfo(for item: FileItem) {
+        GetInfoService.shared.showInfo(for: item.url)
     }
 }

@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 
 /// State and persistence for the sidebar: favorites, home-directory tree, and recents.
@@ -5,7 +6,9 @@ import Foundation
 @Observable
 final class SidebarModel {
     var favorites: [SidebarItem] = []
+    var cloudStorage: [SidebarItem] = []
     var locations: [SidebarItem] = []
+    var sharedServers: [SidebarItem] = []
     var treeRoot: SidebarItem?
     var recents: [SidebarItem] = []
 
@@ -24,10 +27,61 @@ final class SidebarModel {
 
     init() {
         favorites = Self.loadFavorites()
+        cloudStorage = CloudStorageService.detectCloudStorageItems()
         locations = Self.loadLocations()
+        sharedServers = Self.loadSharedServers()
         recents = Self.loadRecents()
         let home = FileManager.default.homeURL
         treeRoot = SidebarItem(url: home, name: "Home", children: [])
+
+        NotificationCenter.default.addObserver(
+            forName: NSWorkspace.didMountNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.refreshLocations()
+            }
+        }
+        NotificationCenter.default.addObserver(
+            forName: NSWorkspace.didUnmountNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.refreshLocations()
+            }
+        }
+    }
+
+    /// Re-scans active cloud storage directories (OneDrive, Google Drive, Dropbox, iCloud Drive).
+    func refreshCloudStorage() {
+        cloudStorage = CloudStorageService.detectCloudStorageItems()
+    }
+
+    /// Adds a user-specified custom cloud folder to the sidebar.
+    func addCustomCloudFolder(url: URL) {
+        CloudStorageService.addCustomCloudFolder(url)
+        refreshCloudStorage()
+    }
+
+    /// Hides a cloud storage provider from the sidebar.
+    func hideCloudStorageItem(item: SidebarItem) {
+        CloudStorageService.hideCloudFolder(path: item.url.standardizedFileURL.path)
+        CloudStorageService.hideCloudFolder(path: item.name)
+        refreshCloudStorage()
+    }
+
+    /// Re-scans mounted volumes, locations, and shared network servers.
+    func refreshLocations() {
+        locations = Self.loadLocations()
+        sharedServers = Self.loadSharedServers()
+    }
+
+    /// Ejects/unmounts the given volume.
+    func ejectVolume(item: SidebarItem) throws {
+        try NSWorkspace.shared.unmountAndEjectDevice(at: item.url)
+        refreshLocations()
     }
 
     // MARK: - Favorites
@@ -39,6 +93,24 @@ final class SidebarModel {
               !favorites.contains(where: { $0.url == url })
         else { return }
         favorites.append(Self.makeItem(for: url))
+        Self.saveFavorites(favorites)
+    }
+
+    func insertFavorite(url: URL, at index: Int) {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
+              isDirectory.boolValue
+        else { return }
+
+        if let existingIndex = favorites.firstIndex(where: { $0.url == url }) {
+            if existingIndex == index || existingIndex == index - 1 { return }
+            let item = favorites.remove(at: existingIndex)
+            let clampedIndex = max(0, min(favorites.count, index > existingIndex ? index - 1 : index))
+            favorites.insert(item, at: clampedIndex)
+        } else {
+            let clampedIndex = max(0, min(favorites.count, index))
+            favorites.insert(Self.makeItem(for: url), at: clampedIndex)
+        }
         Self.saveFavorites(favorites)
     }
 
@@ -183,12 +255,77 @@ final class SidebarModel {
 
     private static func loadLocations() -> [SidebarItem] {
         var items: [SidebarItem] = []
-        items.append(SidebarItem(url: URL(fileURLWithPath: "/"), name: "Macintosh HD"))
-        let icloud = FileManager.default.homeURL.appendingPathComponent("Library/Mobile Documents/com~apple~CloudDocs")
-        if FileManager.default.fileExists(atPath: icloud.path) {
-            items.append(SidebarItem(url: icloud, name: "iCloud Drive"))
+        let fileManager = FileManager.default
+        let keys: [URLResourceKey] = [
+            .volumeLocalizedNameKey,
+            .volumeIsRemovableKey,
+            .volumeIsEjectableKey,
+            .volumeIsInternalKey,
+            .volumeIsRootFileSystemKey
+        ]
+        let options: FileManager.VolumeEnumerationOptions = [.skipHiddenVolumes]
+        let urls = fileManager.mountedVolumeURLs(includingResourceValuesForKeys: keys, options: options) ?? []
+
+        for url in urls {
+            let values = try? url.resourceValues(forKeys: Set(keys))
+            let name = values?.volumeLocalizedName ?? url.lastPathComponent
+            let isInternal = values?.volumeIsInternal ?? true
+            let isEjectable = (values?.volumeIsEjectable ?? false) || (values?.volumeIsRemovable ?? false)
+            let isRoot = (values?.volumeIsRootFileSystem ?? false) || (url.path == "/")
+            let displayName = isRoot ? "Macintosh HD" : name
+
+            if isInternal || isRoot || !url.path.hasPrefix("/Volumes") {
+                items.append(SidebarItem(
+                    url: url,
+                    name: displayName,
+                    isEjectable: isEjectable
+                ))
+            }
         }
-        items.append(SidebarItem(url: URL(fileURLWithPath: "/Volumes"), name: "Network"))
+
+        if !items.contains(where: { $0.url.path == "/" }) {
+            items.insert(SidebarItem(url: URL(fileURLWithPath: "/"), name: "Macintosh HD"), at: 0)
+        }
+
+        return items
+    }
+
+    static func loadSharedServers() -> [SidebarItem] {
+        var items: [SidebarItem] = []
+        let fileManager = FileManager.default
+        let keys: [URLResourceKey] = [
+            .volumeLocalizedNameKey,
+            .volumeIsRemovableKey,
+            .volumeIsEjectableKey,
+            .volumeIsInternalKey,
+            .volumeIsRootFileSystemKey
+        ]
+        let options: FileManager.VolumeEnumerationOptions = [.skipHiddenVolumes]
+        let urls = fileManager.mountedVolumeURLs(includingResourceValuesForKeys: keys, options: options) ?? []
+
+        for url in urls {
+            let values = try? url.resourceValues(forKeys: Set(keys))
+            let isInternal = values?.volumeIsInternal ?? true
+            let isRoot = (values?.volumeIsRootFileSystem ?? false) || (url.path == "/")
+            let name = values?.volumeLocalizedName ?? url.lastPathComponent
+            let isEjectable = (values?.volumeIsEjectable ?? false) || (values?.volumeIsRemovable ?? false)
+
+            if !isInternal && !isRoot && url.path.hasPrefix("/Volumes") {
+                items.append(SidebarItem(
+                    url: url,
+                    name: name,
+                    customSystemImage: "server.rack",
+                    isEjectable: isEjectable
+                ))
+            }
+        }
+
+        // Always include Network entry
+        let networkURL = URL(fileURLWithPath: "/Volumes")
+        if !items.contains(where: { $0.url == networkURL }) {
+            items.insert(SidebarItem(url: networkURL, name: "Network", customSystemImage: "network"), at: 0)
+        }
+
         return items
     }
 

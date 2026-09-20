@@ -60,7 +60,9 @@ struct MediaMetadataPanelView: View {
             Divider()
 
             if let selectedItem {
-                if isLoading {
+                if selectedItem.cloudStatus == .onlineOnly {
+                    onlineOnlyCloudView(selectedItem)
+                } else if isLoading {
                     VStack(spacing: 12) {
                         Spacer()
                         ProgressView().controlSize(.small)
@@ -234,6 +236,44 @@ struct MediaMetadataPanelView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    private func onlineOnlyCloudView(_ item: FileItem) -> some View {
+        VStack(spacing: 12) {
+            Spacer()
+            Image(systemName: "icloud.and.arrow.down")
+                .font(.system(size: 38))
+                .foregroundStyle(Color.accentColor)
+
+            Text(item.name)
+                .font(.system(size: 13, weight: .semibold))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .padding(.horizontal, 16)
+
+            Text("Stored in Cloud")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+
+            Text("This file hasn't been downloaded locally yet. Download it to inspect deep EXIF and media specifications.")
+                .font(.system(size: 11))
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+
+            Button {
+                try? FileManager.default.startDownloadingUbiquitousItem(at: item.url)
+            } label: {
+                Label("Download Now", systemImage: "arrow.down.circle")
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .padding(.top, 4)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     // MARK: - Helpers
 
     private func metadataSection<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
@@ -265,6 +305,12 @@ struct MediaMetadataPanelView: View {
     private func loadMediaDetails() {
         guard let item = selectedItem, !item.isDirectory else {
             details = nil
+            return
+        }
+
+        guard item.cloudStatus != .onlineOnly else {
+            details = nil
+            isLoading = false
             return
         }
 
