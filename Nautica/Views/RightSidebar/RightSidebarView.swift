@@ -63,7 +63,9 @@ struct RightSidebarView: View {
                     currentFolderURL: currentFolderURL,
                     currentFolderItemCount: currentFolderItemCount,
                     onQuickLook: onQuickLook,
-                    onOpenTerminal: onOpenTerminal
+                    onOpenTerminal: onOpenTerminal,
+                    onReloadDirectory: onReloadDirectory,
+                    onSelectTab: { tab in selectedTab = tab }
                 )
 
             case .shelf:
@@ -92,7 +94,8 @@ struct RightSidebarView: View {
             case .media:
                 MediaMetadataPanelView(
                     selectedItem: selectedItems.first,
-                    onQuickLook: onQuickLook
+                    onQuickLook: onQuickLook,
+                    onReloadDirectory: onReloadDirectory
                 )
 
             case .terminal:

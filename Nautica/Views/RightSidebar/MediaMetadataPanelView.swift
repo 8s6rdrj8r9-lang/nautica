@@ -2,8 +2,9 @@ import SwiftUI
 import AppKit
 import ImageIO
 import AVFoundation
+import PDFKit
 
-/// Media metadata extracted from images, audio, or video.
+/// Media metadata extracted from images, audio, video, or PDF documents.
 struct MediaDetails {
     var mediaType: MediaType = .other
     var dimensions: String?
@@ -27,32 +28,76 @@ struct MediaDetails {
     var title: String?
     var artist: String?
     var album: String?
+    var year: String?
+    var copyright: String?
+    var comment: String?
+    var keywords: [String] = []
+    var subject: String?
+    var pageCount: Int?
 
     enum MediaType {
         case image
         case audio
         case video
+        case pdf
         case other
     }
 }
 
-/// Right sidebar panel displaying deep EXIF, camera, audio, and video specifications.
+/// Right sidebar panel displaying deep EXIF, camera, audio, video, and PDF document metadata,
+/// featuring an interactive in-place metadata editor with atomic disk saving and Spotlight synchronization.
 struct MediaMetadataPanelView: View {
     let selectedItem: FileItem?
     var onQuickLook: () -> Void
+    var onReloadDirectory: (() -> Void)? = nil
 
     @State private var details: MediaDetails?
     @State private var isLoading = false
+    @State private var isEditing = false
+    @State private var isSaving = false
+    @State private var showSavedToast = false
+    @State private var errorMessage: String? = nil
+
+    // Editing State Fields
+    @State private var editTitle: String = ""
+    @State private var editAuthor: String = ""
+    @State private var editSubject: String = ""
+    @State private var editAlbum: String = ""
+    @State private var editYear: String = ""
+    @State private var editKeywords: String = ""
+    @State private var editComment: String = ""
+
+    private var isEditable: Bool {
+        guard let details = details else { return false }
+        return details.mediaType == .image || details.mediaType == .pdf || details.mediaType == .audio
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Label("Media & EXIF", systemImage: "camera")
+                Label("Media & Metadata", systemImage: "pencil.and.list.clipboard")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .textCase(.uppercase)
+
                 Spacer()
+
+                if let _ = selectedItem, isEditable && !isLoading {
+                    Button {
+                        if isEditing {
+                            cancelEditing()
+                        } else {
+                            startEditing()
+                        }
+                    } label: {
+                        Text(isEditing ? "Done" : "Edit")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(isEditing ? Color.secondary : Color.accentColor)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isSaving)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -66,12 +111,16 @@ struct MediaMetadataPanelView: View {
                     VStack(spacing: 12) {
                         Spacer()
                         ProgressView().controlSize(.small)
-                        Text("Reading media properties…").font(.caption).foregroundStyle(.secondary)
+                        Text("Reading file properties…").font(.caption).foregroundStyle(.secondary)
                         Spacer()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let details, details.mediaType != .other {
-                    mediaContentView(item: selectedItem, details: details)
+                    if isEditing {
+                        editorFormView(item: selectedItem, details: details)
+                    } else {
+                        mediaContentView(item: selectedItem, details: details)
+                    }
                 } else {
                     nonMediaSelectedView(selectedItem)
                 }
@@ -80,16 +129,17 @@ struct MediaMetadataPanelView: View {
             }
         }
         .task(id: selectedItem?.url) {
+            isEditing = false
             loadMediaDetails()
         }
     }
 
-    // MARK: - Subviews
+    // MARK: - Read-Only View
 
     private func mediaContentView(item: FileItem, details: MediaDetails) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                // Header Thumbnail
+                // Header Thumbnail & Title
                 VStack(spacing: 6) {
                     if let icon = item.iconImage {
                         Image(nsImage: icon)
@@ -108,19 +158,60 @@ struct MediaMetadataPanelView: View {
                         Text(dim + (details.megapixels.map { " (\($0))" } ?? ""))
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    } else if let pages = details.pageCount {
+                        Text("\(pages) page\(pages == 1 ? "" : "s")")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 6)
 
-                // Quick Look Action
-                Button(action: onQuickLook) {
-                    Label("Preview Media", systemImage: "eye")
-                        .frame(maxWidth: .infinity)
+                // Quick Look Action & Saved Toast
+                VStack(spacing: 6) {
+                    Button(action: onQuickLook) {
+                        Label("Preview File", systemImage: "eye")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .controlSize(.small)
+
+                    if showSavedToast {
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                            Text("Metadata updated successfully")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .transition(.opacity)
+                    }
                 }
-                .controlSize(.small)
 
                 Divider()
+
+                // Common Document / Media Annotations
+                if details.title != nil || details.artist != nil || details.subject != nil || !details.keywords.isEmpty || details.comment != nil {
+                    metadataSection("Description & Annotations") {
+                        if let title = details.title { metaRow("Title", title) }
+                        if let artist = details.artist {
+                            metaRow(details.mediaType == .pdf ? "Author" : (details.mediaType == .audio ? "Artist" : "Photographer"), artist)
+                        }
+                        if let album = details.album { metaRow("Album", album) }
+                        if let subject = details.subject { metaRow("Subject", subject) }
+                        if let comment = details.comment { metaRow("Notes", comment) }
+                        if !details.keywords.isEmpty {
+                            metaRow("Keywords", details.keywords.joined(separator: ", "))
+                        }
+                    }
+                    Divider()
+                }
+
+                // PDF Specifics
+                if details.mediaType == .pdf {
+                    metadataSection("PDF Document") {
+                        if let pages = details.pageCount { metaRow("Pages", "\(pages)") }
+                    }
+                }
 
                 // Image Properties / Camera EXIF
                 if details.mediaType == .image {
@@ -172,15 +263,6 @@ struct MediaMetadataPanelView: View {
 
                 // Audio Properties
                 if details.mediaType == .audio {
-                    if details.title != nil || details.artist != nil || details.album != nil {
-                        metadataSection("Track Information") {
-                            if let t = details.title { metaRow("Title", t) }
-                            if let a = details.artist { metaRow("Artist", a) }
-                            if let alb = details.album { metaRow("Album", alb) }
-                        }
-                        Divider()
-                    }
-
                     metadataSection("Audio Specifications") {
                         if let dur = details.duration { metaRow("Duration", dur) }
                         if let br = details.bitrate { metaRow("Bitrate", br) }
@@ -194,6 +276,195 @@ struct MediaMetadataPanelView: View {
         }
     }
 
+    // MARK: - In-Place Editor Form
+
+    private func editorFormView(item: FileItem, details: MediaDetails) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    Text("Edit Metadata")
+                        .font(.system(size: 13, weight: .semibold))
+
+                    Spacer()
+
+                    if isSaving {
+                        ProgressView().controlSize(.small)
+                    }
+                }
+
+                if let err = errorMessage {
+                    Text(err)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    // Title field
+                    formField("Title", text: $editTitle, placeholder: "Title or Caption")
+
+                    // Author / Artist field
+                    let authorLabel = (details.mediaType == .pdf) ? "Author" : (details.mediaType == .audio ? "Artist" : "Photographer")
+                    formField(authorLabel, text: $editAuthor, placeholder: "Author or Creator name")
+
+                    // Audio specific fields
+                    if details.mediaType == .audio {
+                        formField("Album", text: $editAlbum, placeholder: "Album name")
+                        formField("Year", text: $editYear, placeholder: "e.g. 2026")
+                    }
+
+                    // PDF specific fields
+                    if details.mediaType == .pdf {
+                        formField("Subject", text: $editSubject, placeholder: "Document Subject")
+                    }
+
+                    // Keywords (Images & PDFs)
+                    if details.mediaType == .image || details.mediaType == .pdf {
+                        formField("Keywords", text: $editKeywords, placeholder: "Comma separated (e.g. landscape, summer)")
+                    }
+
+                    // User Notes / Comment (Images)
+                    if details.mediaType == .image {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Notes / Comment")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(.secondary)
+                            TextEditor(text: $editComment)
+                                .font(.system(size: 11))
+                                .frame(height: 55)
+                                .border(Color.secondary.opacity(0.2), width: 1)
+                        }
+                    }
+                }
+
+                Divider()
+
+                // Save & Cancel Buttons
+                HStack(spacing: 8) {
+                    Button("Cancel") {
+                        cancelEditing()
+                    }
+                    .controlSize(.small)
+                    .disabled(isSaving)
+
+                    Spacer()
+
+                    Button {
+                        saveMetadata()
+                    } label: {
+                        HStack(spacing: 4) {
+                            if isSaving {
+                                ProgressView().controlSize(.small)
+                            }
+                            Text("Save Changes")
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.small)
+                    .disabled(isSaving)
+                }
+            }
+            .padding(12)
+        }
+    }
+
+    private func formField(_ label: String, text: Binding<String>, placeholder: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.secondary)
+            TextField(placeholder, text: text)
+                .textFieldStyle(.roundedBorder)
+                .controlSize(.small)
+        }
+    }
+
+    private func startEditing() {
+        guard let details = details else { return }
+        editTitle = details.title ?? ""
+        editAuthor = details.artist ?? ""
+        editSubject = details.subject ?? ""
+        editAlbum = details.album ?? ""
+        editYear = details.year ?? ""
+        editKeywords = details.keywords.joined(separator: ", ")
+        editComment = details.comment ?? ""
+        errorMessage = nil
+        isEditing = true
+    }
+
+    private func cancelEditing() {
+        isEditing = false
+        errorMessage = nil
+    }
+
+    private func saveMetadata() {
+        guard let item = selectedItem else { return }
+        isSaving = true
+        errorMessage = nil
+
+        let title = editTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let author = editAuthor.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editAuthor.trimmingCharacters(in: .whitespacesAndNewlines)
+        let subject = editSubject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editSubject.trimmingCharacters(in: .whitespacesAndNewlines)
+        let album = editAlbum.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editAlbum.trimmingCharacters(in: .whitespacesAndNewlines)
+        let year = editYear.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editYear.trimmingCharacters(in: .whitespacesAndNewlines)
+        let comment = editComment.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : editComment.trimmingCharacters(in: .whitespacesAndNewlines)
+        let kwList = editKeywords.components(separatedBy: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        let keywords = kwList.isEmpty ? nil : kwList
+
+        Task {
+            do {
+                if details?.mediaType == .image {
+                    try MetadataEditorService.shared.writeImageMetadata(
+                        at: item.url,
+                        title: title,
+                        author: author,
+                        keywords: keywords,
+                        comment: comment
+                    )
+                } else if details?.mediaType == .pdf {
+                    try MetadataEditorService.shared.writePDFMetadata(
+                        at: item.url,
+                        title: title,
+                        author: author,
+                        subject: subject,
+                        keywords: keywords
+                    )
+                } else if details?.mediaType == .audio {
+                    try MetadataEditorService.shared.writeAudioMetadata(
+                        at: item.url,
+                        title: title,
+                        artist: author,
+                        album: album,
+                        year: year
+                    )
+                }
+
+                await MainActor.run {
+                    isSaving = false
+                    isEditing = false
+                    showSavedToast = true
+                    loadMediaDetails()
+                    onReloadDirectory?()
+
+                    Task {
+                        try? await Task.sleep(nanoseconds: 3_000_000_000)
+                        await MainActor.run {
+                            showSavedToast = false
+                        }
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    isSaving = false
+                    errorMessage = error.localizedDescription
+                }
+            }
+        }
+    }
+
+    // MARK: - State Placeholders
+
     private var emptySelectionView: some View {
         VStack(spacing: 12) {
             Spacer()
@@ -205,7 +476,7 @@ struct MediaMetadataPanelView: View {
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(.secondary)
 
-            Text("Select an image, photo, song, or video to view technical EXIF and stream properties.")
+            Text("Select an image, PDF document, song, or video to view and edit metadata.")
                 .font(.system(size: 11))
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -226,7 +497,7 @@ struct MediaMetadataPanelView: View {
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(.secondary)
 
-            Text("This file does not contain media or EXIF streams.")
+            Text("This file format does not support media or document metadata streams.")
                 .font(.system(size: 11))
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -254,7 +525,7 @@ struct MediaMetadataPanelView: View {
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
 
-            Text("This file hasn't been downloaded locally yet. Download it to inspect deep EXIF and media specifications.")
+            Text("This file hasn't been downloaded locally yet. Download it to inspect and edit metadata.")
                 .font(.system(size: 11))
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -319,6 +590,7 @@ struct MediaMetadataPanelView: View {
         let imageExtensions = ["jpg", "jpeg", "png", "heic", "heif", "tiff", "tif", "raw", "dng", "cr2", "nef", "webp", "gif"]
         let audioExtensions = ["mp3", "m4a", "wav", "flac", "aac", "aiff", "alac"]
         let videoExtensions = ["mp4", "mov", "m4v", "mkv", "avi", "webm"]
+        let pdfExtensions = ["pdf"]
 
         isLoading = true
 
@@ -328,6 +600,9 @@ struct MediaMetadataPanelView: View {
             if imageExtensions.contains(ext) {
                 result.mediaType = .image
                 Self.extractImageMetadata(from: url, into: &result)
+            } else if pdfExtensions.contains(ext) {
+                result.mediaType = .pdf
+                Self.extractPDFMetadata(from: url, into: &result)
             } else if audioExtensions.contains(ext) {
                 result.mediaType = .audio
                 await Self.extractAudioMetadata(from: url, into: &result)
@@ -341,6 +616,21 @@ struct MediaMetadataPanelView: View {
             await MainActor.run {
                 self.details = result
                 self.isLoading = false
+            }
+        }
+    }
+
+    private static func extractPDFMetadata(from url: URL, into result: inout MediaDetails) {
+        guard let doc = PDFDocument(url: url) else { return }
+        result.pageCount = doc.pageCount
+        if let attrs = doc.documentAttributes {
+            result.title = attrs[PDFDocumentAttribute.titleAttribute] as? String
+            result.artist = attrs[PDFDocumentAttribute.authorAttribute] as? String
+            result.subject = attrs[PDFDocumentAttribute.subjectAttribute] as? String
+            if let kw = attrs[PDFDocumentAttribute.keywordsAttribute] as? [String] {
+                result.keywords = kw
+            } else if let kwStr = attrs[PDFDocumentAttribute.keywordsAttribute] as? String {
+                result.keywords = kwStr.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
             }
         }
     }
@@ -363,6 +653,27 @@ struct MediaMetadataPanelView: View {
         if let tiff = props[kCGImagePropertyTIFFDictionary] as? [CFString: Any] {
             result.cameraMake = tiff[kCGImagePropertyTIFFMake] as? String
             result.cameraModel = tiff[kCGImagePropertyTIFFModel] as? String
+            if let desc = tiff[kCGImagePropertyTIFFImageDescription] as? String {
+                result.title = desc
+            }
+            if let artist = tiff[kCGImagePropertyTIFFArtist] as? String {
+                result.artist = artist
+            }
+            if let copyright = tiff[kCGImagePropertyTIFFCopyright] as? String {
+                result.copyright = copyright
+            }
+        }
+
+        if let iptc = props[kCGImagePropertyIPTCDictionary] as? [CFString: Any] {
+            if let caption = iptc[kCGImagePropertyIPTCCaptionAbstract] as? String, result.title == nil {
+                result.title = caption
+            }
+            if let byline = iptc[kCGImagePropertyIPTCByline] as? String, result.artist == nil {
+                result.artist = byline
+            }
+            if let kw = iptc[kCGImagePropertyIPTCKeywords] as? [String] {
+                result.keywords = kw
+            }
         }
 
         if let exif = props[kCGImagePropertyExifDictionary] as? [CFString: Any] {
@@ -387,6 +698,9 @@ struct MediaMetadataPanelView: View {
             }
             if let flash = exif[kCGImagePropertyExifFlash] as? Int {
                 result.flashFired = (flash & 1) != 0
+            }
+            if let comment = exif[kCGImagePropertyExifUserComment] as? String {
+                result.comment = comment
             }
         }
     }

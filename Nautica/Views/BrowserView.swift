@@ -87,6 +87,8 @@ struct BrowserActions {
     var gitCommit: () -> Void
     var gitSwitchBranch: (String) -> Void
     var gitCreateBranch: () -> Void
+    // Metadata Editor (Phase 13).
+    var openMetadataEditor: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -1929,7 +1931,11 @@ struct BrowserView: View {
             gitDiscardSelection: discardSelection,
             gitCommit: { showGitCommitSheet = true },
             gitSwitchBranch: { branch in switchGitBranch(to: branch) },
-            gitCreateBranch: promptCreateGitBranch
+            gitCreateBranch: promptCreateGitBranch,
+            openMetadataEditor: {
+                showRightSidebar = true
+                rightSidebarTab = .media
+            }
         )
     }
 

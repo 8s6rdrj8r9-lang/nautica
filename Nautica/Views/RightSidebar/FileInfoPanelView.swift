@@ -9,6 +9,8 @@ struct FileInfoPanelView: View {
     let currentFolderItemCount: Int
     var onQuickLook: () -> Void
     var onOpenTerminal: (URL) -> Void
+    var onReloadDirectory: (() -> Void)? = nil
+    var onSelectTab: ((RightSidebarTab) -> Void)? = nil
 
     private static let dateFormatter: DateFormatter = {
         let df = DateFormatter()
@@ -80,6 +82,32 @@ struct FileInfoPanelView: View {
                     .frame(maxWidth: .infinity)
             }
             .controlSize(.small)
+        }
+
+        Divider()
+
+        // Tags & Color Labels Palette
+        TagPaletteView(
+            selectedItems: [item],
+            onReloadDirectory: onReloadDirectory
+        )
+
+        if isEditableMediaOrPDF(item) {
+            Divider()
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Metadata Editor")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+
+                Button {
+                    onSelectTab?(.media)
+                } label: {
+                    Label("Edit Metadata in Media Tab", systemImage: "pencil.line")
+                        .frame(maxWidth: .infinity)
+                }
+                .controlSize(.small)
+            }
         }
 
         Divider()
@@ -161,6 +189,14 @@ struct FileInfoPanelView: View {
 
         Divider()
 
+        // Batch Tags & Color Labels Palette
+        TagPaletteView(
+            selectedItems: items,
+            onReloadDirectory: onReloadDirectory
+        )
+
+        Divider()
+
         metadataSection("Selection Summary") {
             metaRow("Total Count", "\(items.count) files/folders")
             let folderCount = items.filter(\.isDirectory).count
@@ -169,6 +205,13 @@ struct FileInfoPanelView: View {
                 metaRow("Composition", "\(folderCount) folders, \(fileCount) files")
             }
         }
+    }
+
+    private func isEditableMediaOrPDF(_ item: FileItem) -> Bool {
+        guard !item.isDirectory else { return false }
+        let ext = item.url.pathExtension.lowercased()
+        let supported = ["jpg", "jpeg", "png", "heic", "heif", "tiff", "tif", "pdf", "mp3", "m4a", "wav", "mp4", "mov"]
+        return supported.contains(ext)
     }
 
     // MARK: - Current Folder View

@@ -47,7 +47,7 @@ enum RightSidebarTab: String, CaseIterable, Identifiable {
         case .shelf: return "Drag and drop staging shelf"
         case .actions: return "Batch utilities and tools"
         case .git: return "Git repository status and commits"
-        case .media: return "EXIF and media specifications"
+        case .media: return "Media, EXIF & document metadata editor"
         case .terminal: return "Embedded command console"
         }
     }

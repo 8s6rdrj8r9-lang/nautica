@@ -77,6 +77,8 @@ struct NauticaApp: App {
                     .keyboardShortcut("i", modifiers: .command)
                 Button("Quick Look") { browserActions?.quickLook() }
                     .keyboardShortcut("y", modifiers: .command)
+                Button("Edit Metadata…") { browserActions?.openMetadataEditor() }
+                    .keyboardShortcut("m", modifiers: [.command, .shift])
                 Menu("Tags") {
                     Button("Red") { browserActions?.toggleTag(.red) }
                         .keyboardShortcut("1", modifiers: .control)
@@ -211,7 +213,8 @@ struct NauticaApp: App {
                         .keyboardShortcut("a", modifiers: [.command, .option])
                     Button("Git Status") { browserActions?.showInspectorTab(.git) }
                         .keyboardShortcut("g", modifiers: [.command, .option])
-                    Button("Media & EXIF") { browserActions?.showInspectorTab(.media) }
+                    Button("Media & Metadata") { browserActions?.showInspectorTab(.media) }
+                        .keyboardShortcut("m", modifiers: [.command, .option])
                     Button("Terminal Console") { browserActions?.showInspectorTab(.terminal) }
                 }
             }
