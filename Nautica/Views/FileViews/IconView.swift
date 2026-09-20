@@ -88,7 +88,11 @@ final class IconCache {
     /// Items per prefetch batch (spec: batches of 50 for large directories).
     static let batchSize = 50
 
-    private let cache = NSCache<NSString, NSImage>()
+    private let cache: NSCache<NSString, NSImage> = {
+        let c = NSCache<NSString, NSImage>()
+        c.countLimit = 1500
+        return c
+    }()
 
     let queue: OperationQueue = {
         let queue = OperationQueue()
