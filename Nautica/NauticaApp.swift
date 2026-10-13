@@ -148,7 +148,14 @@ struct NauticaApp: App {
                 }
                 .keyboardShortcut("t", modifiers: [.command, .shift])
             }
-            CommandMenu("View") {
+            CommandGroup(replacing: .sidebar) {
+                Button("Toggle Sidebar") { browserActions?.toggleSidebar() }
+                    .keyboardShortcut("s", modifiers: [.control, .command])
+                Button("Toggle Inspector") { browserActions?.toggleInspector() }
+                    .keyboardShortcut("i", modifiers: [.command, .option])
+            }
+            CommandGroup(after: .sidebar) {
+                Divider()
                 Button("as Icons") { browserActions?.setViewMode(.icon) }
                     .keyboardShortcut("1", modifiers: .command)
                 Button("as List") { browserActions?.setViewMode(.list) }
@@ -200,19 +207,14 @@ struct NauticaApp: App {
                     Button("Copy to Inactive Pane") { browserActions?.copyToInactivePane() }
                     Button("Move to Inactive Pane") { browserActions?.moveToInactivePane() }
                 }
-                Button("Toggle Sidebar") { browserActions?.toggleSidebar() }
-                    .keyboardShortcut("s", modifiers: [.control, .command])
                 Button("Toggle Dual Pane") { browserActions?.toggleDualPane() }
-                    .keyboardShortcut("d", modifiers: [.command, .shift])
+                    .keyboardShortcut("d", modifiers: [.command, .option])
                 Button("Toggle Filter Bar") { browserActions?.toggleFilterBar() }
                     .keyboardShortcut("f", modifiers: [.command, .option])
                 Button("Toggle Path Bar") { browserActions?.togglePathBar() }
                     .keyboardShortcut("p", modifiers: [.command, .option])
-                Button("Toggle Inspector") { browserActions?.toggleInspector() }
-                    .keyboardShortcut("i", modifiers: [.command, .option])
                 Menu("Inspector Panels") {
                     Button("Recent Folders") { browserActions?.showInspectorTab(.recents) }
-                        .keyboardShortcut("r", modifiers: [.command, .option])
                     Button("Directory Tree") { browserActions?.showInspectorTab(.tree) }
                         .keyboardShortcut("0", modifiers: [.command, .option])
                     Button("File Info") { browserActions?.showInspectorTab(.info) }
@@ -302,7 +304,7 @@ struct NauticaApp: App {
                     Button("Show Tab \(index)") {
                         selectTab(index - 1)
                     }
-                    .keyboardShortcut(KeyEquivalent(Character("\(index)")), modifiers: .command)
+                    .keyboardShortcut(KeyEquivalent(Character("\(index)")), modifiers: [.command, .control])
                 }
             }
         }

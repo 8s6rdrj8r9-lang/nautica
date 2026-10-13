@@ -1,0 +1,17 @@
+Nautica/Services/DuplicateFinderService.swift:125:40: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+123 |         }
+124 | 
+125 |         for case let fileURL as URL in enumerator {
+    |                                        `- warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+126 |             guard !Task.isCancelled else { throw CancellationError() }
+127 | 
+
+Nautica/Services/DuplicateFinderService.swift:166:13: warning: variable 'candidateFiles' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+164 |         let sizeCandidates = sizeGroups.filter { $0.value.count > 1 }
+165 | 
+166 |         var candidateFiles = sizeCandidates.values.flatMap { $0 }
+    |             `- warning: variable 'candidateFiles' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+167 |         let candidateCount = candidateFiles.count
+168 | 
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>

@@ -33,12 +33,13 @@ actor FileSystemService {
         ) { coordinatedURL in
             do {
                 let gitStatusMap = GitService.shared.statusMap(forDirectory: coordinatedURL)
+                let parentProvider = CloudStorageService.provider(for: coordinatedURL)
                 let childURLs = try FileManager.default.contentsOfDirectory(
                     at: coordinatedURL,
                     includingPropertiesForKeys: Self.resourceKeys,
                     options: includingHidden ? [] : [.skipsHiddenFiles]
                 )
-                items = childURLs.compactMap { makeItem(from: $0, includingHidden: includingHidden, gitStatusMap: gitStatusMap) }
+                items = childURLs.compactMap { makeItem(from: $0, includingHidden: includingHidden, gitStatusMap: gitStatusMap, parentProvider: parentProvider) }
             } catch {
                 enumerationError = error
             }
@@ -56,7 +57,8 @@ actor FileSystemService {
     func attributesOfItem(at url: URL) -> FileItem? {
         let parent = url.deletingLastPathComponent()
         let gitStatusMap = GitService.shared.statusMap(forDirectory: parent)
-        return makeItem(from: url, includingHidden: true, gitStatusMap: gitStatusMap)
+        let parentProvider = CloudStorageService.provider(for: parent)
+        return makeItem(from: url, includingHidden: true, gitStatusMap: gitStatusMap, parentProvider: parentProvider)
     }
 
     func fileExists(at url: URL) -> Bool {
@@ -65,16 +67,16 @@ actor FileSystemService {
 
     // MARK: - Private
 
-    private func makeItem(from url: URL, includingHidden: Bool, gitStatusMap: [String: GitFileState]? = nil) -> FileItem? {
+    private func makeItem(from url: URL, includingHidden: Bool, gitStatusMap: [String: GitFileState]? = nil, parentProvider: CloudStorageProvider? = nil) -> FileItem? {
         guard let values = try? url.resourceValues(forKeys: Set(Self.resourceKeys)) else {
             return nil
         }
         let isHidden = values.isHidden ?? url.lastPathComponent.hasPrefix(".")
         if isHidden && !includingHidden { return nil }
 
-        let provider = CloudStorageService.provider(for: url)
-        let cloudStatus = CloudStorageService.cloudStatus(for: url, resourceValues: values)
-        let gitStatus = gitStatusMap?[url.standardizedFileURL.path] ?? gitStatusMap?[url.lastPathComponent]
+        let provider = parentProvider ?? CloudStorageService.provider(for: url)
+        let cloudStatus = CloudStorageService.cloudStatus(for: url, resourceValues: values, provider: provider)
+        let gitStatus = gitStatusMap?[url.standardizedFileURL.path] ?? gitStatusMap?[url.path]
 
         return FileItem(
             url: url,

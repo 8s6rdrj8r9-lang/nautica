@@ -170,7 +170,7 @@ struct CloudStorageService: Sendable {
     }
 
     /// Evaluates the synchronization status of a file using URLResourceValues and low-level APFS dataless flags.
-    static func cloudStatus(for url: URL, resourceValues: URLResourceValues? = nil) -> CloudSyncStatus {
+    static func cloudStatus(for url: URL, resourceValues: URLResourceValues? = nil, provider: CloudStorageProvider? = nil) -> CloudSyncStatus {
         let values = resourceValues ?? (try? url.resourceValues(forKeys: [
             .isUbiquitousItemKey,
             .ubiquitousItemDownloadingStatusKey,
@@ -179,7 +179,7 @@ struct CloudStorageService: Sendable {
         ]))
 
         let isUbiquitous = values?.isUbiquitousItem ?? false
-        let cloudProv = provider(for: url)
+        let cloudProv = provider ?? self.provider(for: url)
 
         guard isUbiquitous || cloudProv != nil else {
             return .notCloud

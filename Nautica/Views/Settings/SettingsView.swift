@@ -7,6 +7,8 @@ import SwiftUI
 struct SettingsView: View {
     var body: some View {
         TabView {
+            RightDockSettingsView()
+                .tabItem { Label("Right Dock", systemImage: "sidebar.right") }
             GeneralSettingsTab()
                 .tabItem { Label("General", systemImage: "gear") }
             AppearanceSettingsTab()
@@ -15,6 +17,8 @@ struct SettingsView: View {
                 .tabItem { Label("Terminal", systemImage: "terminal") }
             VaultSecuritySettingsTab()
                 .tabItem { Label("Security & Vaults", systemImage: "lock.shield") }
+            IntelligenceSettingsTab()
+                .tabItem { Label("Intelligence", systemImage: "sparkles") }
             AdvancedSettingsTab()
                 .tabItem { Label("Advanced", systemImage: "wrench.and.screwdriver") }
         }
@@ -29,20 +33,43 @@ private struct GeneralSettingsTab: View {
     @AppStorage(Constants.showExtensionsKey) private var showExtensions = true
     @AppStorage(Constants.confirmTrashKey) private var confirmTrash = true
     @AppStorage(Constants.showHiddenFilesKey) private var showHiddenFiles = false
+    @State private var isDefaultFileManager = DefaultFileManagerService.shared.isDefaultFileManager()
 
     var body: some View {
         Form {
-            Picker("New windows open:", selection: $newWindowFolder) {
-                Text("Home").tag("home")
-                Text("Desktop").tag("desktop")
-                Text("Last visited").tag("lastVisited")
+            Section("General Behavior") {
+                Picker("New windows open:", selection: $newWindowFolder) {
+                    Text("Home").tag("home")
+                    Text("Desktop").tag("desktop")
+                    Text("Last visited").tag("lastVisited")
+                }
+                Toggle("Show file extensions", isOn: $showExtensions)
+                Toggle("Confirm before moving to Trash", isOn: $confirmTrash)
+                Toggle("Show hidden files by default", isOn: $showHiddenFiles)
             }
-            Toggle("Show file extensions", isOn: $showExtensions)
-            Toggle("Confirm before moving to Trash", isOn: $confirmTrash)
-            Toggle("Show hidden files by default", isOn: $showHiddenFiles)
+
+            Section("System Integration") {
+                Toggle("Set Nautica as Default File Manager", isOn: Binding(
+                    get: { isDefaultFileManager },
+                    set: { newValue in
+                        if newValue {
+                            _ = DefaultFileManagerService.shared.setAsDefault()
+                        } else {
+                            _ = DefaultFileManagerService.shared.restoreFinder()
+                        }
+                        isDefaultFileManager = DefaultFileManagerService.shared.isDefaultFileManager()
+                    }
+                ))
+                Text("Uses macOS LaunchServices to route folder opens to Nautica without disabling or modifying System Integrity Protection (SIP). Reversible anytime.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         .padding()
+        .onAppear {
+            isDefaultFileManager = DefaultFileManagerService.shared.isDefaultFileManager()
+        }
     }
 }
 
@@ -292,6 +319,60 @@ private struct AdvancedSettingsTab: View {
     }
 }
 
+// MARK: - Intelligence & AI (macOS 27)
+
+private struct IntelligenceSettingsTab: View {
+    @AppStorage(Constants.aiEnabledKey) private var aiEnabled = true
+    @AppStorage(Constants.aiProviderKey) private var aiProvider = AIService.Provider.appleFoundation.rawValue
+    @AppStorage(Constants.enableAIBackupKey) private var enableAIBackup = true
+    @AppStorage(Constants.openAIAPIKeyKey) private var openAIAPIKey = ""
+
+    var body: some View {
+        Form {
+            Section("Apple Intelligence (macOS 27)") {
+                Toggle("Enable Intelligence Features", isOn: $aiEnabled)
+                Text("Enables on-device directory summaries, smart tag generation, and content explanations. Operates completely locally without network egress.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if aiEnabled {
+                Section("Engine Configuration") {
+                    Picker("Primary Engine:", selection: $aiProvider) {
+                        Text("Apple Foundation Models (On-Device)").tag(AIService.Provider.appleFoundation.rawValue)
+                        Text("ChatGPT (OpenAI)").tag(AIService.Provider.openAI.rawValue)
+                    }
+
+                    HStack {
+                        Label("Siri AI Delegation", systemImage: "waveform")
+                        Spacer()
+                        Text("Enabled via App Intents")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Section("Cloud Backup Fallback") {
+                    Toggle("Enable ChatGPT (OpenAI) Backup", isOn: $enableAIBackup)
+                    Text("Automatically fallback to ChatGPT if on-device models are busy or unavailable.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if enableAIBackup || aiProvider == AIService.Provider.openAI.rawValue {
+                        SecureField("OpenAI API Key:", text: $openAIAPIKey)
+                        Text("Key is stored locally in macOS application preferences and used only for explicit AI requests.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+        .padding()
+    }
+}
+
 #Preview {
     SettingsView()
 }
+

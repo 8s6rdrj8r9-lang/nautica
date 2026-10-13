@@ -36,6 +36,9 @@ final class SearchService: ObservableObject {
     @Published private(set) var currentQuery: String = ""
     @Published private(set) var currentCriteria: [SearchCriterion] = []
     @Published private(set) var results: [FileItem] = []
+    @Published private(set) var totalResultCount: Int = 0
+    @Published private(set) var isTruncated: Bool = false
+    public static let maxResultCap: Int = 500
 
     private var metadataQuery: NSMetadataQuery?
     private var queryObserverTokens: [NSObjectProtocol] = []
@@ -155,6 +158,8 @@ final class SearchService: ObservableObject {
         currentQuery = ""
         currentCriteria = []
         results = []
+        totalResultCount = 0
+        isTruncated = false
         onUpdateHandler = nil
     }
 
@@ -176,10 +181,13 @@ final class SearchService: ObservableObject {
         defer { queryObj.enableUpdates() }
 
         let count = queryObj.resultCount
-        var items: [FileItem] = []
-        items.reserveCapacity(min(count, 500))
+        self.totalResultCount = count
+        self.isTruncated = count > Self.maxResultCap
 
-        for i in 0..<min(count, 500) {
+        var items: [FileItem] = []
+        items.reserveCapacity(min(count, Self.maxResultCap))
+
+        for i in 0..<min(count, Self.maxResultCap) {
             guard let mdItem = queryObj.result(at: i) as? NSMetadataItem,
                   let path = mdItem.value(forAttribute: kMDItemPath as String) as? String else {
                 continue

@@ -184,4 +184,262 @@ final class ArchiveService {
 
         return outputURL
     }
+
+    // MARK: - Encrypted Disk Images & Encrypted Tarballs
+
+    /// Returns whether the given URL points to an encrypted archive (.tar.gz.enc, .tgz.enc, or .enc).
+    func isEncryptedArchive(url: URL) -> Bool {
+        let name = url.lastPathComponent.lowercased()
+        return name.hasSuffix(".tar.gz.enc") || name.hasSuffix(".tgz.enc") || url.pathExtension.lowercased() == "enc"
+    }
+
+    /// Creates an AES-encrypted disk image (.dmg) from the given items.
+    func createEncryptedDiskImage(
+        from urls: [URL],
+        in destinationDir: URL,
+        baseName: String? = nil,
+        password: String,
+        encryption: VaultService.EncryptionAlgorithm = .aes256
+    ) async throws -> URL {
+        guard !urls.isEmpty else {
+            throw NSError(domain: "ArchiveService", code: 400, userInfo: [NSLocalizedDescriptionKey: "No items to archive"])
+        }
+        guard !password.isEmpty else {
+            throw NSError(domain: "ArchiveService", code: 400, userInfo: [NSLocalizedDescriptionKey: "Password cannot be empty"])
+        }
+
+        let archiveBase = baseName ?? (urls.count == 1 ? urls[0].deletingPathExtension().lastPathComponent : "Encrypted Disk Image")
+        let fm = FileManager.default
+        var outputURL = destinationDir.appendingPathComponent("\(archiveBase).dmg")
+        var counter = 2
+        while fm.fileExists(atPath: outputURL.path) {
+            outputURL = destinationDir.appendingPathComponent("\(archiveBase) \(counter).dmg")
+            counter += 1
+        }
+
+        var sourceFolder: URL
+        var temporaryStagingDir: URL? = nil
+
+        if urls.count == 1, urls[0].hasDirectoryPath {
+            sourceFolder = urls[0]
+        } else {
+            // Stage items into a temporary staging folder
+            let staging = fm.temporaryDirectory.appendingPathComponent("NauticaDMGStage-\(UUID().uuidString)")
+            try fm.createDirectory(at: staging, withIntermediateDirectories: true)
+            temporaryStagingDir = staging
+            sourceFolder = staging
+
+            for itemURL in urls {
+                var dest = staging.appendingPathComponent(itemURL.lastPathComponent)
+                var disambiguation = 1
+                let ext = itemURL.pathExtension
+                let baseName = itemURL.deletingPathExtension().lastPathComponent
+                while fm.fileExists(atPath: dest.path) {
+                    let newName = ext.isEmpty ? "\(baseName) (\(disambiguation))" : "\(baseName) (\(disambiguation)).\(ext)"
+                    dest = staging.appendingPathComponent(newName)
+                    disambiguation += 1
+                }
+                try fm.copyItem(at: itemURL, to: dest)
+            }
+        }
+
+        defer {
+            if let temporaryStagingDir {
+                try? fm.removeItem(at: temporaryStagingDir)
+            }
+        }
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
+        process.arguments = [
+            "create",
+            "-srcfolder", sourceFolder.path,
+            "-format", "UDZO",
+            "-encryption", encryption.rawValue,
+            "-stdinpass",
+            outputURL.path
+        ]
+
+        let inPipe = Pipe()
+        process.standardInput = inPipe
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try process.run()
+                    let passwordData = "\(password)\n".data(using: .utf8) ?? Data()
+                    inPipe.fileHandleForWriting.write(passwordData)
+                    try? inPipe.fileHandleForWriting.close()
+
+                    process.waitUntilExit()
+                    if process.terminationStatus == 0 {
+                        continuation.resume()
+                    } else {
+                        continuation.resume(throwing: NSError(
+                            domain: "ArchiveService",
+                            code: Int(process.terminationStatus),
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to create encrypted disk image (Exit code: \(process.terminationStatus))"]
+                        ))
+                    }
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        return outputURL
+    }
+
+    /// Creates an AES-256 encrypted tarball (.tar.gz.enc) from the given items.
+    func createEncryptedTarball(
+        from urls: [URL],
+        in destinationDir: URL,
+        baseName: String? = nil,
+        password: String
+    ) async throws -> URL {
+        guard !urls.isEmpty else {
+            throw NSError(domain: "ArchiveService", code: 400, userInfo: [NSLocalizedDescriptionKey: "No items to archive"])
+        }
+        guard !password.isEmpty else {
+            throw NSError(domain: "ArchiveService", code: 400, userInfo: [NSLocalizedDescriptionKey: "Password cannot be empty"])
+        }
+
+        let archiveBase = baseName ?? (urls.count == 1 ? urls[0].deletingPathExtension().lastPathComponent : "Encrypted Archive")
+        let fm = FileManager.default
+        var outputURL = destinationDir.appendingPathComponent("\(archiveBase).tar.gz.enc")
+        var counter = 2
+        while fm.fileExists(atPath: outputURL.path) {
+            outputURL = destinationDir.appendingPathComponent("\(archiveBase) \(counter).tar.gz.enc")
+            counter += 1
+        }
+
+        let workingDir = urls[0].deletingLastPathComponent()
+
+        let tarProc = Process()
+        tarProc.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        tarProc.currentDirectoryURL = workingDir
+        var tarArgs = ["-czf", "-"]
+        for url in urls {
+            if url.deletingLastPathComponent().path == workingDir.path {
+                tarArgs.append(url.lastPathComponent)
+            } else {
+                tarArgs.append(url.path)
+            }
+        }
+        tarProc.arguments = tarArgs
+
+        let sslProc = Process()
+        sslProc.executableURL = URL(fileURLWithPath: "/usr/bin/openssl")
+        sslProc.arguments = [
+            "enc", "-aes-256-cbc", "-salt", "-pbkdf2",
+            "-pass", "env:ENC_PASS",
+            "-out", outputURL.path
+        ]
+        sslProc.environment = ["ENC_PASS": password]
+
+        let pipe = Pipe()
+        tarProc.standardOutput = pipe
+        sslProc.standardInput = pipe
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try tarProc.run()
+                    try sslProc.run()
+                    tarProc.waitUntilExit()
+                    sslProc.waitUntilExit()
+
+                    if tarProc.terminationStatus == 0 && sslProc.terminationStatus == 0 {
+                        continuation.resume()
+                    } else {
+                        continuation.resume(throwing: NSError(
+                            domain: "ArchiveService",
+                            code: Int(sslProc.terminationStatus != 0 ? sslProc.terminationStatus : tarProc.terminationStatus),
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to create encrypted tarball"]
+                        ))
+                    }
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        return outputURL
+    }
+
+    /// Extracts and decrypts an encrypted tarball (.tar.gz.enc) into a clean destination directory.
+    @discardableResult
+    func extractEncryptedTarball(
+        archiveURL: URL,
+        destination: URL? = nil,
+        password: String
+    ) async throws -> URL {
+        let parentDir = archiveURL.deletingLastPathComponent()
+        var baseName = archiveURL.deletingPathExtension().lastPathComponent
+        if baseName.hasSuffix(".tar.gz") {
+            baseName = String(baseName.dropLast(7))
+        } else if baseName.hasSuffix(".tgz") {
+            baseName = String(baseName.dropLast(4))
+        } else if baseName.hasSuffix(".tar") {
+            baseName = String(baseName.dropLast(4))
+        }
+
+        let targetDir: URL
+        if let destination {
+            targetDir = destination
+        } else {
+            let fm = FileManager.default
+            var candidate = parentDir.appendingPathComponent(baseName)
+            var counter = 2
+            while fm.fileExists(atPath: candidate.path) {
+                candidate = parentDir.appendingPathComponent("\(baseName) \(counter)")
+                counter += 1
+            }
+            targetDir = candidate
+        }
+
+        try FileManager.default.createDirectory(at: targetDir, withIntermediateDirectories: true)
+
+        let sslDec = Process()
+        sslDec.executableURL = URL(fileURLWithPath: "/usr/bin/openssl")
+        sslDec.arguments = [
+            "enc", "-d", "-aes-256-cbc", "-salt", "-pbkdf2",
+            "-pass", "env:ENC_PASS",
+            "-in", archiveURL.path
+        ]
+        sslDec.environment = ["ENC_PASS": password]
+
+        let tarExtract = Process()
+        tarExtract.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        tarExtract.arguments = ["-xzf", "-", "-C", targetDir.path]
+
+        let pipe = Pipe()
+        sslDec.standardOutput = pipe
+        tarExtract.standardInput = pipe
+
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try sslDec.run()
+                    try tarExtract.run()
+                    sslDec.waitUntilExit()
+                    tarExtract.waitUntilExit()
+
+                    if sslDec.terminationStatus == 0 && tarExtract.terminationStatus == 0 {
+                        continuation.resume()
+                    } else {
+                        continuation.resume(throwing: NSError(
+                            domain: "ArchiveService",
+                            code: Int(sslDec.terminationStatus != 0 ? sslDec.terminationStatus : tarExtract.terminationStatus),
+                            userInfo: [NSLocalizedDescriptionKey: "Decryption failed. Please check your password."]
+                        ))
+                    }
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+
+        return targetDir
+    }
 }

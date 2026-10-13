@@ -77,6 +77,11 @@ struct RightSidebarView: View {
                     onPerformMove: onPerformMove
                 )
 
+            case .hex:
+                HexViewerPanelView(
+                    selectedItem: selectedItems.first
+                )
+
             case .actions:
                 QuickActionsPanelView(
                     selectedItems: selectedItems,

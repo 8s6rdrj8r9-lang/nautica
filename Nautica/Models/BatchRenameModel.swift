@@ -238,20 +238,34 @@ final class BatchRenameModel {
     }
 
     private func computeFormatName(original: String, baseName: String, ext: String, number: Int) -> String {
-        // If legacy sequence pattern has '#' placeholders, respect it
-        if sequencePattern.contains("#") && formatType == .customPattern {
+        // If sequence pattern has '#' placeholders, respect it
+        if sequencePattern.contains("#") {
             return computeSequenceWithHashes(original: original, pattern: sequencePattern, number: number)
         }
 
         let numStr = String(format: "%0*d", max(1, paddingDigits), number)
-        let name = customFormatName.trimmingCharacters(in: .whitespaces)
+        let patternName = sequencePattern.trimmingCharacters(in: .whitespaces)
+        let customName = customFormatName.trimmingCharacters(in: .whitespaces)
+        let name = (!patternName.isEmpty && patternName != "file_###" && !patternName.hasPrefix("item_###")) ? patternName : customName
 
         var result: String
         switch formatType {
         case .nameAndCounter:
-            result = name.isEmpty ? numStr : "\(name)_\(numStr)"
+            if name.isEmpty {
+                result = numStr
+            } else if name.hasSuffix("_") || name.hasSuffix("-") || name.hasSuffix(" ") {
+                result = "\(name)\(numStr)"
+            } else {
+                result = "\(name)_\(numStr)"
+            }
         case .counterAndName:
-            result = name.isEmpty ? numStr : "\(numStr)_\(name)"
+            if name.isEmpty {
+                result = numStr
+            } else if name.hasPrefix("_") || name.hasPrefix("-") || name.hasPrefix(" ") {
+                result = "\(numStr)\(name)"
+            } else {
+                result = "\(numStr)_\(name)"
+            }
         case .customPattern:
             return computeSequenceWithHashes(original: original, pattern: sequencePattern, number: number)
         }

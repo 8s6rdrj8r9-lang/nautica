@@ -1,0 +1,60 @@
+# Nautica feature review — frozen 2026-10-07
+
+38 feature groups were inventoried against the current working copy. “Source present” establishes implementation presence; it does not establish a successful user task. “Observed” names only the captured task or focused service control. The Files crash prevented a complete browser walkthrough.
+
+The August 8 PRD remains Draft. Must/Should/Could labels below describe that draft's priorities. Newer features are included in this audit because the user selected them, without silently making them approved requirements.
+
+| Feature / draft ID | Intent | Demonstrated state | Evidence | Limits / issues |
+| --- | --- | --- | --- | --- |
+| First launch / permissions | Draft onboarding, local-first claims | Observed | 01–03 screenshots | Skip for Now works; privacy copy overstates cloud/network boundary. |
+| Default workspace | File manager purpose | Observed | 04 screenshot; GraphApplicationShell | Opens empty Objects; no first-use choice of Files versus Objects. |
+| Icon view F-001 | Must; 15k/500ms/60fps | Source present; live flow blocked | IconView, FileViewCoordinator; F-01/F-14 | 15k service benchmark adverse; actual render/scroll UNKNOWN. |
+| List view F-002 | Must; sort/type-ahead/columns | Source present; live flow blocked | ListView, ListViewCell; R-003 | Selection tests do not establish full UI or column persistence. |
+| Column preview / full columns F-003 | Could; PRD open choice | Source present; live flow blocked | ColumnViewController | Full columns exceed the initial column-preview brief; usability not observed. |
+| Gallery view | Beyond draft F001–F016 | Source present; live flow blocked | GalleryViewController | Preview implementation present; media-format and large-filmstrip verification pending. |
+| Dual / multi-pane F-004 | Should | Source plus model tests | SplitLayout; R-003 | Layout model tests pass; cross-pane drag, focus and sync navigation UNKNOWN. |
+| Sidebar / tree / favorites F-005 | Must | Onboarding observed; browser blocked | 03; SidebarView, TreePanelView | Configured favorites are source-present; denied paths/tree navigation UNKNOWN. |
+| Breadcrumb/editable path F-006/F-007 | Must / Should | Source present; live flow blocked | PathBarView, GoToFolderSheet | Completion, segment drag and Cmd-L focus behavior UNKNOWN. |
+| Tabs/window restore F-008 | Must | Source present | TabPersistence, TabState, NauticaApp | Native tab commands overlap view shortcuts; restart/crash restoration not tested. |
+| Quick Look F-009 | Must; 100ms target | Source present; live flow blocked | QuickLookService | Space/arrow interaction and latency UNKNOWN. |
+| Terminal integration F-010 | Should | Source present | TerminalService | External emulator launch and automation-denied behavior UNKNOWN. |
+| Embedded terminal | Beyond draft external-terminal scope | Partial terminal implementation | MiniTerminalPanelView | One-shot shell runner, no PTY; cancellation/output/process bounds need design. |
+| File operations F-011 | Must | Service controls tested; consequential failures confirmed | R-003/R-004 | Safe ordinary staged copy; destructive replace failure; batch cancellation contract conflict. |
+| Batch rename F-012 | Should | Model behavior tested; apply UI blocked | R-003/R-007; BatchRenameModel | Custom Pattern produced vacation_001…003. Two older sequence tests drift from current default mode. |
+| Tags F-013 | Could; Finder interoperability | Source and tests | TagService; R-003 | DB/native writes are not an atomic transaction; native failures suppressed; external rename reconciliation UNKNOWN. |
+| Per-folder state F-014 | Should | Source present | ViewStateService, ViewOptionsService | SwiftData and preference storage exist; restoration/migration/accessibility unverified. |
+| Hidden files F-015 | Must | Source present; live flow blocked | DirectoryContents, BrowserView | Keyboard binding present; session behavior UNKNOWN in UI. |
+| Network shares F-016 | Could | Source present; no live connection | ServerConnectionService | System URL handoff/mount polling; picks first new mount without matching identity. Bonjour starts when service initializes. |
+| Cloud provider folders/status | Beyond no-cloud onboarding copy | Source; classification tests | CloudStorageService; R-003 | Detection covers multiple providers; download/evict uses ubiquitous-item APIs, so non-Apple parity is not established. |
+| Search / filter / Smart Folders | Feature expansion | Source present | SearchService, FilterBarView | Spotlight cap 500; saved-query escaping and unindexed-folder behavior need verification. |
+| Sort / grouping / density | Draft + expansion | Source; sort benchmark | DirectoryContents, GroupClassifier, Settings | 50k in-memory sort 37ms; visual sorting/layout/large text not tested. |
+| Get Info / metadata | Feature expansion | Source plus focused MP3 probe | R-006; MetadataEditorService | Confirmed untouched artist frame loss; image/PDF/audio fidelity otherwise UNKNOWN. |
+| Drop Shelf / recents / hex / inspector | Feature expansion | Source present; live flow blocked | RightSidebar views | Useful temporary staging/navigation; persistent recents retention and large-file hex behavior need bounds. |
+| Quick Actions / Shortcuts | Feature expansion | Source present | QuickActionService | Image conversion/PDF/Shortcuts runner present; no media or third-party workflow executed. |
+| Git tools | Feature expansion | Source plus status probe | R-007; GitService | Spaced filename badges fail; commits/discard/branch changes not exercised. |
+| Checksums | Feature expansion | Observed service control | R-006 | SHA-256 abc fixture correct; MD5/SHA-1 should be identified as legacy compatibility, not authentication. |
+| Duplicate Finder | Feature expansion | Observed service control | R-006 | Size/prefix/full-hash pipeline found one pair and excluded same-size different-content control; stale-result delete/hardlink accounting UNKNOWN. |
+| Archives / encrypted archives | Feature expansion | Source present | ArchiveService | ZIP -P puts password in arguments; DMG partial staging; unauthenticated CBC tar mode; malicious extraction/round trips UNKNOWN. |
+| Folder sync | Feature expansion | Service failures confirmed | R-004 | Missing-root deletes, remove-before-copy loss, metadata-only identity. Preview and execution can diverge. |
+| Secure deletion | Feature expansion | Service boundary failure confirmed | R-004; sheet source | File symlink target truncated. Directory symlink failed safely. Physical erasure UNKNOWN. |
+| Vault create/unlock/keychain | Feature expansion | Source; Settings observed | 11; VaultService | Uses hdiutil/APFS and stdin password. No live keychain, Touch ID or mount lifecycle test. |
+| Vault automation/diagnostics | Feature expansion | Source; default settings observed | 11; VaultAutomationService / Diagnostics | Scope/forced detach/identity and health wording concerns; no real vault affected. |
+| Default file manager | Feature expansion | Source only | DefaultFileManagerService | Launch Services role change present; universal Finder replacement claim not established; system defaults not changed. |
+| Objects / Relationships | EnsDev vocabulary expansion | Object creation observed; graph tests | 05/07; R-003 | Explicit objects and provenance/history present; multi-object relationship editor not exercised. |
+| Collection / Smart / Relationship Views | Expansion | Collection/pin observed; graph model tests | 06/07; R-003 | Views do not own Objects; traversal bounded to 16 and inferred edges optional. Full-scale query/accessibility UNKNOWN. |
+| Right Dock | Expansion | Observed controls and pin navigation | 07/10 | Configurable labels/compact/off and pin types; initial empty dock consumes space. |
+| PAF import / review / freeze / export / capture / index | Expansion | Import observed; parser probe; host tests | 08/09; R-003/R-006 | Exact package preserved and missing-entry freeze blocked. Valid synthetic host flows pass; current supplied kit cannot complete full live freeze. |
+
+## Product assessment
+
+The feature set has grown into three substantial experiences: file management, Objects & Views, and audit records. Vaults, media tools, Git, sync, archives and an embedded shell runner create additional consequential paths. Breadth is visible in source; verification is uneven. A long feature list should therefore not be used as a readiness claim.
+
+Keep the separation between files and Objects understandable. The observed empty Objects workspace does not explain why a new file-manager user should start there. A first-use workspace choice and remembered user preference would support both audiences. Explicit Collection membership and the “Views do not own Objects” explanation are strengths worth preserving.
+
+Cloud detection tests establish classification for their named fixtures. They do not establish download/evict parity across providers. Likewise, a Launch Services folder-role change does not prove universal Finder replacement. Label these capabilities by the boundary actually supported.
+
+Batch rename should compete on preview, collision handling, recovery and repeatable templates. Finder already provides multiple-file replacement, added text and formatting; the draft's third-party-only premise needs correction. [Apple Finder guide](https://support.apple.com/en-ph/guide/mac-help/-mchlp1144/mac).
+
+Detailed findings: [AUDIT-REPORT.md](/Users/arthur/Development/Nautica/docs/audits/2026-10-07/AUDIT-REPORT.md). Suggestions: [ALTERNATIVES-AND-IDEAS.md](/Users/arthur/Development/Nautica/docs/audits/2026-10-07/ALTERNATIVES-AND-IDEAS.md). Machine-readable inventory: [FEATURE-MATRIX.csv](/Users/arthur/Development/Nautica/docs/audits/2026-10-07/FEATURE-MATRIX.csv).
+
+AUDITOR RESPONSE FROZEN

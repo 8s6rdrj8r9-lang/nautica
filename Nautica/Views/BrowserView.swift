@@ -92,6 +92,10 @@ struct BrowserActions {
     // File Vaults & Encrypted Containers (Phase 14 & 16).
     var openCreateVault: () -> Void
     var lockAllVaults: () -> Void
+    // Power-User & Pro Utilities Suite (Phase 18).
+    var secureDeleteSelection: () -> Void
+    var openFolderSync: () -> Void
+    var openCreateEncryptedArchive: () -> Void
 }
 
 private struct FocusedBrowserActionsKey: FocusedValueKey {
@@ -121,6 +125,7 @@ private final class UndoBox {
 /// (`TabState`) that owns navigation history, directory listing, selection,
 /// and view mode (Prompt 8).
 struct BrowserView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(Constants.splitLayoutKey) private var splitLayoutRaw: Int = SplitLayout.single.rawValue
     private var splitLayout: SplitLayout {
         get { SplitLayout(rawValue: splitLayoutRaw) ?? .single }
@@ -170,6 +175,13 @@ struct BrowserView: View {
     @State private var unlockVaultTargetURL: URL? = nil
     @State private var showVaultHealthSheet = false
     @State private var vaultHealthTargetURL: URL? = nil
+    @State private var showSecureDeleteSheet = false
+    @State private var secureDeleteTargets: [FileItem] = []
+    @State private var showCreateEncryptedArchiveSheet = false
+    @State private var encryptedArchiveTargets: [FileItem] = []
+    @State private var showExtractEncryptedArchiveSheet = false
+    @State private var extractEncryptedArchiveTarget: URL? = nil
+    @State private var showFolderSyncSheet = false
     @State private var conflictSheetData: ConflictSheetData?
     @State private var searchScope: SearchScope = .folder(Constants.defaultWindowURL())
     @State private var searchFilter: SearchFilter = .nameAndContent
@@ -287,6 +299,47 @@ struct BrowserView: View {
             if let targetURL = vaultHealthTargetURL {
                 VaultHealthSheet(vaultURL: targetURL)
             }
+        }
+        .sheet(isPresented: $showSecureDeleteSheet) {
+            SecureDeleteConfirmationSheet(
+                items: secureDeleteTargets,
+                onDismiss: { showSecureDeleteSheet = false },
+                onCompletion: {
+                    for pane in activePanes { pane.directoryContents.reload() }
+                }
+            )
+        }
+        .sheet(isPresented: $showCreateEncryptedArchiveSheet) {
+            CreateEncryptedArchiveSheet(
+                items: encryptedArchiveTargets,
+                destinationDir: activeTab.navigationHistory.currentURL,
+                onDismiss: { showCreateEncryptedArchiveSheet = false },
+                onArchiveCreated: { _ in
+                    for pane in activePanes { pane.directoryContents.reload() }
+                }
+            )
+        }
+        .sheet(isPresented: $showExtractEncryptedArchiveSheet) {
+            if let target = extractEncryptedArchiveTarget {
+                ExtractEncryptedArchiveSheet(
+                    archiveURL: target,
+                    destinationDir: activeTab.navigationHistory.currentURL,
+                    onDismiss: { showExtractEncryptedArchiveSheet = false },
+                    onExtractionComplete: { _ in
+                        for pane in activePanes { pane.directoryContents.reload() }
+                    }
+                )
+            }
+        }
+        .sheet(isPresented: $showFolderSyncSheet) {
+            FolderSyncSheet(
+                leftURL: activeTab.navigationHistory.currentURL,
+                rightURL: inactivePane?.navigationHistory.currentURL ?? activeTab.navigationHistory.currentURL,
+                onDismiss: { showFolderSyncSheet = false },
+                onSyncComplete: {
+                    for pane in activePanes { pane.directoryContents.reload() }
+                }
+            )
         }
         .sheet(item: $conflictSheetData) { data in
             ConflictResolutionSheet(
@@ -956,8 +1009,12 @@ struct BrowserView: View {
     }
 
     private func toggleSidebar() {
-        withAnimation {
+        if reduceMotion {
             columnVisibility = (columnVisibility == .detailOnly) ? .all : .detailOnly
+        } else {
+            withAnimation {
+                columnVisibility = (columnVisibility == .detailOnly) ? .all : .detailOnly
+            }
         }
     }
 
@@ -2012,6 +2069,17 @@ struct BrowserView: View {
                         pane.directoryContents.reload()
                     }
                 }
+            },
+            secureDeleteSelection: {
+                guard !selectedItems.isEmpty else { return }
+                secureDeleteTargets = selectedItems
+                showSecureDeleteSheet = true
+            },
+            openFolderSync: { showFolderSyncSheet = true },
+            openCreateEncryptedArchive: {
+                guard !selectedItems.isEmpty else { return }
+                encryptedArchiveTargets = selectedItems
+                showCreateEncryptedArchiveSheet = true
             }
         )
     }
@@ -2245,6 +2313,8 @@ struct BrowserView: View {
                     currentFolderURL: activeTab.navigationHistory.currentURL,
                     resultCount: activeTab.directoryContents.items.count,
                     isGathering: SearchService.shared.isGathering,
+                    isTruncated: SearchService.shared.isTruncated,
+                    totalCount: SearchService.shared.totalResultCount,
                     scope: $searchScope,
                     filter: $searchFilter,
                     criteria: $searchCriteria,
@@ -2363,7 +2433,11 @@ struct BrowserView: View {
             .font(.subheadline)
 
             Button {
-                withAnimation { dismissedFullDiskBanner = true }
+                if reduceMotion {
+                    dismissedFullDiskBanner = true
+                } else {
+                    withAnimation { dismissedFullDiskBanner = true }
+                }
             } label: {
                 Image(systemName: "xmark")
                     .font(.caption2.weight(.semibold))

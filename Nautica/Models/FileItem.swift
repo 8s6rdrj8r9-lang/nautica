@@ -88,6 +88,10 @@ struct FileItem: Identifiable, Hashable {
         self.gitStatus = gitStatus
     }
 
+    var formattedSize: String {
+        size.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "—"
+    }
+
     var isCloudItem: Bool {
         cloudStatus != .notCloud || cloudProvider != nil
     }

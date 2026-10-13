@@ -1,0 +1,24 @@
+{
+  "captureTime": "2026-10-07 14:59:59.7306 -0600",
+  "pid": 75833,
+  "procPath": "/private/tmp/*/Nautica Release Audit.app/Contents/MacOS/NauticaReal",
+  "coalitionName": "com.arthur.nautica.auditrelease20261007",
+  "exception": {
+    "codes": "0x0000000000000002, 0x00000001f4876120",
+    "rawCodes": [
+      2,
+      8397480224
+    ],
+    "type": "EXC_BAD_ACCESS",
+    "signal": "SIGBUS",
+    "subtype": "KERN_PROTECTION_FAILURE at 0x00000001f4876120"
+  },
+  "termination": {
+    "flags": 1024,
+    "code": 10,
+    "namespace": "SIGNAL",
+    "indicator": "Bus error: 10",
+    "byProc": "exc handler",
+    "byPid": 75833
+  }
+}

@@ -60,6 +60,10 @@ enum FileContextMenu {
         var lockVault: (() -> Void)? = nil
         var createVault: (() -> Void)? = nil
         var checkVaultHealth: (() -> Void)? = nil
+        var addToDropShelf: (() -> Void)? = nil
+        var secureDelete: (() -> Void)? = nil
+        var createEncryptedArchive: (() -> Void)? = nil
+        var extractEncryptedArchive: (() -> Void)? = nil
     }
 
     static func makeMenu(for items: [FileItem], actions: Actions) -> NSMenu {
@@ -74,9 +78,16 @@ enum FileContextMenu {
         if items.count == 1, ArchiveService.shared.isArchive(url: items[0].url), let extract = actions.extract {
             menu.addItem(NSMenuItem(title: "Extract “\(items[0].name)”") { _ in extract() })
         }
+        if items.count == 1, ArchiveService.shared.isEncryptedArchive(url: items[0].url), let extractEnc = actions.extractEncryptedArchive {
+            let encItem = NSMenuItem(title: "Extract Encrypted Archive “\(items[0].name)”…") { _ in extractEnc() }
+            if let icon = NSImage(systemSymbolName: "lock.open", accessibilityDescription: "Extract encrypted archive") {
+                encItem.image = icon
+            }
+            menu.addItem(encItem)
+        }
         if items.count == 1, ArchiveService.shared.isDiskImage(url: items[0].url), let mountDiskImage = actions.mountDiskImage {
             let mountItem = NSMenuItem(title: "Open Disk Image") { _ in mountDiskImage() }
-            if let icon = NSImage(systemSymbolName: "opticaldiscdrive", accessibilityDescription: nil) {
+            if let icon = NSImage(systemSymbolName: "opticaldiscdrive", accessibilityDescription: "Mount disk image") {
                 mountItem.image = icon
             }
             menu.addItem(mountItem)
@@ -90,7 +101,7 @@ enum FileContextMenu {
                     let lockItem = NSMenuItem(title: "Lock File Vault (Eject)") { _ in
                         actions.lockVault?()
                     }
-                    if let icon = NSImage(systemSymbolName: "lock.slash", accessibilityDescription: nil) {
+                    if let icon = NSImage(systemSymbolName: "lock.slash", accessibilityDescription: "Lock file vault") {
                         lockItem.image = icon
                     }
                     menu.addItem(lockItem)
@@ -98,7 +109,7 @@ enum FileContextMenu {
                     let unlockItem = NSMenuItem(title: "Unlock File Vault…") { _ in
                         actions.unlockVault?()
                     }
-                    if let icon = NSImage(systemSymbolName: "lock.open", accessibilityDescription: nil) {
+                    if let icon = NSImage(systemSymbolName: "lock.open", accessibilityDescription: "Unlock file vault") {
                         unlockItem.image = icon
                     }
                     menu.addItem(unlockItem)
@@ -107,7 +118,7 @@ enum FileContextMenu {
                 let healthItem = NSMenuItem(title: "Check Vault Health…") { _ in
                     actions.checkVaultHealth?()
                 }
-                if let icon = NSImage(systemSymbolName: "cross.case", accessibilityDescription: nil) {
+                if let icon = NSImage(systemSymbolName: "cross.case", accessibilityDescription: "Check vault health") {
                     healthItem.image = icon
                 }
                 menu.addItem(healthItem)
@@ -116,7 +127,7 @@ enum FileContextMenu {
             let newVaultItem = NSMenuItem(title: "New Encrypted File Vault…") { _ in
                 actions.createVault?()
             }
-            if let icon = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: nil) {
+            if let icon = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: "Create encrypted vault") {
                 newVaultItem.image = icon
             }
             menu.addItem(newVaultItem)
@@ -167,6 +178,15 @@ enum FileContextMenu {
         tagsItem.submenu = tagsMenu
         menu.addItem(tagsItem)
 
+        if let addToDropShelf = actions.addToDropShelf, !items.isEmpty {
+            let shelfTitle = items.count == 1 ? "Add “\(items[0].name)” to Drop Shelf" : "Add \(items.count) Items to Drop Shelf"
+            let shelfItem = NSMenuItem(title: shelfTitle) { _ in addToDropShelf() }
+            if let icon = NSImage(systemSymbolName: "tray.and.arrow.down", accessibilityDescription: "Add to drop shelf") {
+                shelfItem.image = icon
+            }
+            menu.addItem(shelfItem)
+        }
+
         menu.addItem(.separator())
 
         let compressTitle = items.count == 1 ? "Compress “\(items[0].name)”" : "Compress \(items.count) Items"
@@ -175,6 +195,14 @@ enum FileContextMenu {
         }
         if let compressWithPassword = actions.compressWithPassword {
             menu.addItem(NSMenuItem(title: "Compress with Password…", enabled: !items.isEmpty) { _ in compressWithPassword() })
+        }
+        if let createEncryptedArchive = actions.createEncryptedArchive, !items.isEmpty {
+            let title = items.count == 1 ? "Create Encrypted Archive from “\(items[0].name)”…" : "Create Encrypted Archive (\(items.count) Items)…"
+            let encItem = NSMenuItem(title: title) { _ in createEncryptedArchive() }
+            if let icon = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: "Create encrypted archive") {
+                encItem.image = icon
+            }
+            menu.addItem(encItem)
         }
         if let makeAlias = actions.makeAlias {
             let aliasTitle = items.count == 1 ? "Make Alias" : "Make \(items.count) Aliases"
@@ -203,6 +231,17 @@ enum FileContextMenu {
 
         menu.addItem(NSMenuItem(title: "Copy") { _ in actions.copy() })
         menu.addItem(NSMenuItem(title: "Move to Trash") { _ in actions.trash() })
+
+        if let secureDelete = actions.secureDelete, !items.isEmpty {
+            let secTitle = items.count == 1 ? "Secure Delete “\(items[0].name)”…" : "Secure Delete \(items.count) Items…"
+            let secItem = NSMenuItem(title: secTitle) { _ in secureDelete() }
+            if let icon = NSImage(systemSymbolName: "trash.slash", accessibilityDescription: "Securely delete files") {
+                secItem.image = icon
+            }
+            secItem.keyEquivalent = "\u{08}"
+            secItem.keyEquivalentModifierMask = [.option, .command]
+            menu.addItem(secItem)
+        }
 
         // Cloud file actions (Download Now / Free Up Space)
         let cloudItems = items.filter(\.isCloudItem)
@@ -412,6 +451,37 @@ enum FileContextMenu {
                 submenu.addItem(item)
                 hasAny = true
             }
+        }
+
+        if let first = items.first {
+            if hasAny {
+                submenu.addItem(.separator())
+            }
+            let aiItem = NSMenuItem(title: first.isDirectory ? "Summarize Folder with AI…" : "Explain File with AI…") { _ in
+                Task { @MainActor in
+                    let result: String
+                    do {
+                        if first.isDirectory {
+                            result = try await AIService.shared.summarizeDirectory(at: first.url)
+                        } else {
+                            result = try await AIService.shared.explainFile(at: first.url)
+                        }
+                    } catch {
+                        result = "AI analysis failed: \(error.localizedDescription)"
+                    }
+                    let alert = NSAlert()
+                    alert.messageText = "Nautica Intelligence"
+                    alert.informativeText = result
+                    alert.alertStyle = .informational
+                    alert.addButton(withTitle: "OK")
+                    alert.runModal()
+                }
+            }
+            if let icon = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "AI") {
+                aiItem.image = icon
+            }
+            submenu.addItem(aiItem)
+            hasAny = true
         }
 
         if !hasAny {

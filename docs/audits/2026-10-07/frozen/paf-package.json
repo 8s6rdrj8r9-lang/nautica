@@ -1,0 +1,21 @@
+{
+  "framework": "PAF",
+  "package_format": 1,
+  "framework_version": "0.1",
+  "release": "Evidence-Sufficiency-Patch",
+  "interaction_model": "intake-freeze-clean-audit",
+  "entry_points": {
+    "start_here": "START-HERE.md",
+    "audit_intake": "AUDIT-INTAKE.md",
+    "audit_initiation": "AUDIT-INITIATION-PROMPT-INTERACTIVE.md",
+    "audit_launch": "AUDIT-LAUNCH-PROMPT.md"
+  },
+  "framework_root": "framework/",
+  "templates": {
+    "audit_input": "AUDIT-INPUT-TEMPLATE.md",
+    "evidence_register": "EVIDENCE-REGISTER-TEMPLATE.csv",
+    "audit_report": "AUDIT-REPORT-TEMPLATE.md"
+  },
+  "freeze_command": "FREEZE & START AUDIT",
+  "completion_marker": "AUDITOR RESPONSE FROZEN"
+}

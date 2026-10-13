@@ -8,7 +8,7 @@ struct MainWindow: View {
 
     var body: some View {
         if hasCompletedOnboarding {
-            BrowserView()
+            GraphApplicationShell()
         } else {
             OnboardingView()
         }

@@ -1,0 +1,169 @@
+CoreData: error: Failed to stat path '/tmp/nautica-audit-runtime-2026-10-07/Library/Application Support/default.store', errno 2 / No such file or directory.
+CoreData: error: Executing as effective user 501
+CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Information for file system
+CoreData: error: ---------------------------
+CoreData: error:   File system type: 		0
+CoreData: error:   File system flags: 		0
+CoreData: error:   Total data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Total i-nodes: 			0
+CoreData: error:   File system ID: 		0, 0
+CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Owner UID: 			0
+CoreData: error:   Filesystem type name: 		
+CoreData: error:   Mount on name: 			
+CoreData: error:   Mount from name: 		
+CoreData: error: Failed to stat path '/tmp/nautica-audit-runtime-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+CoreData: error: Executing as effective user 501
+CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Information for file system
+CoreData: error: ---------------------------
+CoreData: error:   File system type: 		0
+CoreData: error:   File system flags: 		0
+CoreData: error:   Total data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Total i-nodes: 			0
+CoreData: error:   File system ID: 		0, 0
+CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Owner UID: 			0
+CoreData: error:   Filesystem type name: 		
+CoreData: error:   Mount on name: 			
+CoreData: error:   Mount from name: 		
+CoreData: error: Failed to stat path '/tmp/nautica-audit-runtime-2026-10-07/Library', errno 2 / No such file or directory.
+CoreData: error: Executing as effective user 501
+CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Information for file system
+CoreData: error: ---------------------------
+CoreData: error:   File system type: 		0
+CoreData: error:   File system flags: 		0
+CoreData: error:   Total data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Total i-nodes: 			0
+CoreData: error:   File system ID: 		0, 0
+CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Owner UID: 			0
+CoreData: error:   Filesystem type name: 		
+CoreData: error:   Mount on name: 			
+CoreData: error:   Mount from name: 		
+CoreData: error: Executing as effective user 501
+CoreData: error: Information for /tmp/nautica-audit-runtime-2026-10-07
+CoreData: error: ---------------------------
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		160 bytes
+CoreData: error:   File inode: 		26159432
+CoreData: error:   File user ID: 		501
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   755
+CoreData: error:   file is not a symbolic link
+CoreData: error:   Sandbox access to file-write-create allowed
+CoreData: error: Information for file system
+CoreData: error: ---------------------------
+CoreData: error:   File system type: 		0x1a
+CoreData: error:   File system flags: 		0x4909080
+CoreData: error:   MNT_JOURNALED
+CoreData: error:   Total data blocks: 		59840624
+CoreData: error:   Free data blocks: 		6525845
+CoreData: error:   Free blocks for nonsuperuser:	6525845
+CoreData: error:   Total i-nodes: 			262898395
+CoreData: error:   File system ID: 		0x1000012, 0x1a
+CoreData: error:   Free i-nodes: 			261033800
+CoreData: error:   Owner UID: 			0
+CoreData: error:   Filesystem type name: 		apfs
+CoreData: error:   Mount on name: 			/System/Volumes/Data
+CoreData: error:   Mount from name: 		/dev/disk3s1
+CoreData: error: Executing as effective user 501
+CoreData: error: Information for /tmp
+CoreData: error: ---------------------------
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		512 bytes
+CoreData: error:   File inode: 		24989268
+CoreData: error:   File user ID: 		0
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   777
+CoreData: error:   file is not a symbolic link
+CoreData: error:   Sandbox access to file-write-create allowed
+CoreData: error: Executing as effective user 501
+CoreData: error: Information for /
+CoreData: error: ---------------------------
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		704 bytes
+CoreData: error:   File inode: 		2
+CoreData: error:   File user ID: 		0
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   755
+CoreData: error:   file is not a symbolic link
+CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error: Logging status information for directory path: /tmp/nautica-audit-runtime-2026-10-07/Library/Application Support
+CoreData: error: Executing as effective user 501
+CoreData: error: Information for /
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		704 bytes
+CoreData: error:   File inode: 		2
+CoreData: error:   File user ID: 		0
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   755
+CoreData: error:   component is not a symbolic link
+CoreData: error:   component is readable
+CoreData: error:   component is not writeable with errno 30
+CoreData: error: Information for /tmp
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		512 bytes
+CoreData: error:   File inode: 		24989268
+CoreData: error:   File user ID: 		0
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   777
+CoreData: error:   component is not a symbolic link
+CoreData: error:   component is readable
+CoreData: error:   component is writeable
+CoreData: error: Information for /tmp/nautica-audit-runtime-2026-10-07
+CoreData: error:   File Device ID: 	0
+CoreData: error:   Device ID: 		16777234
+CoreData: error:   File Size: 		160 bytes
+CoreData: error:   File inode: 		26159432
+CoreData: error:   File user ID: 		501
+CoreData: error:   File group ID: 		0
+CoreData: error:   File Permissions: 	
+CoreData: error: d
+CoreData: error:   755
+CoreData: error:   component is not a symbolic link
+CoreData: error:   component is readable
+CoreData: error:   component is writeable
+CoreData: error: Failed to stat path '/tmp/nautica-audit-runtime-2026-10-07/Library', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-runtime-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error: addPersistentStoreWithType:configuration:URL:options:error: returned error NSCocoaErrorDomain (512)
+CoreData: error: userInfo:
+CoreData: error: 	reason : Failed to create file; code = 2
+CoreData: error: storeType: SQLite
+CoreData: error: configuration: default
+CoreData: error: URL: file:///tmp/nautica-audit-runtime-2026-10-07/Library/Application%20Support/default.store
+CoreData: annotation: options:
+CoreData: annotation: 	NSMigratePersistentStoresAutomaticallyOption : 1
+CoreData: annotation: 	NSInferMappingModelAutomaticallyOption : 1
+CoreData: annotation: 	NSPersistentStoreRemoteChangeNotificationOptionKey : 1
+CoreData: annotation: 	NSPersistentHistoryTrackingKey : 1
+CoreData: error: <NSPersistentStoreCoordinator: 0xc53184200>: Attempting recovery from error encountered during addPersistentStore: 0xc52c0a5e0 Error Domain=NSCocoaErrorDomain Code=512 "The file couldn’t be saved." UserInfo={reason=Failed to create file; code = 2}
+CoreData: error: During recovery, parent directory path reported as missing
+CoreData: error: Recovery attempt while adding <NSPersistentStoreDescription: 0xc52c0a5e0> (type: SQLite, url: file:///tmp/nautica-audit-runtime-2026-10-07/Library/Application%20Support/default.store) was successful!

@@ -1,0 +1,62 @@
+{
+  "results" : [
+    {
+      "destination_exists" : false,
+      "destination_original_bytes" : "OLD DESTINATION",
+      "failed" : 1,
+      "probe" : "replace_missing_source"
+    },
+    {
+      "deleted" : 1,
+      "destination_exists" : false,
+      "planned_actions" : [
+        "deleteRight"
+      ],
+      "probe" : "mirror_missing_left",
+      "relative_paths" : [
+        "important.txt"
+      ]
+    },
+    {
+      "destination_exists" : false,
+      "error" : "The file “version.txt” couldn’t be opened because there is no such file.",
+      "planned_actions" : [
+        "copyToRight"
+      ],
+      "probe" : "sync_source_disappears",
+      "relative_paths" : [
+        "version.txt"
+      ]
+    },
+    {
+      "actions" : [
+        "skip"
+      ],
+      "contents_differ" : true,
+      "probe" : "mirror_equal_metadata_different_bytes",
+      "statuses" : [
+        "Identical"
+      ]
+    },
+    {
+      "probe" : "secure_delete_file_symlink",
+      "selected_link_exists" : false,
+      "target_bytes_after" : 0,
+      "target_exists" : true
+    },
+    {
+      "error" : "The file “directory-link” couldn’t be opened.",
+      "outside_child_exists" : true,
+      "outside_directory_exists" : true,
+      "probe" : "secure_delete_directory_symlink"
+    },
+    {
+      "destination_matches" : true,
+      "probe" : "ordinary_copy_control",
+      "source_preserved" : true,
+      "succeeded" : 1
+    }
+  ],
+  "root" : "\/private\/tmp\/nautica-audit-probes-2026-10-07-8508F2AE-5BEA-47E5-9E6F-F6BB470EF25F",
+  "synthetic_only" : true
+}

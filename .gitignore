@@ -10,3 +10,8 @@ build/
 
 # Swift Package Manager
 .build/
+
+# Binaries and profiling
+main
+*.profraw
+

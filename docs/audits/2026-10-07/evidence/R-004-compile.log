@@ -1,0 +1,51 @@
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/FolderSyncService.swift:122:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+120 |                 options: [.skipsPackageDescendants]
+121 |             ) {
+122 |                 for case let fileURL as URL in enumerator {
+    |                                                `- warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+123 |                     let relPath = fileURL.path.replacingOccurrences(of: leftURL.path, with: "").trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+124 |                     if !relPath.isEmpty {
+
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/FolderSyncService.swift:142:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+140 |                 options: [.skipsPackageDescendants]
+141 |             ) {
+142 |                 for case let fileURL as URL in enumerator {
+    |                                                `- warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+143 |                     let relPath = fileURL.path.replacingOccurrences(of: rightURL.path, with: "").trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+144 |                     if !relPath.isEmpty {
+
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/FolderSyncService.swift:155:13: warning: variable 'allRelPaths' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+153 |         }
+154 | 
+155 |         var allRelPaths = Set(leftFiles.keys).union(Set(rightFiles.keys))
+    |             `- warning: variable 'allRelPaths' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+156 |         var differences: [SyncItemDifference] = []
+157 | 
+
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/FolderSyncService.swift:202:27: warning: value 'l' was defined but never used; consider replacing with boolean test [#NoUsage]
+200 |                     }
+201 |                 }
+202 |             } else if let l = left {
+    |                           `- warning: value 'l' was defined but never used; consider replacing with boolean test [#NoUsage]
+203 |                 status = .leftOnly
+204 |                 defaultAction = .copyToRight
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/SecureFileDeletionService.swift:231:17: warning: result of call to 'fcntl' is unused [#NoUsage]
+229 | 
+230 |                 // Force full physical disk flush bypassing macOS drive write caches
+231 |                 fcntl(fd, F_FULLFSYNC)
+    |                 `- warning: result of call to 'fcntl' is unused [#NoUsage]
+232 |             }
+233 | 
+
+/tmp/nautica-audit-execution-2026-10-07/Nautica/Services/SecureFileDeletionService.swift:236:13: warning: result of call to 'fcntl' is unused [#NoUsage]
+234 |             // Truncate to zero bytes
+235 |             ftruncate(fd, 0)
+236 |             fcntl(fd, F_FULLFSYNC)
+    |             `- warning: result of call to 'fcntl' is unused [#NoUsage]
+237 |         }
+238 | 
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>

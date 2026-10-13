@@ -196,6 +196,10 @@ final class IconViewController: NSViewController {
     var onCopySelection: (() -> Void)?
     var onTrashSelection: (() -> Void)?
     var onCompressWithPassword: (([URL]) -> Void)?
+    var onAddToDropShelf: (([URL]) -> Void)?
+    var onSecureDelete: (([FileItem]) -> Void)?
+    var onCreateEncryptedArchive: (([FileItem]) -> Void)?
+    var onExtractEncryptedArchive: ((URL) -> Void)?
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
@@ -743,6 +747,22 @@ final class IconViewController: NSViewController {
             checkVaultHealth: { [weak self] in
                 guard let self, let first = self.contextMenuItems.first else { return }
                 self.onCheckVaultHealth?(first.url)
+            },
+            addToDropShelf: { [weak self] in
+                guard let self else { return }
+                self.onAddToDropShelf?(self.contextMenuItems.map(\.url))
+            },
+            secureDelete: { [weak self] in
+                guard let self else { return }
+                self.onSecureDelete?(self.contextMenuItems)
+            },
+            createEncryptedArchive: { [weak self] in
+                guard let self else { return }
+                self.onCreateEncryptedArchive?(self.contextMenuItems)
+            },
+            extractEncryptedArchive: { [weak self] in
+                guard let self, let first = self.contextMenuItems.first else { return }
+                self.onExtractEncryptedArchive?(first.url)
             }
         )
     }

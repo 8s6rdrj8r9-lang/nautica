@@ -8,6 +8,8 @@ struct ScopeBarView: View {
     let currentFolderURL: URL
     let resultCount: Int
     let isGathering: Bool
+    var isTruncated: Bool = false
+    var totalCount: Int = 0
     @Binding var scope: SearchScope
     @Binding var filter: SearchFilter
     @Binding var criteria: [SearchCriterion]
@@ -58,9 +60,24 @@ struct ScopeBarView: View {
                         .scaleEffect(0.8)
                 }
 
-                Text("\(resultCount) \(resultCount == 1 ? "item" : "items")")
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                if isTruncated {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(.orange)
+                        Text("Showing 500 of \(totalCount) items (capped)")
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(.orange)
+                    }
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.12))
+                    .clipShape(Capsule())
+                } else {
+                    Text("\(resultCount) \(resultCount == 1 ? "item" : "items")")
+                        .font(.system(size: 11))
+                        .foregroundColor(.secondary)
+                }
 
                 Button(action: {
                     smartFolderName = "Search \(currentFolderName)"

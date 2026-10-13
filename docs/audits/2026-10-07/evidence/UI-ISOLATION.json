@@ -1,0 +1,20 @@
+{
+  "runtime_home": "/tmp/nautica-audit-runtime-2026-10-07",
+  "bundle_identifier": "com.arthur.nautica.audit20261007",
+  "binary_bytes_unchanged": false,
+  "pid": 70156,
+  "initial_capture_limitation": "01-start-objects inherited original preferences before separate bundle identity; not first-launch evidence. It will not be used as evidence of defaults.",
+  "relaunch_note": "After the Files crash, the UI tool relaunched the app without the isolated home. That graph state was rejected; the process was terminated before personal file operations. A launcher subsequently enforced the disposable home for all launches. User files were not intentionally mutated or exported. Incidental native picker directory labels were excluded from audit evidence.",
+  "launch_wrapper": "Native launcher enforces CFFIXED_USER_HOME. Product binary retained as NauticaReal; ad hoc re-signing changes signature bytes. Source code is unmodified; this instrumented bundle is not the distribution build.",
+  "product_binary_sha256": "003986bd30dbe64f07f1b155f62f755888ef0234ac1a7cb882566e74bd08f584",
+  "debug": {
+    "built_binary_sha256": "9f18190a1937a5691b6d3bc4cce3f79572573dda9fba856c8f277dbf10f6a1fe",
+    "instrumented_binary_sha256": "003986bd30dbe64f07f1b155f62f755888ef0234ac1a7cb882566e74bd08f584",
+    "code_text_hash_equal": true
+  },
+  "release": {
+    "built_binary_sha256": "cbab6dd8419c696dfb1e81e321929119f258d229a96a8310c31b6c9b80e3f784",
+    "instrumented_binary_sha256": "08751439c52c748a1c2d82d19f1eb5509b2174e50091491ee572b0a7dbf73d73",
+    "code_text_hash_equal": true
+  }
+}

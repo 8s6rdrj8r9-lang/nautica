@@ -162,6 +162,22 @@ final class IconViewItem: NSCollectionViewItem {
             cloudBadgeView.isHidden = true
             cloudBadgeView.image = nil
         }
+
+        // VoiceOver Accessibility Configuration
+        view.setAccessibilityElement(true)
+        view.setAccessibilityRole(.button)
+        var a11yParts: [String] = [item.name, item.isDirectory ? "Folder" : "File", item.formattedSize]
+        if let gitStatus = item.gitStatus {
+            a11yParts.append("Git \(gitStatus.displayName)")
+        }
+        if !item.tagColors.isEmpty {
+            a11yParts.append("\(item.tagColors.count) tags")
+        }
+        if item.cloudStatus == .onlineOnly {
+            a11yParts.append("Stored in cloud")
+        }
+        view.setAccessibilityLabel(a11yParts.joined(separator: ", "))
+        view.setAccessibilityHelp("Double-click to open, Space for Quick Look")
     }
 
     override func prepareForReuse() {

@@ -89,20 +89,24 @@ There is no mature, open-source, native macOS file manager that bridges this gap
 | **F-011** | File Operations | US-PUD-04, US-PFP-02 | Copy, move, delete, and rename files/directories with progress dialogs. | Input: User drag/drop or menu actions. Output: Progress window with cancel/pause. Interaction: Undo support (Cmd+Z). |
 | **F-012** | Batch Rename | US-NDC-01 | Rename multiple selected files with patterns (sequence, find/replace, extension change). | Input: Multi-selection + dialog. Output: Renamed files. Interaction: Live preview of new names before confirm. |
 | **F-013** | Custom Tags | US-NDC-01 | Assign user-defined colored tags with custom labels to any file/folder. | Input: Right-click menu or sidebar. Output: Tag metadata stored in local SQLite database. Interaction: Filter by tag, sort by tag. |
-| **F-014** | Per-Folder View State | US-NDC-02 | Remember view mode, sort column, icon size, and column widths for each directory. | Input: User changes. Output: Stored in **SwiftData**. Interaction: Auto-restore on revisit. |
+| **F-014** | Per-Folder View State | US-NDC-02 | Remember view mode, sort column, icon size, and column widths for each directory. | Input: User changes. Output: Stored in **SwiftData** with background observer. Interaction: Auto-restore on revisit. |
 | **F-015** | Hidden Files Toggle | US-PFP-02 | Show/hide dotfiles and system-hidden items. | Input: Cmd+Shift+. or menu. Output: View refresh. Interaction: Persistent per-session. |
 | **F-016** | Network Share Browsing | US-PUD-01 | Connect to and browse SMB, AFP, and WebDAV shares. | Input: Server URL or Bonjour discovery. Output: Mounted share in sidebar. Interaction: Authenticate via system dialog. |
+| **F-017** | On-Device AI Assistance & Contextual Siri Delegation | US-PUD-01, US-NDC-01 | On-device file/folder summaries, smart tag generation, and contextual queries via Apple Foundation Model (default) with Siri AI delegation and opt-in ChatGPT backup. | Input: Selected file(s) or folder. Output: Generated summary, suggested tags. Interaction: Context menu "AI Quick Actions", Siri query delegation, Shortcuts. |
+| **F-018** | macOS 27 Full Disk Access (FDA) Onboarding | US-PFP-01, US-PFP-02 | Transparent onboarding and permission guidance matching macOS 27 prompt controls and agent safeguards with zero telemetry. | Input: First launch or permission check. Output: Guided permission sheet. Interaction: One-click jump to System Settings with live grant detection. |
+| **F-019** | Adaptive Chrome & Toolbar Overflow | US-NDC-03, US-PUD-03 | macOS 27 responsive toolbar chrome utilizing `visibilityPriority` and `toolbarOverflowMenu` with Liquid Glass styling. | Input: Window resize. Output: Overflow menu for excess tools. Interaction: Non-clipping toolbar buttons. |
 
 ### 4.2 Non-Functional Requirements
 
 | Dimension | Requirement |
 |-----------|-------------|
-| **Performance** | • Icon view must render 10,000+ files at 60fps with lazy thumbnail loading.<br>• List view sort on 50k files must complete in < 500ms.<br>• Window open time < 300ms for last-used directory. |
-| **Security** | • Zero network calls unless user explicitly mounts a network share.<br>• All file access via `NSFileCoordinator` to prevent conflicts.<br>• No keychain access except for network share credentials (stored in system keychain, not custom). |
+| **Performance** | • Icon view must render 10,000+ files at 60fps with lazy thumbnail loading and content prefetching.<br>• List view sort on 50k files must complete in < 500ms.<br>• Window open time < 300ms for last-used directory. |
+| **Security & Privacy** | • Zero telemetry, zero external network calls by default.<br>• Default AI runs 100% on-device via Apple Foundation Models; cloud fallback (ChatGPT) requires explicit user consent and API key.<br>• All file access via `NSFileCoordinator` to prevent conflicts.<br>• Transparent Full Disk Access request with clear rationale. |
 | **Availability** | • Local-first: all data stored on-device; no cloud dependency.<br>• Crash recovery: restore open windows/tabs on relaunch. |
-| **Scalability** | • Plugin architecture (future) for custom view modes and sidebar providers.<br>• Tag database must handle 100k+ tagged items without degradation. |
-| **Usability** | • Follow Apple HIG for all controls, menus, and keyboard shortcuts.<br>• Neurodivergent-friendly: consistent layout, predictable animations (reduce motion respected), high-contrast support.<br>• Full keyboard navigation support (arrow keys, type-ahead selection, Cmd+number for tabs). |
-| **Compatibility** | • macOS 14 (Sonoma) minimum, optimized for macOS 15+.<br>• Apple Silicon and Intel.<br>• Integrates with macOS Services menu and Share extensions. |
+| **Scalability** | • Plugin architecture (PAF / scripts) for custom view modes and sidebar providers.<br>• Tag database (GRDB/SQLite) must handle 100k+ tagged items without degradation. |
+| **Usability & Accessibility** | • Follow Apple HIG and macOS 27 design patterns.<br>• Neurodivergent-friendly: consistent spatial layout, predictable animations (reduce motion respected), high-contrast support, cognitive scaffolding.<br>• Full keyboard navigation support (arrow keys, type-ahead selection, Cmd+number for tabs). |
+| **Compatibility** | • macOS 27.0+ (Golden Gate) native target.<br>• Apple Silicon (ARM64) exclusive; no legacy x86 dependencies.<br>• Siri AI delegation, App Intents, and Contextual File Query integration. |
+
 
 ### 4.3 Feature Dependencies
 

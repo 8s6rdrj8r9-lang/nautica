@@ -19,6 +19,10 @@ final class GalleryViewController: NSViewController {
     var onQuickLook: (() -> Void)?
     var onGetInfo: (() -> Void)?
     var onCompressWithPassword: (([URL]) -> Void)?
+    var onAddToDropShelf: (([URL]) -> Void)?
+    var onSecureDelete: (([FileItem]) -> Void)?
+    var onCreateEncryptedArchive: (([FileItem]) -> Void)?
+    var onExtractEncryptedArchive: ((URL) -> Void)?
     var onFindDuplicates: ((URL) -> Void)?
     var onGitDiff: ((URL) -> Void)?
     var onGitCommit: (() -> Void)?
@@ -592,6 +596,18 @@ final class GalleryViewController: NSViewController {
             },
             checkVaultHealth: { [weak self] in
                 self?.onCheckVaultHealth?(item.url)
+            },
+            addToDropShelf: { [weak self] in
+                self?.onAddToDropShelf?([item.url])
+            },
+            secureDelete: { [weak self] in
+                self?.onSecureDelete?([item])
+            },
+            createEncryptedArchive: { [weak self] in
+                self?.onCreateEncryptedArchive?([item])
+            },
+            extractEncryptedArchive: { [weak self] in
+                self?.onExtractEncryptedArchive?(item.url)
             }
         )
 

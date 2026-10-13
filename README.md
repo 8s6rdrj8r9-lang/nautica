@@ -67,3 +67,18 @@ Design rules:
 The app is built prompt-by-prompt per `Nautica-KimiCode-Prompts.md`
 (scaffold → file system → selection → views → chrome → services → polish).
 Each source file notes which prompt implements it.
+
+## Graph organization and PAF
+
+Nautica also provides an Objects & Views workspace backed by the existing GRDB
+stack. Objects can appear in multiple Collection, Smart, and Relationship Views;
+Views do not own their Objects. Settings → Right Dock configures independent
+navigation pins for Views, Objects, registered Subsystems, and actions. The
+existing filesystem browser remains available through Files.
+
+PAF is a package-driven subsystem with ZIP/manifest integrity checks, grouped
+intake, explicit boundary/evidence review, immutable freeze, a standalone auditor
+export, and frozen response capture. Execution currently uses an external auditor
+through manual export/import; there is no embedded model runner. See
+[Graph and PAF architecture](docs/GRAPH-AND-PAF.md) for the package contract,
+history semantics, security limits, and test coverage.

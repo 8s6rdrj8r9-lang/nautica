@@ -1,0 +1,898 @@
+{
+  "audit_id": "NAUTICA-2026-10-07",
+  "status": "FROZEN",
+  "user_authorization": "FREEZE & START AUDIT",
+  "audited_date": "2026-10-07",
+  "freeze_observed_at": "2026-10-07T14:35:20.616984-06:00",
+  "head": "31efe1a4495910804ada6f85deed806b1ffab33c",
+  "source_file_count": 143,
+  "manifest": [
+    {
+      "path": "ACCEPTED-INPUT.md",
+      "sha256": "1d9239ba5fa59c25f8170436370685350138ea085bcea0d134fcba7eb4be95d4",
+      "bytes": 14651
+    },
+    {
+      "path": "INPUT-INTEGRITY.json",
+      "sha256": "16c451103ad24096dc7b6f14026320d3acff8c59fdd806ba9043a4e99036498b",
+      "bytes": 4532
+    },
+    {
+      "path": "INPUT-REGISTER.csv",
+      "sha256": "5ea5ac81eed551e6d93f82414270732be118adb35e0337a66995692d99613a5c",
+      "bytes": 2312
+    },
+    {
+      "path": "criteria/EnsDev_Constitution.md",
+      "sha256": "c5ae2fc3f371c174498fdcba1c3651868af5873d8e0e8bcc5ce3e552ddf21295",
+      "bytes": 3953
+    },
+    {
+      "path": "criteria/EnsDev_Doctrine.md",
+      "sha256": "02974c21b567083f8913283b8575b7fe530e9985b13457d2b28f82c32ba0467a",
+      "bytes": 8732
+    },
+    {
+      "path": "criteria/EnsDev_Engineering_Handbook.md",
+      "sha256": "8bea64115effb4f7199e79c848be04872a26870fea77c931d25ee5cc906b7d73",
+      "bytes": 64135
+    },
+    {
+      "path": "criteria/EnsDev_Governance.md",
+      "sha256": "f79788c57552af7ad6ddb88cb1ccbb40822c878232029f9dd554aed9dc2f3975",
+      "bytes": 23029
+    },
+    {
+      "path": "criteria/EnsDev_Ontology_Standard.md",
+      "sha256": "b6fb20aeb72eaeeb3e06ed1a6ba8e1d032e0e72c7f64537664692ddbae91d2d6",
+      "bytes": 6862
+    },
+    {
+      "path": "criteria/EnsDev_Product_Manifesto.md",
+      "sha256": "f2caaa0ac7b4da11d488b8883060f6175fac2ee32d1ef35a291c537cd922eb3d",
+      "bytes": 2093
+    },
+    {
+      "path": "criteria/GOVERNANCE-SOURCES.json",
+      "sha256": "c2ce561e3303a2ae7d13500ee91684bb39bf99f861f60dc40e79c11c0015273a",
+      "bytes": 994
+    },
+    {
+      "path": "methodology/AUDIT-INPUT-TEMPLATE.md",
+      "sha256": "9306e66a9007743c8bf8fbcad78451f5a0c17a8795d2ea9b5c5d266bbc2b7410",
+      "bytes": 2273
+    },
+    {
+      "path": "methodology/AUDIT-LAUNCH-PROMPT.md",
+      "sha256": "4931c6360c62a607dbf8f04bd158787e26221e9004366e73883369d396ba2d4a",
+      "bytes": 2880
+    },
+    {
+      "path": "methodology/AUDIT-REPORT-TEMPLATE.md",
+      "sha256": "2f74f4c0f42a122c4dfc7756560de9c0efc8d29bab01e7bcb8e08c61f7125664",
+      "bytes": 1803
+    },
+    {
+      "path": "methodology/EVIDENCE-REGISTER-TEMPLATE.csv",
+      "sha256": "5d70b74eac9427e59c04e3e759a4e3b683e10d3cf292c45cc1f3c4ef9bf055ad",
+      "bytes": 170
+    },
+    {
+      "path": "methodology/START-HERE.md",
+      "sha256": "c0e51271e7bc531dcbf0f9279607ed69e9867b6b8fd74e6ed3b98532a76a107a",
+      "bytes": 3141
+    },
+    {
+      "path": "methodology/VERIFICATION-CLASSES-QUICK-GUIDE.md",
+      "sha256": "b6d6d86865adac31dace57908339efea3b18ca6238e8ebfd562f1148862b25d8",
+      "bytes": 1755
+    },
+    {
+      "path": "methodology/framework/AUDIT-AI-RULES.md",
+      "sha256": "43aa32d590e7df71d1cc962393bac3b74d9bbed8235248d505175334bd6674d6",
+      "bytes": 3749
+    },
+    {
+      "path": "methodology/framework/AUDIT-CHANGE.md",
+      "sha256": "4bb093448923c004d43b090cfb010360ae9fecdcad87bca1f120a85e506b4fbc",
+      "bytes": 2153
+    },
+    {
+      "path": "methodology/framework/AUDIT-CORE.md",
+      "sha256": "233e88b049bcfc26a4f623b4936193524ecfddf69fa587f43792c5f4e5d82a5a",
+      "bytes": 3462
+    },
+    {
+      "path": "methodology/framework/AUDIT-DOMAINS.md",
+      "sha256": "ed3cd16810d47a1692f3f5a798d760dec255ab41966b25a3db7668756a851b73",
+      "bytes": 3363
+    },
+    {
+      "path": "methodology/framework/AUDIT-EVIDENCE.md",
+      "sha256": "f49eb34842b845ae56c84954d864e49a9225817585d031188e38e04f695f5f76",
+      "bytes": 3822
+    },
+    {
+      "path": "methodology/framework/AUDIT-FINDINGS.md",
+      "sha256": "7cf00708ff7cdc6ed342409cb9b4c89664455182e7d29ceaa978e3388f03f3b2",
+      "bytes": 3907
+    },
+    {
+      "path": "methodology/framework/AUDIT-METHODOLOGY.md",
+      "sha256": "5b92388027337e41f227e7d0ffad69d500ca215556abb01bc04764bd846d3ed5",
+      "bytes": 2779
+    },
+    {
+      "path": "methodology/framework/AUDIT-PROFILES.md",
+      "sha256": "f46675b535529e0ad107bfd72c7908fe936acf3eeda670d04d8c40bc2e4ecdad",
+      "bytes": 2199
+    },
+    {
+      "path": "methodology/framework/AUDIT-REPORTING.md",
+      "sha256": "e020500c745bff10d9fdcbfd0932e495143bc9a7793c4782a3eac341c41b8c82",
+      "bytes": 1817
+    },
+    {
+      "path": "methodology/framework/AUDIT-RISK.md",
+      "sha256": "afa7cde0cf874fbeb6c29cccbaad4e9de9cbbe2212dead2c8dcc7598c404883a",
+      "bytes": 1845
+    },
+    {
+      "path": "methodology/framework/SPECIALIST-MODULE-CONTRACT.md",
+      "sha256": "3a9a75b2e0de6a1d0ff68dfc28e1c59187a8b5b69181c7809858e37f406cd6cf",
+      "bytes": 3382
+    },
+    {
+      "path": "methodology/framework/templates/AUDIT-PLAN.md",
+      "sha256": "d2534e789f50a2c660fe35d8e8aba6c8be2a49c8823287734343803f59f1d02b",
+      "bytes": 417
+    },
+    {
+      "path": "methodology/framework/templates/AUDIT-REPORT.md",
+      "sha256": "fbfb816df49c013b9b60274c7a260fc5d7f18a88d96a846304918e37d0d96f29",
+      "bytes": 321
+    },
+    {
+      "path": "methodology/framework/templates/EVIDENCE.md",
+      "sha256": "4972fdc702f7548734e1d5b4426f6dac97f31abea5191eb72358b26d8733587a",
+      "bytes": 261
+    },
+    {
+      "path": "methodology/framework/templates/FINDING.md",
+      "sha256": "1e728051f6d84228733406b042a143e78660ba9a0e6a94dd357bdc2324679c5a",
+      "bytes": 356
+    },
+    {
+      "path": "methodology/framework/templates/PROJECT-PROFILE.md",
+      "sha256": "483743ecd213bf14014dd90b90fa8ba7a9c59310839903715ef8b824b35c1115",
+      "bytes": 432
+    },
+    {
+      "path": "methodology/framework/templates/SPECIALIST-MODULE.md",
+      "sha256": "fd3ace7f0d151c1bc6b9e7ceeaf47e8d4bb663c8e585a20eba6cbaa28a4de2c2",
+      "bytes": 557
+    },
+    {
+      "path": "paf-package.json",
+      "sha256": "e569d68ca486dacb8e951c667712a4f2a130efb2e11a1df5eeec6e68db4cc36e",
+      "bytes": 685
+    },
+    {
+      "path": "source/.gitignore",
+      "sha256": "d2db509d232e38beae00b0ef438069b4960f05bfe8df1152c5b5ab83500af28e",
+      "bytes": 117
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "83d3d9f5a2ffb0b64cacec353e12c37574d42582f844f94a38ae474fb0731437",
+      "bytes": 1315
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_128x128@1x.png",
+      "sha256": "c3506516b5fd8ed8d7bd7ef7fa01c7adb082733d4d7bbe23120d1990efeae56c",
+      "bytes": 14448
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+      "sha256": "b1fda5865deb6c463eb857f2d7148e2870484164453c9d8cb265c187eba15073",
+      "bytes": 35246
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_16x16@1x.png",
+      "sha256": "1d6cf2396afc14c48f1220a96f2eaf8ec9b06e5d0b60f2aee777d712ceacf5a6",
+      "bytes": 834
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+      "sha256": "749b23084786c16f80905aea77874d2a6f2bee5a3a3f6b434e02e824c963ecd5",
+      "bytes": 2121
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_256x256@1x.png",
+      "sha256": "b1fda5865deb6c463eb857f2d7148e2870484164453c9d8cb265c187eba15073",
+      "bytes": 35246
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+      "sha256": "a61bc526090f79817d3f183fc9ec94931199c4b0b02f24e3d5ef947072939ef5",
+      "bytes": 90051
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_32x32@1x.png",
+      "sha256": "749b23084786c16f80905aea77874d2a6f2bee5a3a3f6b434e02e824c963ecd5",
+      "bytes": 2121
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+      "sha256": "ffbc3b49da139796982e7c512eadd27d8a6c229ccccc04001801dfba2315895c",
+      "bytes": 5551
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_512x512@1x.png",
+      "sha256": "a61bc526090f79817d3f183fc9ec94931199c4b0b02f24e3d5ef947072939ef5",
+      "bytes": 90051
+    },
+    {
+      "path": "source/Nautica/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+      "sha256": "99dc7206c134f7656a3a8ba09a1687eedc6c4993eb177f830fdc9e932bfd690a",
+      "bytes": 245026
+    },
+    {
+      "path": "source/Nautica/Credits.rtf",
+      "sha256": "6c1576fe3d263f54854a951b5a5cb464459ebf347e4fbc4feecc51ff7b26e7f6",
+      "bytes": 262
+    },
+    {
+      "path": "source/Nautica/Info.plist",
+      "sha256": "5323264da9073cf92b4f3a14e94f0f4ae74616cc9cddd9fe8f7a40572664cd0d",
+      "bytes": 1235
+    },
+    {
+      "path": "source/Nautica/Models/BatchRenameModel.swift",
+      "sha256": "7b4ec195aeb7c1c2c602705e2e99fe4da89fd1fa67251849bae0111b8aa1e4c8",
+      "bytes": 10365
+    },
+    {
+      "path": "source/Nautica/Models/DirectoryContents.swift",
+      "sha256": "bf4a1d6a1602e68a5c505c9d99b759ffe24f6ed9f8b995db9477357f5ac691c2",
+      "bytes": 6039
+    },
+    {
+      "path": "source/Nautica/Models/FileItem.swift",
+      "sha256": "84d3f4827da79637daa235485359214ab1f67e8ea419a6042e08d92df3718fbb",
+      "bytes": 4076
+    },
+    {
+      "path": "source/Nautica/Models/GraphModel.swift",
+      "sha256": "c80a6db46d21657571bc32e5ce74fd4f46ff545a7a3092851d6bd2f1bce2bdaf",
+      "bytes": 5942
+    },
+    {
+      "path": "source/Nautica/Models/GroupByCriterion.swift",
+      "sha256": "3349c0065a7e010afb73403fbb3432da196906eb9b5eaedb3e57987a775ed504",
+      "bytes": 667
+    },
+    {
+      "path": "source/Nautica/Models/NavigationHistory.swift",
+      "sha256": "f1720b8ec01edc6cfbdc1349c3a76aff89cc038b9e30de9a21e1ed5486d5a710",
+      "bytes": 1232
+    },
+    {
+      "path": "source/Nautica/Models/PAFModel.swift",
+      "sha256": "c2d5df56f80167a218e9bf04975d27b6ad5cbdeaf0f3cdd85d9809f7bf40e35d",
+      "bytes": 3138
+    },
+    {
+      "path": "source/Nautica/Models/SearchCriterion.swift",
+      "sha256": "35fe9ee5792a90d9c3e6b9da995b1c3950790541c8dd143f6b469d948b829653",
+      "bytes": 10237
+    },
+    {
+      "path": "source/Nautica/Models/SelectionModel.swift",
+      "sha256": "3a5334f37ca05022f1e2dc359c8dce96e8e1c759aae515dcac2c543c2245cedf",
+      "bytes": 4884
+    },
+    {
+      "path": "source/Nautica/Models/SidebarItem.swift",
+      "sha256": "dc7a20e095ad6394486c1ea4d965a713fb38ac439b7178194c7b27b6232fa0cc",
+      "bytes": 5093
+    },
+    {
+      "path": "source/Nautica/Models/SidebarModel.swift",
+      "sha256": "de3a715755b7c512235fac95dd1b680681742240fb16196f67d212dedc90deb7",
+      "bytes": 13899
+    },
+    {
+      "path": "source/Nautica/Models/SortKey.swift",
+      "sha256": "41d2f26c18eb75cebbf1bb6b2e90173251bdef4210bc909c49380623c36120a2",
+      "bytes": 496
+    },
+    {
+      "path": "source/Nautica/Models/SplitLayout.swift",
+      "sha256": "e3493ad8eac3bc1ef3c9a8b65521ad751dad2aa8123f1b5d929530b605526be7",
+      "bytes": 1411
+    },
+    {
+      "path": "source/Nautica/Models/TabPersistence.swift",
+      "sha256": "d4465c92dc8462779a7262a14004b12d473ec0745caf364a7313efa642930cc5",
+      "bytes": 3311
+    },
+    {
+      "path": "source/Nautica/Models/TabState.swift",
+      "sha256": "81bcbc81470d360297a9708de3b141b036a1082a1f14962e9246e8c88ecc9ab4",
+      "bytes": 1019
+    },
+    {
+      "path": "source/Nautica/Models/TagColor.swift",
+      "sha256": "41fbd6063d71c3d5df29766d044732b837c18dc7b5d348b53c723b3502d177e4",
+      "bytes": 3850
+    },
+    {
+      "path": "source/Nautica/Models/TagItem.swift",
+      "sha256": "3ab3cebd7d4ddfbc43844a0c4a8379be7d3198e1f50a83867de57dbdaa3f6453",
+      "bytes": 737
+    },
+    {
+      "path": "source/Nautica/Models/ViewMode.swift",
+      "sha256": "78c639c1f76b0d760c9b934cdae00159ebb51753e61ff6472a23c70992f21b06",
+      "bytes": 156
+    },
+    {
+      "path": "source/Nautica/Models/ViewState.swift",
+      "sha256": "7d7b23677e0200796a49f38d636609a1caab1901825b68339bb28d7b62335445",
+      "bytes": 1348
+    },
+    {
+      "path": "source/Nautica/Nautica.entitlements",
+      "sha256": "173ca2c8afd6585e3e3a83449ab93a9b6ce591d513a353493752eab1168df42d",
+      "bytes": 309
+    },
+    {
+      "path": "source/Nautica/NauticaApp.swift",
+      "sha256": "800ebbe38ba0cbbc942b9ac51b3845cdd269e99a2a632565de657bebdf477b7b",
+      "bytes": 17540
+    },
+    {
+      "path": "source/Nautica/Services/ArchiveService.swift",
+      "sha256": "ad339fb640b8e23fdad0a47849dea9c9057a2c0b821c6ba7e3762df8f1230f5d",
+      "bytes": 17504
+    },
+    {
+      "path": "source/Nautica/Services/ChecksumService.swift",
+      "sha256": "64a0cbeff5bc72852b47b0307c65675034d4707b9fbef95c15db39273bbf6bd8",
+      "bytes": 5676
+    },
+    {
+      "path": "source/Nautica/Services/CloudStorageService.swift",
+      "sha256": "7453250df32d9b1cc87b2b15f7469e2488e0dfd4404f2e95bf0094819a01e405",
+      "bytes": 13718
+    },
+    {
+      "path": "source/Nautica/Services/DefaultFileManagerService.swift",
+      "sha256": "692de4979e696f9905c1c9a7397ea0039d7a1867fec7557127f9457b80d1ef58",
+      "bytes": 2149
+    },
+    {
+      "path": "source/Nautica/Services/DirectoryWatcherService.swift",
+      "sha256": "097cdb19fd14a0da43aa05ab07a283825ae1c58467cb27c2ddc4943733e84902",
+      "bytes": 2233
+    },
+    {
+      "path": "source/Nautica/Services/DuplicateFinderService.swift",
+      "sha256": "aa41215965a0e2cb9a77e937a14a70ea05729130b5dd528f12a23a7e4ff1d6dc",
+      "bytes": 11324
+    },
+    {
+      "path": "source/Nautica/Services/FileOperationService.swift",
+      "sha256": "cf8bab4c283850c68c8c5a0304122d78f2d0281f223f6d533e19f7c6c8ab3a60",
+      "bytes": 19394
+    },
+    {
+      "path": "source/Nautica/Services/FileSystemService.swift",
+      "sha256": "9f8719866eba333c92d57dabbd83c6b3e3cd05fa651610aabb030a0799c87080",
+      "bytes": 3646
+    },
+    {
+      "path": "source/Nautica/Services/FolderSyncService.swift",
+      "sha256": "d69475d98c39f332df5ec8d4cc2385b7a24f8053d3e7259c99008f20f3400705",
+      "bytes": 11384
+    },
+    {
+      "path": "source/Nautica/Services/GetInfoService.swift",
+      "sha256": "16adaf39d7cb79e152aedbe354642fbed42cbaeb8aa8e25335d4094d51c0b00b",
+      "bytes": 1805
+    },
+    {
+      "path": "source/Nautica/Services/GitService.swift",
+      "sha256": "88576946d971bef11af220dae70fb3783121a370ddc83574f007e1c478eecb39",
+      "bytes": 10903
+    },
+    {
+      "path": "source/Nautica/Services/GraphStore.swift",
+      "sha256": "33dac67ed12b0e07e856d2e4abeeb65b68455620e700f6eb5379015cbd0bd875",
+      "bytes": 10819
+    },
+    {
+      "path": "source/Nautica/Services/GroupClassifier.swift",
+      "sha256": "4a445db7a5620e5bf40f1f4e58f70736824de341e5289db853c54c50868a9603",
+      "bytes": 6483
+    },
+    {
+      "path": "source/Nautica/Services/MetadataEditorService.swift",
+      "sha256": "5316d7d28e18d6d2b1a17073166e4431f0d3e03c5d3e7e53d1c1d18602156d6f",
+      "bytes": 14714
+    },
+    {
+      "path": "source/Nautica/Services/PAFHost.swift",
+      "sha256": "3cde27632166400108ef9cf2635fc4fe5922c9fbbcd63fbdeae6e70259f4e63c",
+      "bytes": 17229
+    },
+    {
+      "path": "source/Nautica/Services/PAFPackageLoader.swift",
+      "sha256": "64bd7109b3ff847cbd41809bcd217c74c99eca07b1583f7aa559a4330d7efbbe",
+      "bytes": 11537
+    },
+    {
+      "path": "source/Nautica/Services/PerformanceProfilerService.swift",
+      "sha256": "d007300246bcd234d9211bfa044518653667d5386679a3e042c3d74f8432ff07",
+      "bytes": 6035
+    },
+    {
+      "path": "source/Nautica/Services/QuickActionService.swift",
+      "sha256": "e4bdc4e961310153bbbe4f32d28d144f1d92f623e946439c823229291ea2eb1f",
+      "bytes": 8641
+    },
+    {
+      "path": "source/Nautica/Services/QuickLookService.swift",
+      "sha256": "c356460705a6bee79b5ac037f58c775ec749b174ecafe946b6568a13ef98bc1c",
+      "bytes": 1908
+    },
+    {
+      "path": "source/Nautica/Services/SearchService.swift",
+      "sha256": "461d3855c84bbafce414c4a66b7250c80d396cfcd625c08117f3122d431032c9",
+      "bytes": 10196
+    },
+    {
+      "path": "source/Nautica/Services/SecureFileDeletionService.swift",
+      "sha256": "593e79c8b24667ce97e0e4845fc9902b8ae83d2406cb7ad3be377dc93f35cc15",
+      "bytes": 10810
+    },
+    {
+      "path": "source/Nautica/Services/ServerConnectionService.swift",
+      "sha256": "8250a43a0301083d9475ada5009aee004fee05c39fe6fca8cc241f1d6dc508b5",
+      "bytes": 4290
+    },
+    {
+      "path": "source/Nautica/Services/SpringLoadManager.swift",
+      "sha256": "cefdcdd96252e0371e3b82f81dbc26eda9d7dc580dcb8dade8f711cf13883a3e",
+      "bytes": 1927
+    },
+    {
+      "path": "source/Nautica/Services/SyncNavigationManager.swift",
+      "sha256": "05fc29f69f6754dc8f566421ea2ab1a0cb027ec377fee88743bbef550e2b66be",
+      "bytes": 3270
+    },
+    {
+      "path": "source/Nautica/Services/TagService.swift",
+      "sha256": "726f508a712ed8e5ad57c0405160e51a6556dfab519c59de767d30f6780b6ab8",
+      "bytes": 9608
+    },
+    {
+      "path": "source/Nautica/Services/TerminalService.swift",
+      "sha256": "cf90c94d5530c40a8810d92e76b23db31cbb2e432501b5fcf01c681e3e2c8a4c",
+      "bytes": 4215
+    },
+    {
+      "path": "source/Nautica/Services/ThumbnailService.swift",
+      "sha256": "ebaadd77281b5d679aa52d8099849d4265632ec9c7e5bba816d83867ae579306",
+      "bytes": 202
+    },
+    {
+      "path": "source/Nautica/Services/TrashOriginStore.swift",
+      "sha256": "d40afa2b54be1c43d8fd55684dee5f49a3498cf15825e24b7b12b6f66ddca748",
+      "bytes": 4276
+    },
+    {
+      "path": "source/Nautica/Services/VaultAutomationService.swift",
+      "sha256": "bd6a808d36a4e3f131a33b3483565f2eae36daf38e3fc44a7ec8df7dc8a7e995",
+      "bytes": 5598
+    },
+    {
+      "path": "source/Nautica/Services/VaultDiagnosticsService.swift",
+      "sha256": "55bacfb8cbc92837c03b35f23607b8f458276f43f956e594aec2ce1293848561",
+      "bytes": 9651
+    },
+    {
+      "path": "source/Nautica/Services/VaultService.swift",
+      "sha256": "8a26f0a041338afea6c2dc9a649f891581dc42ce6d66359b74a7bf8a9429f380",
+      "bytes": 17645
+    },
+    {
+      "path": "source/Nautica/Services/ViewOptionsService.swift",
+      "sha256": "ffe505be3dc420cbf7c58bf719e8b0d75eb6b20603a8e468248e71b70ddf1260",
+      "bytes": 6451
+    },
+    {
+      "path": "source/Nautica/Services/ViewStateService.swift",
+      "sha256": "7f076b48ddbc0580fbca9bf37dbdbb4b22273712811ef6f09ad98ec265a794bf",
+      "bytes": 2171
+    },
+    {
+      "path": "source/Nautica/Utilities/Constants.swift",
+      "sha256": "5c86e307c96dcbe7722677947018e8930113670fa81f4c78d7296d97d365c881",
+      "bytes": 2293
+    },
+    {
+      "path": "source/Nautica/Utilities/Extensions/Color+Hex.swift",
+      "sha256": "7b992702c34467efe0062f91fcaf1ce3cd20173ede0b9327807ab267591af7fb",
+      "bytes": 1359
+    },
+    {
+      "path": "source/Nautica/Utilities/Extensions/FileManager+Helpers.swift",
+      "sha256": "956bead9ce0e39ff8871a0e9b76d746d02cd40e78eb175fbb6d1c1772ce7623e",
+      "bytes": 628
+    },
+    {
+      "path": "source/Nautica/Utilities/Extensions/URL+FileOperations.swift",
+      "sha256": "eb761c2d961cfb21e25faf46b96151089f3422fb2e7bbc1879ffe59ebfd63b73",
+      "bytes": 1134
+    },
+    {
+      "path": "source/Nautica/Views/BrowserView.swift",
+      "sha256": "62b7fa46cc1594780340807df345c3ae252e308b6f57e1ad6fc4aeebace4802e",
+      "bytes": 104844
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/CompressPasswordSheet.swift",
+      "sha256": "11aafcc93d7983c2a5826b64a996e1ac3cd327574f410a9aa950122060a478a5",
+      "bytes": 2873
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/ConnectToServerSheet.swift",
+      "sha256": "914ed3ba6289e1f7701e050267321e6887216d2cddeb659e6c22149a54ec2355",
+      "bytes": 8612
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/CreateEncryptedArchiveSheet.swift",
+      "sha256": "603c72c9b098bcd7c13df1045501f62712d713320887d701a6ae7a00aea35f96",
+      "bytes": 9094
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/CreateVaultSheet.swift",
+      "sha256": "67e39264962c7c1993f722a049f521963f6a8665bdb85792dbbb9427930706f4",
+      "bytes": 8626
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/DuplicateFinderSheet.swift",
+      "sha256": "86fef3a69fb147c9c49650b0ef4cc2f2bc4e6e2925e41177f238854353da1f4d",
+      "bytes": 12898
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/ExtractEncryptedArchiveSheet.swift",
+      "sha256": "eaba8a8443686b6b1443500e03a8ffe09db9089bed5a02360b36f81bcc1ebee6",
+      "bytes": 4084
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/FilterBarView.swift",
+      "sha256": "1f7a7821f9c54f00335154b24212fe276016c0b4c075cff35bd2799d6f5e9438",
+      "bytes": 5113
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/FolderSyncSheet.swift",
+      "sha256": "48178bea1f9918fbd8e6ff716524c2dda05436eb621846b2e28375432c27e4cc",
+      "bytes": 13735
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/GitCommitSheet.swift",
+      "sha256": "7d703b94b8a462dd2b2d9806d70699777bacf1e53325d40c7a55d9c12e57e725",
+      "bytes": 9905
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/GitDiffSheet.swift",
+      "sha256": "2ca3dce7dde7e6230d65b1caad5139cf9eb9489c1c01c54dd20937dca7c99e1a",
+      "bytes": 7711
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/GoToFolderSheet.swift",
+      "sha256": "f7b81606126279f1d5c015d1bfa0bcf73cb005f94c7044d2b58bebd6ed4e4229",
+      "bytes": 2496
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/PathBarView.swift",
+      "sha256": "6311b413ef935e37cd26ac310a6309fbe638689b675147440580ff2d8ac771cd",
+      "bytes": 3805
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/ProgressPanel.swift",
+      "sha256": "a5b04338273a216ea9e8245dab8c0e31bbef7168c25f62554d8714a91a98c58f",
+      "bytes": 2519
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/ScopeBarView.swift",
+      "sha256": "4b51bf824dea68e8b77517d9bdb5c06ab08ca554a4c5325e170a8cf249068175",
+      "bytes": 9055
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/SecureDeleteConfirmationSheet.swift",
+      "sha256": "0d2c0d704c8a533f2364787e36051418d4147ef6ada97d5bd0214a2992640a6f",
+      "bytes": 9600
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/ToolbarView.swift",
+      "sha256": "deaa9933a65d9f4e96b52543018d999071b190b326ed90be37f7c4cc1dafcc8e",
+      "bytes": 24571
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/UnlockVaultSheet.swift",
+      "sha256": "1636c48c90eec7b57387cf416ece51e74c6e41a806db4c535f8367a4d0d6c501",
+      "bytes": 6446
+    },
+    {
+      "path": "source/Nautica/Views/Chrome/VaultHealthSheet.swift",
+      "sha256": "c14bdd6e2a3f54c4c6fc21b9568981567b821efe5a7c827d842e40be3d6c85ab",
+      "bytes": 8715
+    },
+    {
+      "path": "source/Nautica/Views/Common/TagDotsView.swift",
+      "sha256": "45bd75bb5f9d8416d0583300486713612e8caff422c6c5aed92d5a50a622bc5b",
+      "bytes": 2881
+    },
+    {
+      "path": "source/Nautica/Views/ConflictResolution/ConflictResolutionModel.swift",
+      "sha256": "7cee2d7c1ec2749085d01c9a30e585640fdf93749ceb308ca55b541f14bd1c1e",
+      "bytes": 3097
+    },
+    {
+      "path": "source/Nautica/Views/ConflictResolution/ConflictResolutionSheet.swift",
+      "sha256": "7f8e8329268f0c9e80c60b195a13acc94ac006a511737aebaf8d09d417132f7a",
+      "bytes": 5236
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/BatchRenameSheet.swift",
+      "sha256": "b2ee01dd7d6fc891e4036161819fbcb2baa8cafdd42a3a6a914d1aa7f2e1685c",
+      "bytes": 9310
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/ColumnViewController.swift",
+      "sha256": "f42d49aaddef7e64751385aed510f14eedfa8b81e7c38fdf1ba540c87802d060",
+      "bytes": 37832
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/FileContextMenu.swift",
+      "sha256": "ed2ce0c433e511e2e642347ade6c7b69142bd896d89f445de0b8f6d266283600",
+      "bytes": 21015
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/FilePromiseProvider.swift",
+      "sha256": "cb47b6f3a4b7094ebbc16955141c48ef2ac5d6fef5c617e742fc5877220f6756",
+      "bytes": 1963
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/FileViewCoordinator.swift",
+      "sha256": "63d7241aca6f8d93c0abe0537ad72c4c1a7d33af7aede10bd8b455e784259831",
+      "bytes": 29878
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/GalleryViewController.swift",
+      "sha256": "b92fb63e5a9f3f58fa5b551bf4d4be0c0d207486aa437ed3d255e93b9c9e41ca",
+      "bytes": 33549
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/IconView.swift",
+      "sha256": "868ed10b4c13427f1ad5fceaafec56cbb48738205bce91cc9d0485e2b15e5a50",
+      "bytes": 41227
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/IconViewCell.swift",
+      "sha256": "2946362342f49f73fcf4fed6106628121535cc309807b8254f1065c632825bd0",
+      "bytes": 8567
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/ListView.swift",
+      "sha256": "d88f7e2cac3324bbaaf62d9b1cdc765ed49f6f1e98ad0c56d5218dc716eecc34",
+      "bytes": 43504
+    },
+    {
+      "path": "source/Nautica/Views/FileViews/ListViewCell.swift",
+      "sha256": "8ef9e10b4f89f4b6e570c548c4e3e18700707929bf696edb2dadfb2a105c11f8",
+      "bytes": 12000
+    },
+    {
+      "path": "source/Nautica/Views/GetInfo/CustomIconView.swift",
+      "sha256": "74a18939709ef63d479cb09bded75b849d116d4740cbdc429d126a1b475024c2",
+      "bytes": 5684
+    },
+    {
+      "path": "source/Nautica/Views/GetInfo/GetInfoView.swift",
+      "sha256": "4384047e12518032cd7898fc699751b2391d977bb9653d5a6e4b4e8586caa2e0",
+      "bytes": 35747
+    },
+    {
+      "path": "source/Nautica/Views/GetInfo/GetInfoWindowController.swift",
+      "sha256": "b4269dc61858e99d0e52a6199370929a8111767aee6ae43fa2470e6ef710e2c6",
+      "bytes": 1096
+    },
+    {
+      "path": "source/Nautica/Views/Graph/GraphViewBuilder.swift",
+      "sha256": "653098d1550a0bb37d5ef3cf037b040f17de587445982854c1fa7f636f42c870",
+      "bytes": 10039
+    },
+    {
+      "path": "source/Nautica/Views/Graph/GraphWorkspace.swift",
+      "sha256": "7f85990f574354f5a8630673e42477a280c9995101ae5419cb501607208c2656",
+      "bytes": 17182
+    },
+    {
+      "path": "source/Nautica/Views/Graph/PAFWorkspaceView.swift",
+      "sha256": "0e87d1eedadf2681c71568e419848db8fc8911682cbd5c6b61c9b080e92414d7",
+      "bytes": 18420
+    },
+    {
+      "path": "source/Nautica/Views/Onboarding/OnboardingView.swift",
+      "sha256": "ba5ca80fab4e829792a8331e95f4853073c8a0cd34be2ca61aec81b5229aab0e",
+      "bytes": 5070
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/DropShelfPanelView.swift",
+      "sha256": "5b60639cd42d72a8161a9d09d95956832350faef0e8f375bbb96a5961e0eac88",
+      "bytes": 8896
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/FileInfoPanelView.swift",
+      "sha256": "88474dfa955d7e2a2db204e273fdb3c18e4d115b98a758f1e26c71a863607378",
+      "bytes": 10372
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/GitStatusPanelView.swift",
+      "sha256": "a531c0a8401637079aeacb5fab8c22e8b71cac4b9261893764a70457d8f2ed7e",
+      "bytes": 14071
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/HexViewerPanelView.swift",
+      "sha256": "211a562c109a15f523f54e89bafbba0caa625363f295b7c0b0eaca046b0d6b5e",
+      "bytes": 13993
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift",
+      "sha256": "57f683b158d833579976cfa8d0b8f6a2753f8386b04cc9a6c8f1cbaff8241635",
+      "bytes": 31825
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/MiniTerminalPanelView.swift",
+      "sha256": "d2866c08d5421e5754887398d42126f02c4dc14b8a3d022683188ec0b736176d",
+      "bytes": 9728
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/QuickActionsPanelView.swift",
+      "sha256": "b47193c93bddf75b8049ea5a70edf813f09f395cc170cea61ff7d52d558df4e0",
+      "bytes": 17546
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/RecentsPanelView.swift",
+      "sha256": "08531521b6baaa93d55ef48dcb2435fec38cf14c774e031bf8c0fca839c7f23b",
+      "bytes": 6010
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/RightSidebarTab.swift",
+      "sha256": "573cf7582af2714ee3a0bde397a52a4b9b6502eb7cf75a81ec6e82f7a5f18418",
+      "bytes": 1858
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/RightSidebarView.swift",
+      "sha256": "7a27f91d2d08bd929fa68148981086fb80b58e33fa9c721c5da6429883a84c82",
+      "bytes": 4310
+    },
+    {
+      "path": "source/Nautica/Views/RightSidebar/TagPaletteView.swift",
+      "sha256": "e352a58a77b08c3fd022f0eed22d6a44c4d5f62ec6f90772d60223250cbe0302",
+      "bytes": 10110
+    },
+    {
+      "path": "source/Nautica/Views/Settings/SettingsView.swift",
+      "sha256": "cb75e0c5849807967d1028dfd342248cd72555a023a9a7298b69a4cceae7856d",
+      "bytes": 13343
+    },
+    {
+      "path": "source/Nautica/Views/SidebarFolderDropModifier.swift",
+      "sha256": "43923517bdd179bbdd93bf3d4a200b7292f01e1b02c42753c81cb04f06bda593",
+      "bytes": 2644
+    },
+    {
+      "path": "source/Nautica/Views/SidebarView.swift",
+      "sha256": "723be9ac0c485e1bda3dc689b63000674e3738070a479b92e58278ee3758d7da",
+      "bytes": 14824
+    },
+    {
+      "path": "source/Nautica/Views/TreePanelView.swift",
+      "sha256": "4e8f0383a56bc2e0eafac1904cd29bfbd2106fb4e9c7a7834ead7fb3f65e2fa9",
+      "bytes": 2957
+    },
+    {
+      "path": "source/Nautica/Views/ViewOptions/ViewOptionsPanelController.swift",
+      "sha256": "f62a426ea89da33c3eb8b0db843df61143ead7772f986344a22bb11da29ff98b",
+      "bytes": 1351
+    },
+    {
+      "path": "source/Nautica/Views/ViewOptions/ViewOptionsView.swift",
+      "sha256": "81be64dafa1f466cf4e5ad7c2a858fd7bb7b753d319c9ff85a9bc213c46a4bdf",
+      "bytes": 6070
+    },
+    {
+      "path": "source/Nautica/Views/Windows/MainWindow.swift",
+      "sha256": "ebc7f2f09f43f71e7248d1ad9a486e556e50c1a31b8a42e7ab809e472cd4b5c8",
+      "bytes": 475
+    },
+    {
+      "path": "source/Nautica-PRD-v1.0.md",
+      "sha256": "d451513fa23ec85025c2f5204c9feb11596e91c1bd87c06d64033a7d7751b5fe",
+      "bytes": 26505
+    },
+    {
+      "path": "source/Nautica.xcodeproj/project.pbxproj",
+      "sha256": "1711f536b88ae603208efe52bb054c768066161a8a194adb6ad6df6e71c93df5",
+      "bytes": 16325
+    },
+    {
+      "path": "source/Nautica.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256": "beddec46654b73c62a71846a5acd4dfd72810ff8531d90cc9a9d4ba9429c8f97",
+      "bytes": 384
+    },
+    {
+      "path": "source/Nautica.xcodeproj/xcshareddata/xcschemes/Nautica.xcscheme",
+      "sha256": "91466b11bbe83c4b2abe2e8f4c3869c4e79ce4807d54e4860a0dd7043b34944b",
+      "bytes": 3348
+    },
+    {
+      "path": "source/NauticaTests/BatchRenameTests.swift",
+      "sha256": "789ee8e0f53302a4a952225b5a332c4ef1dc21777caeeee32b90f0fc765b2b10",
+      "bytes": 6545
+    },
+    {
+      "path": "source/NauticaTests/CloudStorageServiceTests.swift",
+      "sha256": "8a9927558d91ecf46d68b33786bf21bcb34815df069737efd67b8d653871744a",
+      "bytes": 5947
+    },
+    {
+      "path": "source/NauticaTests/FileOperationServiceTests.swift",
+      "sha256": "46f7b3bb2ade81fe3ef0987a4c267719cf7caf864b416a82688495cbd02867ec",
+      "bytes": 7995
+    },
+    {
+      "path": "source/NauticaTests/GraphStoreTests.swift",
+      "sha256": "045645f6ca87c46e3f10fc3352e99a056beb213aebd9e914ebafa2c614e2f043",
+      "bytes": 7028
+    },
+    {
+      "path": "source/NauticaTests/PAFHostTests.swift",
+      "sha256": "2a1f7163a9cdebd4ebb7e03ea793e9530cfaca80f82c358cacb3921ed515fc9d",
+      "bytes": 11940
+    },
+    {
+      "path": "source/NauticaTests/SelectionModelTests.swift",
+      "sha256": "880025cd4c253f59ee1136133507b8f539c9663dbeba1a391c8fb6b6fd90b39d",
+      "bytes": 4893
+    },
+    {
+      "path": "source/NauticaTests/SplitLayoutTests.swift",
+      "sha256": "36ba9953312e278706c103dd4e7172e9081c6dd325f37d5c0c8c82b7673aa207",
+      "bytes": 1404
+    },
+    {
+      "path": "source/NauticaTests/TagServiceTests.swift",
+      "sha256": "60970a72068879838a2eb56f4e1edb6cd6c70e38353ea0ed66049206491ead62",
+      "bytes": 2339
+    },
+    {
+      "path": "source/README.md",
+      "sha256": "7ef2a824683e4ad9e2741bec20965a93a21b671c2b78c849a0a2996d0abdd3cb",
+      "bytes": 4638
+    },
+    {
+      "path": "source/docs/GRAPH-AND-PAF.md",
+      "sha256": "a4ba2a12d0c5c04921daefcd7b36cb76d2480bfed770bb48438112ca2055e6fd",
+      "bytes": 9025
+    }
+  ],
+  "input_snapshot_sha256": "ce410a7f35dbc8d9840ed2a2f9e44100ca227cca183646a252e52b58292e7811",
+  "isolation_limitation": "Same assistant conversation includes intake and previously seen historical validation material; no perfect clean-context isolation is claimed."
+}

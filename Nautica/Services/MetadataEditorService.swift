@@ -182,7 +182,7 @@ public final class MetadataEditorService: @unchecked Sendable {
         if ext == "mp3" {
             try writeMP3ID3Metadata(at: url, title: title, artist: artist, album: album, year: year)
         } else if ext == "m4a" || ext == "mp4" || ext == "mov" {
-            writeM4AMetadata(at: url, title: title, artist: artist, album: album)
+            try writeM4AMetadata(at: url, title: title, artist: artist, album: album)
         }
 
         // Always sync Spotlight extended attributes for rapid search & indexing
@@ -226,8 +226,43 @@ public final class MetadataEditorService: @unchecked Sendable {
             ? fileData.subdata(in: audioOffset..<fileData.count)
             : fileData
 
+        // Parse existing frames from existing ID3 tag to preserve untouched metadata
+        var existingFrames: [(id: String, frameBytes: Data)] = []
+        if audioOffset > 10 {
+            var cursor = 10
+            while cursor + 10 <= audioOffset {
+                let idBytes = fileData.subdata(in: cursor..<cursor + 4)
+                guard idBytes[0] != 0, let frameID = String(data: idBytes, encoding: .ascii) else {
+                    // Padding or end of frames
+                    break
+                }
+                // Big-endian 4-byte size
+                let sizeBytes = fileData.subdata(in: cursor + 4..<cursor + 8)
+                let framePayloadSize = Int(sizeBytes.withUnsafeBytes { $0.load(as: UInt32.self).bigEndian })
+                let fullFrameSize = 10 + framePayloadSize
+                guard fullFrameSize > 10, cursor + fullFrameSize <= audioOffset else {
+                    break
+                }
+                let fullFrameData = fileData.subdata(in: cursor..<cursor + fullFrameSize)
+                existingFrames.append((id: frameID, frameBytes: fullFrameData))
+                cursor += fullFrameSize
+            }
+        }
+
         // Build new ID3v2.3 tag payload
         var frameData = Data()
+
+        // Frame IDs being updated by this call
+        var updatedFrameIDs = Set<String>()
+        if title != nil { updatedFrameIDs.insert("TIT2") }
+        if artist != nil { updatedFrameIDs.insert("TPE1") }
+        if album != nil { updatedFrameIDs.insert("TALB") }
+        if year != nil { updatedFrameIDs.insert("TYER") }
+
+        // Retain all existing frames that are NOT being updated!
+        for existing in existingFrames where !updatedFrameIDs.contains(existing.id) {
+            frameData.append(existing.frameBytes)
+        }
 
         func appendTextFrame(id: String, text: String?) {
             guard let text = text, !text.isEmpty else { return }
@@ -286,8 +321,7 @@ public final class MetadataEditorService: @unchecked Sendable {
         title: String?,
         artist: String?,
         album: String?
-    ) {
-        // Use AVMutableMovie header rewrite if supported
+    ) throws {
         let movie = AVMutableMovie(url: url, options: nil)
         var items = movie.metadata
         func updateItem(key: AVMetadataKey, value: String?) {
@@ -308,9 +342,8 @@ public final class MetadataEditorService: @unchecked Sendable {
         let tempURL = url.deletingLastPathComponent()
             .appendingPathComponent(".tmp_\(UUID().uuidString)_\(url.lastPathComponent)")
 
-        if (try? movie.writeHeader(to: tempURL, fileType: .m4a)) != nil {
-            _ = try? FileManager.default.replaceItemAt(url, withItemAt: tempURL)
-        }
+        try movie.writeHeader(to: tempURL, fileType: .m4a)
+        _ = try FileManager.default.replaceItemAt(url, withItemAt: tempURL)
     }
 
     // MARK: - Spotlight Extended Attributes Synchronization

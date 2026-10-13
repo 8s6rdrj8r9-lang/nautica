@@ -37,6 +37,13 @@ enum Constants {
     static let vaultAutoLockOnScreenLockKey = "vaultAutoLockOnScreenLock"
     static let vaultInactivityTimeoutKey = "vaultInactivityTimeout"
 
+    // Intelligence & AI Settings (macOS 27)
+    static let aiEnabledKey = "aiEnabled"
+    static let aiProviderKey = "aiProvider"
+    static let aiBackupProviderKey = "aiBackupProvider"
+    static let openAIAPIKeyKey = "openAIAPIKey"
+    static let enableAIBackupKey = "enableAIBackup"
+
     /// Initial folder for a new window, per the General preference.
     static func defaultWindowURL() -> URL {
         switch UserDefaults.standard.string(forKey: defaultNewWindowFolderKey) {

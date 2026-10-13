@@ -1,0 +1,33 @@
+{
+  "checksum_abc" : "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+  "duplicate_control" : {
+    "counts" : [
+      2
+    ],
+    "groups" : 1,
+    "reclaimable" : [
+      3
+    ]
+  },
+  "mp3_title_edit" : {
+    "audio_payload_retained" : true,
+    "fixture" : "synthetic ID3v2.3 header and artist text frame; no codec playback claim",
+    "new_title_frame_present" : true,
+    "old_artist_frame_retained" : false
+  },
+  "root" : "\/private\/tmp\/nautica-audit-utility-1B048CE3-A628-4AD5-8D9A-653A842E01D8",
+  "supplied_paf_package" : {
+    "blockers" : [
+      "Missing entry point file: AUDIT-INTAKE.md",
+      "Missing entry point file: AUDIT-INITIATION-PROMPT-INTERACTIVE.md"
+    ],
+    "file_count" : 62,
+    "notes" : [
+      "Referenced source archive not included: source\/PAF-v0.1-Evidence-Sufficiency-Patch-Final.zip",
+      "60 packaged file checksums verified. Hashes do not authenticate the publisher.",
+      "Imported separate supplements without rewriting or renaming package content: paf-package.json."
+    ],
+    "original_archive_hash" : "c74af5f3c9d225a39b4274f9dc380565191dc5848b16d6319807255d997c8b44",
+    "ready" : false
+  }
+}

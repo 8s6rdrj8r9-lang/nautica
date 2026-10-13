@@ -40,7 +40,7 @@ struct VaultHealthSheet: View {
 
                         if let res = repairResult {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Repair Output")
+                                Text("Verification Output")
                                     .font(.caption)
                                     .fontWeight(.bold)
                                 Text(res)
@@ -184,7 +184,7 @@ struct VaultHealthSheet: View {
                         if isRepairing {
                             ProgressView().controlSize(.small)
                         }
-                        Text("Repair Container")
+                        Text("Verify Integrity")
                     }
                 }
                 .buttonStyle(.borderedProminent)
@@ -231,7 +231,7 @@ struct VaultHealthSheet: View {
         let target = vaultURL
         Task {
             do {
-                let res = try await VaultDiagnosticsService.shared.repair(vaultURL: target)
+                let res = try await VaultDiagnosticsService.shared.verifyIntegrity(vaultURL: target)
                 await MainActor.run {
                     self.repairResult = res
                     self.isRepairing = false
@@ -239,7 +239,7 @@ struct VaultHealthSheet: View {
                 await runDiagnostics()
             } catch {
                 await MainActor.run {
-                    self.repairResult = "Repair failed: \(error.localizedDescription)"
+                    self.repairResult = "Verification error: \(error.localizedDescription)"
                     self.isRepairing = false
                 }
             }

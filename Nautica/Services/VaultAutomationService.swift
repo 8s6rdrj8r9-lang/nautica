@@ -114,15 +114,15 @@ public final class VaultAutomationService: ObservableObject {
         lastActivityDate = Date()
     }
 
-    /// Queries the system for all mounted encrypted vaults.
+    /// Queries the system for all mounted encrypted vaults managed by Nautica.
     public func refreshActiveVaults() {
-        activeVaults = VaultService.shared.mountedVaults()
+        activeVaults = VaultService.shared.mountedVaults(onlyManaged: true)
     }
 
-    /// Immediately detaches and locks all mounted vaults.
+    /// Immediately detaches and locks all mounted managed vaults.
     @discardableResult
     public func lockAllVaultsNow() async -> [URL: Error] {
-        let failures = await VaultService.shared.lockAllVaults()
+        let failures = await VaultService.shared.lockAllVaults(force: false)
         refreshActiveVaults()
         return failures
     }
@@ -144,8 +144,8 @@ public final class VaultAutomationService: ObservableObject {
         let maxIdleSeconds = Double(timeoutMinutes * 60)
 
         if idleSeconds >= maxIdleSeconds {
-            // Check if any vaults are mounted before locking
-            let mounted = VaultService.shared.mountedVaults()
+            // Check if any managed vaults are mounted before locking
+            let mounted = VaultService.shared.mountedVaults(onlyManaged: true)
             if !mounted.isEmpty {
                 Task {
                     await self.lockAllVaultsNow()

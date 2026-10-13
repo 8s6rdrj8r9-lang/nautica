@@ -87,21 +87,33 @@ final class QuickActionService {
         let pdfDocument = PDFDocument()
         let imageExtensions = Set(["png", "jpg", "jpeg", "heic", "tiff", "webp", "gif", "bmp"])
 
+        var failedURLs: [URL] = []
         for url in urls {
             let ext = url.pathExtension.lowercased()
             if ext == "pdf" {
-                if let existingPDF = PDFDocument(url: url) {
+                if let existingPDF = PDFDocument(url: url), existingPDF.pageCount > 0 {
                     for pageIndex in 0..<existingPDF.pageCount {
                         if let page = existingPDF.page(at: pageIndex) {
                             pdfDocument.insert(page, at: pdfDocument.pageCount)
                         }
                     }
+                } else {
+                    failedURLs.append(url)
                 }
             } else if imageExtensions.contains(ext) {
                 if let image = NSImage(contentsOf: url), let page = PDFPage(image: image) {
                     pdfDocument.insert(page, at: pdfDocument.pageCount)
+                } else {
+                    failedURLs.append(url)
                 }
+            } else {
+                failedURLs.append(url)
             }
+        }
+
+        guard failedURLs.isEmpty else {
+            let failedNames = failedURLs.map(\.lastPathComponent).joined(separator: ", ")
+            throw NSError(domain: "QuickActionService", code: 422, userInfo: [NSLocalizedDescriptionKey: "Cannot include unreadable or unsupported file(s): \(failedNames)"])
         }
 
         guard pdfDocument.pageCount > 0 else {

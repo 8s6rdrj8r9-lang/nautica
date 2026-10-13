@@ -1,0 +1,15 @@
+Nautica/Services/CloudStorageService.swift:225:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+223 |                 options: [.skipsHiddenFiles]
+224 |             ) {
+225 |                 for case let fileURL as URL in enumerator {
+    |                                                `- warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+226 |                     try? FileManager.default.startDownloadingUbiquitousItem(at: fileURL)
+227 |                 }
+
+Nautica/Services/CloudStorageService.swift:242:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+240 |                 options: [.skipsHiddenFiles]
+241 |             ) {
+242 |                 for case let fileURL as URL in enumerator {
+    |                                                `- warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode
+243 |                     try? FileManager.default.evictUbiquitousItem(at: fileURL)
+244 |                 }

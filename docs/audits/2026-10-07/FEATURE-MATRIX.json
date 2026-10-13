@@ -1,0 +1,268 @@
+[
+  {
+    "feature": "First launch / permissions",
+    "intent": "Draft onboarding, local-first claims",
+    "state": "Observed",
+    "evidence": "01\u201303 screenshots",
+    "limits": "Skip for Now works; privacy copy overstates cloud/network boundary."
+  },
+  {
+    "feature": "Default workspace",
+    "intent": "File manager purpose",
+    "state": "Observed",
+    "evidence": "04 screenshot; GraphApplicationShell",
+    "limits": "Opens empty Objects; no first-use choice of Files versus Objects."
+  },
+  {
+    "feature": "Icon view F-001",
+    "intent": "Must; 15k/500ms/60fps",
+    "state": "Source present; live flow blocked",
+    "evidence": "IconView, FileViewCoordinator; F-01/F-14",
+    "limits": "15k service benchmark adverse; actual render/scroll UNKNOWN."
+  },
+  {
+    "feature": "List view F-002",
+    "intent": "Must; sort/type-ahead/columns",
+    "state": "Source present; live flow blocked",
+    "evidence": "ListView, ListViewCell; R-003",
+    "limits": "Selection tests do not establish full UI or column persistence."
+  },
+  {
+    "feature": "Column preview / full columns F-003",
+    "intent": "Could; PRD open choice",
+    "state": "Source present; live flow blocked",
+    "evidence": "ColumnViewController",
+    "limits": "Full columns exceed the initial column-preview brief; usability not observed."
+  },
+  {
+    "feature": "Gallery view",
+    "intent": "Beyond draft F001\u2013F016",
+    "state": "Source present; live flow blocked",
+    "evidence": "GalleryViewController",
+    "limits": "Preview implementation present; media-format and large-filmstrip verification pending."
+  },
+  {
+    "feature": "Dual / multi-pane F-004",
+    "intent": "Should",
+    "state": "Source plus model tests",
+    "evidence": "SplitLayout; R-003",
+    "limits": "Layout model tests pass; cross-pane drag, focus and sync navigation UNKNOWN."
+  },
+  {
+    "feature": "Sidebar / tree / favorites F-005",
+    "intent": "Must",
+    "state": "Onboarding observed; browser blocked",
+    "evidence": "03; SidebarView, TreePanelView",
+    "limits": "Configured favorites are source-present; denied paths/tree navigation UNKNOWN."
+  },
+  {
+    "feature": "Breadcrumb/editable path F-006/F-007",
+    "intent": "Must / Should",
+    "state": "Source present; live flow blocked",
+    "evidence": "PathBarView, GoToFolderSheet",
+    "limits": "Completion, segment drag and Cmd-L focus behavior UNKNOWN."
+  },
+  {
+    "feature": "Tabs/window restore F-008",
+    "intent": "Must",
+    "state": "Source present",
+    "evidence": "TabPersistence, TabState, NauticaApp",
+    "limits": "Native tab commands overlap view shortcuts; restart/crash restoration not tested."
+  },
+  {
+    "feature": "Quick Look F-009",
+    "intent": "Must; 100ms target",
+    "state": "Source present; live flow blocked",
+    "evidence": "QuickLookService",
+    "limits": "Space/arrow interaction and latency UNKNOWN."
+  },
+  {
+    "feature": "Terminal integration F-010",
+    "intent": "Should",
+    "state": "Source present",
+    "evidence": "TerminalService",
+    "limits": "External emulator launch and automation-denied behavior UNKNOWN."
+  },
+  {
+    "feature": "Embedded terminal",
+    "intent": "Beyond draft external-terminal scope",
+    "state": "Partial terminal implementation",
+    "evidence": "MiniTerminalPanelView",
+    "limits": "One-shot shell runner, no PTY; cancellation/output/process bounds need design."
+  },
+  {
+    "feature": "File operations F-011",
+    "intent": "Must",
+    "state": "Service controls tested; consequential failures confirmed",
+    "evidence": "R-003/R-004",
+    "limits": "Safe ordinary staged copy; destructive replace failure; batch cancellation contract conflict."
+  },
+  {
+    "feature": "Batch rename F-012",
+    "intent": "Should",
+    "state": "Model behavior tested; apply UI blocked",
+    "evidence": "R-003/R-007; BatchRenameModel",
+    "limits": "Custom Pattern produced vacation_001\u2026003. Two older sequence tests drift from current default mode."
+  },
+  {
+    "feature": "Tags F-013",
+    "intent": "Could; Finder interoperability",
+    "state": "Source and tests",
+    "evidence": "TagService; R-003",
+    "limits": "DB/native writes are not an atomic transaction; native failures suppressed; external rename reconciliation UNKNOWN."
+  },
+  {
+    "feature": "Per-folder state F-014",
+    "intent": "Should",
+    "state": "Source present",
+    "evidence": "ViewStateService, ViewOptionsService",
+    "limits": "SwiftData and preference storage exist; restoration/migration/accessibility unverified."
+  },
+  {
+    "feature": "Hidden files F-015",
+    "intent": "Must",
+    "state": "Source present; live flow blocked",
+    "evidence": "DirectoryContents, BrowserView",
+    "limits": "Keyboard binding present; session behavior UNKNOWN in UI."
+  },
+  {
+    "feature": "Network shares F-016",
+    "intent": "Could",
+    "state": "Source present; no live connection",
+    "evidence": "ServerConnectionService",
+    "limits": "System URL handoff/mount polling; picks first new mount without matching identity. Bonjour starts when service initializes."
+  },
+  {
+    "feature": "Cloud provider folders/status",
+    "intent": "Beyond no-cloud onboarding copy",
+    "state": "Source; classification tests",
+    "evidence": "CloudStorageService; R-003",
+    "limits": "Detection covers multiple providers; download/evict uses ubiquitous-item APIs, so non-Apple parity is not established."
+  },
+  {
+    "feature": "Search / filter / Smart Folders",
+    "intent": "Feature expansion",
+    "state": "Source present",
+    "evidence": "SearchService, FilterBarView",
+    "limits": "Spotlight cap 500; saved-query escaping and unindexed-folder behavior need verification."
+  },
+  {
+    "feature": "Sort / grouping / density",
+    "intent": "Draft + expansion",
+    "state": "Source; sort benchmark",
+    "evidence": "DirectoryContents, GroupClassifier, Settings",
+    "limits": "50k in-memory sort 37ms; visual sorting/layout/large text not tested."
+  },
+  {
+    "feature": "Get Info / metadata",
+    "intent": "Feature expansion",
+    "state": "Source plus focused MP3 probe",
+    "evidence": "R-006; MetadataEditorService",
+    "limits": "Confirmed untouched artist frame loss; image/PDF/audio fidelity otherwise UNKNOWN."
+  },
+  {
+    "feature": "Drop Shelf / recents / hex / inspector",
+    "intent": "Feature expansion",
+    "state": "Source present; live flow blocked",
+    "evidence": "RightSidebar views",
+    "limits": "Useful temporary staging/navigation; persistent recents retention and large-file hex behavior need bounds."
+  },
+  {
+    "feature": "Quick Actions / Shortcuts",
+    "intent": "Feature expansion",
+    "state": "Source present",
+    "evidence": "QuickActionService",
+    "limits": "Image conversion/PDF/Shortcuts runner present; no media or third-party workflow executed."
+  },
+  {
+    "feature": "Git tools",
+    "intent": "Feature expansion",
+    "state": "Source plus status probe",
+    "evidence": "R-007; GitService",
+    "limits": "Spaced filename badges fail; commits/discard/branch changes not exercised."
+  },
+  {
+    "feature": "Checksums",
+    "intent": "Feature expansion",
+    "state": "Observed service control",
+    "evidence": "R-006",
+    "limits": "SHA-256 abc fixture correct; MD5/SHA-1 should be identified as legacy compatibility, not authentication."
+  },
+  {
+    "feature": "Duplicate Finder",
+    "intent": "Feature expansion",
+    "state": "Observed service control",
+    "evidence": "R-006",
+    "limits": "Size/prefix/full-hash pipeline found one pair and excluded same-size different-content control; stale-result delete/hardlink accounting UNKNOWN."
+  },
+  {
+    "feature": "Archives / encrypted archives",
+    "intent": "Feature expansion",
+    "state": "Source present",
+    "evidence": "ArchiveService",
+    "limits": "ZIP -P puts password in arguments; DMG partial staging; unauthenticated CBC tar mode; malicious extraction/round trips UNKNOWN."
+  },
+  {
+    "feature": "Folder sync",
+    "intent": "Feature expansion",
+    "state": "Service failures confirmed",
+    "evidence": "R-004",
+    "limits": "Missing-root deletes, remove-before-copy loss, metadata-only identity. Preview and execution can diverge."
+  },
+  {
+    "feature": "Secure deletion",
+    "intent": "Feature expansion",
+    "state": "Service boundary failure confirmed",
+    "evidence": "R-004; sheet source",
+    "limits": "File symlink target truncated. Directory symlink failed safely. Physical erasure UNKNOWN."
+  },
+  {
+    "feature": "Vault create/unlock/keychain",
+    "intent": "Feature expansion",
+    "state": "Source; Settings observed",
+    "evidence": "11; VaultService",
+    "limits": "Uses hdiutil/APFS and stdin password. No live keychain, Touch ID or mount lifecycle test."
+  },
+  {
+    "feature": "Vault automation/diagnostics",
+    "intent": "Feature expansion",
+    "state": "Source; default settings observed",
+    "evidence": "11; VaultAutomationService / Diagnostics",
+    "limits": "Scope/forced detach/identity and health wording concerns; no real vault affected."
+  },
+  {
+    "feature": "Default file manager",
+    "intent": "Feature expansion",
+    "state": "Source only",
+    "evidence": "DefaultFileManagerService",
+    "limits": "Launch Services role change present; universal Finder replacement claim not established; system defaults not changed."
+  },
+  {
+    "feature": "Objects / Relationships",
+    "intent": "EnsDev vocabulary expansion",
+    "state": "Object creation observed; graph tests",
+    "evidence": "05/07; R-003",
+    "limits": "Explicit objects and provenance/history present; multi-object relationship editor not exercised."
+  },
+  {
+    "feature": "Collection / Smart / Relationship Views",
+    "intent": "Expansion",
+    "state": "Collection/pin observed; graph model tests",
+    "evidence": "06/07; R-003",
+    "limits": "Views do not own Objects; traversal bounded to 16 and inferred edges optional. Full-scale query/accessibility UNKNOWN."
+  },
+  {
+    "feature": "Right Dock",
+    "intent": "Expansion",
+    "state": "Observed controls and pin navigation",
+    "evidence": "07/10",
+    "limits": "Configurable labels/compact/off and pin types; initial empty dock consumes space."
+  },
+  {
+    "feature": "PAF import / review / freeze / export / capture / index",
+    "intent": "Expansion",
+    "state": "Import observed; parser probe; host tests",
+    "evidence": "08/09; R-003/R-006",
+    "limits": "Exact package preserved and missing-entry freeze blocked. Valid synthetic host flows pass; current supplied kit cannot complete full live freeze."
+  }
+]

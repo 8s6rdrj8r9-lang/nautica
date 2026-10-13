@@ -135,6 +135,7 @@ public final class VaultService: @unchecked Sendable {
             savePasswordToKeychain(password, for: targetURL)
         }
 
+        registerManagedVault(at: targetURL)
         return targetURL
     }
 
@@ -147,6 +148,8 @@ public final class VaultService: @unchecked Sendable {
         password: String? = nil,
         useBiometricsIfAvailable: Bool = true
     ) async throws -> URL {
+        registerManagedVault(at: url)
+
         // If already mounted, return existing mount point
         let mountCheck = isVaultMounted(at: url)
         if mountCheck.isMounted, let mountURL = mountCheck.mountURL {
@@ -217,20 +220,13 @@ public final class VaultService: @unchecked Sendable {
             }
         }
 
-        // Fallback: Check mounted volumes matching volume name
-        let volName = url.deletingPathExtension().lastPathComponent
-        let defaultMount = URL(fileURLWithPath: "/Volumes/\(volName)")
-        if FileManager.default.fileExists(atPath: defaultMount.path) {
-            return defaultMount
-        }
-
         throw VaultError.executionFailed("Attached but unable to locate mount point")
     }
 
     // MARK: - Vault Detachment / Locking
 
-    /// Detaches and locks a mounted vault volume cleanly.
-    public func lockVault(at url: URL) async throws {
+    /// Detaches and locks a mounted vault volume cleanly. Defaults to graceful detachment.
+    public func lockVault(at url: URL, force: Bool = false) async throws {
         let mountCheck = isVaultMounted(at: url)
         guard mountCheck.isMounted, let mountURL = mountCheck.mountURL else {
             throw VaultError.notMounted
@@ -239,13 +235,21 @@ public final class VaultService: @unchecked Sendable {
         // Detach volume via hdiutil
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
-        process.arguments = ["detach", mountURL.path(percentEncoded: false), "-force"]
-        try? process.run()
+        var args = ["detach", mountURL.path(percentEncoded: false)]
+        if force {
+            args.append("-force")
+        }
+        process.arguments = args
+        let errPipe = Pipe()
+        process.standardError = errPipe
+
+        try process.run()
         process.waitUntilExit()
 
-        // Fallback to AppKit unmount if still present
-        if FileManager.default.fileExists(atPath: mountURL.path) {
-            try? NSWorkspace.shared.unmountAndEjectDevice(at: mountURL)
+        guard process.terminationStatus == 0 else {
+            let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
+            let errStr = String(data: errData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            throw VaultError.executionFailed(errStr.isEmpty ? "Vault is busy or could not be detached cleanly." : errStr)
         }
     }
 
@@ -313,7 +317,7 @@ public final class VaultService: @unchecked Sendable {
                             if let entities = image["system-entities"] as? [[String: Any]] {
                                 for entity in entities {
                                     if let mount = entity["mount-point"] as? String {
-                                        return (true, URL(fileURLWithPath: mount))
+                                         return (true, URL(fileURLWithPath: mount))
                                     }
                                 }
                             }
@@ -325,18 +329,37 @@ public final class VaultService: @unchecked Sendable {
             return (false, nil)
         }
 
-        // Fallback check against /Volumes/<VolName>
-        let volName = url.deletingPathExtension().lastPathComponent
-        let defaultMount = URL(fileURLWithPath: "/Volumes/\(volName)")
-        if FileManager.default.fileExists(atPath: defaultMount.path) {
-            return (true, defaultMount)
-        }
-
         return (false, nil)
     }
 
-    /// Returns all currently mounted encrypted vaults with their image URL and mount point URL.
-    public func mountedVaults() -> [(url: URL, mountPoint: URL)] {
+    // MARK: - Managed Vault Registry
+
+    private let managedVaultsKey = "Nautica.ManagedVaultURLs"
+
+    public func registerManagedVault(at url: URL) {
+        var list = managedVaults()
+        list.insert(url.standardizedFileURL.resolvingSymlinksInPath())
+        UserDefaults.standard.set(list.map(\.path), forKey: managedVaultsKey)
+    }
+
+    public func unregisterManagedVault(at url: URL) {
+        var list = managedVaults()
+        list.remove(url.standardizedFileURL.resolvingSymlinksInPath())
+        UserDefaults.standard.set(list.map(\.path), forKey: managedVaultsKey)
+    }
+
+    public func isManagedVault(at url: URL) -> Bool {
+        managedVaults().contains(url.standardizedFileURL.resolvingSymlinksInPath())
+    }
+
+    public func managedVaults() -> Set<URL> {
+        let paths = UserDefaults.standard.stringArray(forKey: managedVaultsKey) ?? []
+        return Set(paths.map { URL(fileURLWithPath: $0).standardizedFileURL.resolvingSymlinksInPath() })
+    }
+
+    /// Returns currently mounted vaults. When `onlyManaged` is true (default), only checks
+    /// vaults registered as managed by Nautica, protecting unrelated images and preventing CPU spikes.
+    public func mountedVaults(onlyManaged: Bool = true) -> [(url: URL, mountPoint: URL)] {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
         process.arguments = ["info", "-plist"]
@@ -346,6 +369,7 @@ public final class VaultService: @unchecked Sendable {
         process.standardError = Pipe()
 
         var results: [(url: URL, mountPoint: URL)] = []
+        let managed = managedVaults()
 
         do {
             try process.run()
@@ -355,7 +379,12 @@ public final class VaultService: @unchecked Sendable {
                let images = plist["images"] as? [[String: Any]] {
                 for image in images {
                     guard let imagePath = image["image-path"] as? String else { continue }
-                    let imageURL = URL(fileURLWithPath: imagePath)
+                    let imageURL = URL(fileURLWithPath: imagePath).standardizedFileURL.resolvingSymlinksInPath()
+
+                    if onlyManaged && !managed.contains(imageURL) {
+                        continue
+                    }
+
                     guard isVault(at: imageURL) else { continue }
 
                     if let entities = image["system-entities"] as? [[String: Any]] {
@@ -375,15 +404,15 @@ public final class VaultService: @unchecked Sendable {
         return results
     }
 
-    /// Cleanly unmounts and locks all currently mounted vaults. Returns any failures encountered.
+    /// Cleanly unmounts and locks all currently mounted managed vaults. Returns any failures encountered.
     @discardableResult
-    public func lockAllVaults() async -> [URL: Error] {
-        let vaults = mountedVaults()
+    public func lockAllVaults(force: Bool = false) async -> [URL: Error] {
+        let vaults = mountedVaults(onlyManaged: true)
         var failures: [URL: Error] = [:]
 
         for vault in vaults {
             do {
-                try await lockVault(at: vault.url)
+                try await lockVault(at: vault.url, force: force)
             } catch {
                 failures[vault.url] = error
             }

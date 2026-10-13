@@ -85,15 +85,15 @@ actor TagService {
                 currentTags.append(tagString)
             }
 
-            try? (url as NSURL).setResourceValue(currentTags as NSArray, forKey: .tagNamesKey)
+            try (url as NSURL).setResourceValue(currentTags as NSArray, forKey: .tagNamesKey)
 
-            if let dbTag = try? database().read({ db in
+            if let dbTag = try database().read({ db in
                 try TagItem.filter(Column("name") == color.name).fetchOne(db)
             }) {
                 if hasColor {
-                    try? removeTag(dbTag.id, from: url)
+                    try removeTag(dbTag.id, from: url)
                 } else {
-                    try? applyTag(dbTag.id, to: url)
+                    try applyTag(dbTag.id, to: url)
                 }
             }
         }
@@ -102,9 +102,9 @@ actor TagService {
     /// Clears all tags from the specified URLs.
     func clearAllTags(for urls: [URL]) throws {
         for url in urls {
-            try? (url as NSURL).setResourceValue([] as NSArray, forKey: .tagNamesKey)
+            try (url as NSURL).setResourceValue([] as NSArray, forKey: .tagNamesKey)
             let key = url.absoluteString
-            try? database().write { db in
+            try database().write { db in
                 _ = try FileTag.filter(Column("fileURL") == key).deleteAll(db)
             }
         }
@@ -112,14 +112,14 @@ actor TagService {
 
     /// Sets the complete list of tag names for a URL.
     func setTags(_ tags: [String], for url: URL) throws {
-        try? (url as NSURL).setResourceValue(tags as NSArray, forKey: .tagNamesKey)
+        try (url as NSURL).setResourceValue(tags as NSArray, forKey: .tagNamesKey)
         let key = url.absoluteString
-        try? database().write { db in
+        try database().write { db in
             _ = try FileTag.filter(Column("fileURL") == key).deleteAll(db)
         }
         for tag in tags {
             let info = FileTagInfo(rawName: tag)
-            let dbTag = try? database().write { db -> TagItem in
+            let dbTag = try database().write { db -> TagItem in
                 if let existing = try TagItem.filter(Column("name") == info.displayName).fetchOne(db) {
                     return existing
                 }
@@ -127,9 +127,7 @@ actor TagService {
                 try newItem.insert(db)
                 return newItem
             }
-            if let dbTag {
-                try? applyTag(dbTag.id, to: url)
-            }
+            try applyTag(dbTag.id, to: url)
         }
     }
 

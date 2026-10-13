@@ -1,0 +1,354 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project Nautica.xcodeproj -scheme Nautica -configuration Debug -derivedDataPath /tmp/nautica-audit-build-2026-10-07 -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile build-for-testing
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  GRDB: https://github.com/groue/GRDB.swift @ 7.11.1
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00008103-001E0D0821A2001E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00008103-001E0D0821A2001E, name:My Mac }
+{ platform:macOS, name:Any Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (6 targets)
+    Target 'NauticaTests' in project 'Nautica'
+        ➜ Explicit dependency on target 'Nautica' in project 'Nautica'
+    Target 'Nautica' in project 'Nautica'
+        ➜ Explicit dependency on target 'GRDB-product' in project 'GRDB'
+    Target 'GRDB-product' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+    Target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDBSQLite' in project 'GRDB'
+    Target 'GRDBSQLite' in project 'GRDB' (no dependencies)
+    Target 'GRDB_GRDB' in project 'GRDB' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ReadFileContents /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/docc/features.json
+
+Build description signature: 1b0567227814ad5c6c226957a7761d32
+Build description path: /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/XCBuildData/1b0567227814ad5c6c226957a7761d32.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk /tmp/nautica-audit-build-2026-10-07/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache
+    cd /tmp/nautica-audit-execution-2026-10-07/Nautica.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -o /tmp/nautica-audit-build-2026-10-07/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache
+
+ProcessInfoPlistFile /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle/Contents/Info.plist /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/GRDB.build/Debug/GRDB_GRDB-b.build/empty-GRDB_GRDB.plist (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /tmp/nautica-audit-build-2026-10-07/SourcePackages/checkouts/GRDB.swift
+    builtin-infoPlistUtility /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/GRDB.build/Debug/GRDB_GRDB-b.build/empty-GRDB_GRDB.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle/Contents/Info.plist
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/empty-NauticaTests.plist (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/empty-NauticaTests.plist
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_const_extract_protocols.json (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_const_extract_protocols.json
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-OutputFileMap.json (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-OutputFileMap.json
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.LinkFileList (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.LinkFileList
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftConstValuesFileList (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.hmap
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyStaticMetadataFileList (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyMetadataFileList (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyMetadataFileList
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-project-headers.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-project-headers.hmap
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-own-target-headers.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-own-target-headers.hmap
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-generated-files.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-generated-files.hmap
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-target-headers.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-target-headers.hmap
+
+WriteAuxiliaryFile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-non-framework-target-headers.hmap (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    write-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-non-framework-target-headers.hmap
+
+MkDir /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /bin/mkdir -p /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources
+
+MkDir /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /bin/mkdir -p /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS
+
+MkDir /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /bin/mkdir -p /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents
+
+MkDir /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /bin/mkdir -p /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest
+
+MkDir /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /bin/mkdir -p /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns
+
+ProcessProductPackaging /tmp/nautica-audit-execution-2026-10-07/Nautica/Nautica.entitlements /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+    Entitlements:
+    
+    {
+    "com.apple.security.files.all" = 1;
+    "com.apple.security.files.user-selected.read-write" = 1;
+    "com.apple.security.get-task-allow" = 1;
+}
+    
+    builtin-productPackagingUtility /tmp/nautica-audit-execution-2026-10-07/Nautica/Nautica.entitlements -entitlements -format xml -o /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent
+
+ProcessProductPackagingDER /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent.der (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /usr/bin/derq query -f xml -i /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent -o /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent.der --raw
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/Resources/GRDB_GRDB.bundle /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/Resources
+
+ProcessInfoPlistFile /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/Info.plist /tmp/nautica-audit-execution-2026-10-07/Nautica/Info.plist (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-infoPlistUtility /tmp/nautica-audit-execution-2026-10-07/Nautica/Info.plist -producttype com.apple.product-type.application -genpkginfo /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PkgInfo -expandbuildsettings -platform macosx -additionalcontentfile /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/assetcatalog_generated_info.plist -scanforprivacyfile /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/Resources/GRDB_GRDB.bundle -o /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/Info.plist
+
+SwiftDriver NauticaTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NauticaTests -Onone @/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList -DDEBUG -Xcc -fmodule-map-file\=/tmp/nautica-audit-build-2026-10-07/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -target arm64-apple-macos14.0 -g -module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/nautica-audit-build-2026-10-07/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/PackageFrameworks -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -F /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/nautica-audit-build-2026-10-07/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache -output-file-map /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -sdk-module-cache-path /tmp/nautica-audit-build-2026-10-07/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-generated-files.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-own-target-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-project-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/include -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-Swift.h -working-directory /tmp/nautica-audit-execution-2026-10-07 -experimental-emit-module-separately -disable-cmo
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources/GRDB_GRDB.bundle /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/GRDB_GRDB.bundle /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources
+
+ProcessInfoPlistFile /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Info.plist /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/empty-NauticaTests.plist (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-infoPlistUtility /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/empty-NauticaTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -platform macosx -scanforprivacyfile /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources/GRDB_GRDB.bundle -o /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Info.plist
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-D95MMGVK1B8WSSIN9612TJHT2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-20ZE8VEPWMORBIQY1PZI7DKVJ.pcm
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCUIAutomation-EYIHJ34IIU8T.swiftmodule
+
+SwiftExplicitDependencyCompileModuleFromInterface arm64 /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules/XCTest-NGEXED0R8ENV.swiftmodule
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ NauticaTests (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+
+SwiftCompile normal arm64 Compiling\ PAFHostTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/PAFHostTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/PAFHostTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile PAFHostTests.swift
+
+SwiftCompile normal arm64 Compiling\ FileOperationServiceTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile FileOperationServiceTests.swift
+
+SwiftCompile normal arm64 Compiling\ CloudStorageServiceTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/CloudStorageServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/CloudStorageServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile CloudStorageServiceTests.swift
+
+SwiftCompile normal arm64 Compiling\ TagServiceTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/TagServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/TagServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile TagServiceTests.swift
+
+SwiftCompile normal arm64 Compiling\ GraphStoreTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/GraphStoreTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/GraphStoreTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile GraphStoreTests.swift
+
+SwiftCompile normal arm64 Compiling\ SelectionModelTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/SelectionModelTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/SelectionModelTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile SelectionModelTests.swift
+
+SwiftCompile normal arm64 Compiling\ BatchRenameTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile BatchRenameTests.swift
+
+SwiftCompile normal arm64 Compiling\ SplitLayoutTests.swift /tmp/nautica-audit-execution-2026-10-07/NauticaTests/SplitLayoutTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftCompile normal arm64 /tmp/nautica-audit-execution-2026-10-07/NauticaTests/SplitLayoutTests.swift (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-SwiftPerFileCompile SplitLayoutTests.swift
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for NauticaTests (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriver\ Compilation\ Requirements NauticaTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NauticaTests -Onone @/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList -DDEBUG -Xcc -fmodule-map-file\=/tmp/nautica-audit-build-2026-10-07/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -target arm64-apple-macos14.0 -g -module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/nautica-audit-build-2026-10-07/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/PackageFrameworks -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -F /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/nautica-audit-build-2026-10-07/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache -output-file-map /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -sdk-module-cache-path /tmp/nautica-audit-build-2026-10-07/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-generated-files.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-own-target-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-project-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/include -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-Swift.h -working-directory /tmp/nautica-audit-execution-2026-10-07 -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal arm64 Compiling CloudStorageServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.swiftmodule /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.swiftmodule
+
+SwiftMergeGeneratedHeaders /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources/NauticaTests-Swift.h /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-Swift.h (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-swiftHeaderTool -arch arm64 /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-Swift.h -o /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources/NauticaTests-Swift.h
+
+SwiftDriverJobDiscovery normal arm64 Compiling SelectionModelTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.swiftdoc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftdoc (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftdoc /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.swiftdoc
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.abi.json /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.abi.json (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.abi.json /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/arm64-apple-macos.abi.json
+
+Copy /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftsourceinfo (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftsourceinfo /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/NauticaTests.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo
+
+SwiftDriverJobDiscovery normal arm64 Compiling BatchRenameTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriverJobDiscovery normal arm64 Compiling TagServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriverJobDiscovery normal arm64 Compiling SplitLayoutTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriverJobDiscovery normal arm64 Compiling FileOperationServiceTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriverJobDiscovery normal arm64 Compiling GraphStoreTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriverJobDiscovery normal arm64 Compiling PAFHostTests.swift (in target 'NauticaTests' from project 'Nautica')
+
+SwiftDriver\ Compilation NauticaTests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NauticaTests -Onone @/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList -DDEBUG -Xcc -fmodule-map-file\=/tmp/nautica-audit-build-2026-10-07/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -target arm64-apple-macos14.0 -g -module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/nautica-audit-build-2026-10-07/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/PackageFrameworks -F /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -F /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/nautica-audit-build-2026-10-07/SDKStatCaches.noindex/macosx27.0-26A425-7231f6df4def33e022ae2eb8f782df1a.sdkstatcache -output-file-map /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex -sdk-module-cache-path /tmp/nautica-audit-build-2026-10-07/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/nautica-audit-build-2026-10-07/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-generated-files.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-own-target-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests-project-headers.hmap -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/include -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources/arm64 -Xcc -I/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests-Swift.h -working-directory /tmp/nautica-audit-execution-2026-10-07 -experimental-emit-module-separately -disable-cmo
+
+Ld /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS/NauticaTests normal (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos14.0 -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -L/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -L/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F/tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -F/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/PackageFrameworks -F/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug -iframework /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -filelist /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @loader_path -Xlinker -rpath -Xlinker /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/PackageFrameworks -Xlinker -rpath -Xlinker @loader_path/../Frameworks -Xlinker -rpath -Xlinker @executable_path/../Frameworks -bundle_loader /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/Nautica -Xlinker -object_path_lto -Xlinker /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_dependency_info.dat -fobjc-link-runtime -fprofile-instr-generate -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.swiftmodule -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/Nautica.debug.dylib -Xlinker -no_adhoc_codesign -o /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS/NauticaTests
+
+CopySwiftLibs /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS/NauticaTests --scan-folder /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Frameworks --scan-folder /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/PlugIns --scan-folder /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Library/SystemExtensions --scan-folder /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Extensions --platform macosx --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
+
+ExtractAppIntentsMetadata (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name NauticaTests --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk --xcode-version 27A266a --platform-family macOS --deployment-target 14.0 --bundle-identifier com.arthur.nautica.tests --output /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/Resources --target-triple arm64-apple-macos14.0 --binary-file /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest/Contents/MacOS/NauticaTests --dependency-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests_dependency_info.dat --stringsdata-file /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftFileList --metadata-file-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyMetadataFileList --static-metadata-file-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/NauticaTests.DependencyStaticMetadataFileList --swift-const-vals-list /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/NauticaTests.build/Objects-normal/arm64/NauticaTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --no-app-shortcuts-localization
+2026-10-07 14:37:53.080 appintentsmetadataprocessor[69879:1064574] Starting appintentsmetadataprocessor export
+2026-10-07 14:37:53.087 appintentsmetadataprocessor[69879:1064574] warning: Metadata extraction skipped, no AppIntents.framework dependency found
+
+CodeSign /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest
+
+RegisterExecutionPolicyException /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-RegisterExecutionPolicyException /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest
+
+Touch /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest (in target 'NauticaTests' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    /usr/bin/touch -c /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/PlugIns/NauticaTests.xctest
+
+CodeSign /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/Nautica.debug.dylib (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/Nautica.debug.dylib
+/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/Nautica.debug.dylib: replacing existing signature
+
+CodeSign /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/__preview.dylib (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/__preview.dylib
+/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app/Contents/MacOS/__preview.dylib: replacing existing signature
+
+CodeSign /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --entitlements /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/Nautica.build/Debug/Nautica.build/Nautica.app.xcent --timestamp\=none --generate-entitlement-der /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app
+/tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app: replacing existing signature
+
+Validate /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-validationUtility /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app -no-validate-extension -infoplist-subpath Contents/Info.plist
+
+RegisterWithLaunchServices /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /tmp/nautica-audit-execution-2026-10-07
+    builtin-lsregisterurl --record-path /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/XCBuildData/registered-launchservices.txt -- /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /tmp/nautica-audit-build-2026-10-07/Build/Products/Debug/Nautica.app
+
+PruneExplicitPrecompiledModules /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/nautica-audit-build-2026-10-07/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/nautica-audit-build-2026-10-07/SDKExplicitPrecompiledModules
+
+note: Disabling hardened runtime with ad-hoc codesigning. (in target 'Nautica' from project 'Nautica')
+** TEST BUILD SUCCEEDED ** [8.111 sec]
+

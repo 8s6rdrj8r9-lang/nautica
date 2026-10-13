@@ -70,7 +70,7 @@ struct OnboardingView: View {
         VStack(spacing: 16) {
             Text("Welcome to Nautica")
                 .font(.largeTitle)
-            Text("Nautica is a privacy-first file manager inspired by Nemo.\nNo telemetry, no cloud, fully open source.")
+            Text("Nautica is a local-first, privacy-respecting file manager inspired by Nemo.\nNo telemetry, local-first by default, fully open source.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
             Button("Continue") { step = .permissions }
@@ -80,18 +80,22 @@ struct OnboardingView: View {
 
     private var permissionsStep: some View {
         VStack(spacing: 16) {
-            Text("Full Disk Access")
+            Text("Full Disk Access (macOS 27)")
                 .font(.title)
-            Text("To browse every folder — including Cloud Storage (OneDrive, Google Drive, Dropbox) and protected system directories — macOS asks you to grant Nautica Full Disk Access. Your files never leave this Mac.")
+            Text("To browse local folders, external volumes, and protected directories without sandboxing boundaries, macOS 27 requires Full Disk Access.\n\nNautica operates strictly on-device with zero telemetry, zero automated scraping, and no cloud egress by default.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            Button("Open System Settings") {
+            Button("Open System Settings → Privacy & Security") {
                 FullDiskAccess.openSystemSettings()
             }
-            Text("This step advances automatically once access is granted.")
+            .buttonStyle(.borderedProminent)
+            Text("This step advances automatically as soon as access is granted.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Button("Skip for Now") { step = .favorites }
+                .buttonStyle(.plain)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 

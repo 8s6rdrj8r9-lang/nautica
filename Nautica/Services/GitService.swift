@@ -13,10 +13,13 @@ public final class GitService: Sendable {
     /// Runs a git command in the specified directory and returns standard output.
     @discardableResult
     public func runGit(_ args: [String], at directory: URL) -> (output: String, error: String, exitCode: Int32) {
+        let isDir = (try? directory.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        let effectiveDir = isDir ? directory : directory.deletingLastPathComponent()
+
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/git")
         process.arguments = args
-        process.currentDirectoryURL = directory
+        process.currentDirectoryURL = effectiveDir
 
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
@@ -37,16 +40,47 @@ public final class GitService: Sendable {
         }
     }
 
+    /// Runs a git command in the specified directory and returns raw standard output data.
+    @discardableResult
+    public func runGitData(_ args: [String], at directory: URL) -> (output: Data, error: String, exitCode: Int32) {
+        let isDir = (try? directory.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        let effectiveDir = isDir ? directory : directory.deletingLastPathComponent()
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/git")
+        process.arguments = args
+        process.currentDirectoryURL = effectiveDir
+
+        let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = stderrPipe
+
+        do {
+            try process.run()
+            let outData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+            let errData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+
+            let errStr = String(data: errData, encoding: .utf8) ?? ""
+            return (outData, errStr, process.terminationStatus)
+        } catch {
+            return (Data(), error.localizedDescription, -1)
+        }
+    }
+
     // MARK: - Repository Discovery & Root Resolution
 
     /// Returns whether the given directory resides inside a Git working tree.
     public func isGitRepository(at directory: URL) -> Bool {
+        guard (try? directory.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true else { return false }
         let result = runGit(["rev-parse", "--is-inside-work-tree"], at: directory)
         return result.exitCode == 0 && result.output.trimmingCharacters(in: .whitespacesAndNewlines) == "true"
     }
 
     /// Resolves the root directory URL of the enclosing Git repository, or nil if not tracked.
     public func repoRoot(at directory: URL) -> URL? {
+        guard (try? directory.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true else { return nil }
         let result = runGit(["rev-parse", "--show-toplevel"], at: directory)
         guard result.exitCode == 0 else { return nil }
         let path = result.output.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -104,36 +138,99 @@ public final class GitService: Sendable {
         }
     }
 
+    /// Unquotes and unescapes C-style quoted paths emitted by Git porcelain format.
+    public func unquotePorcelainPath(_ rawPath: String) -> String {
+        let trimmed = rawPath.trimmingCharacters(in: .whitespaces)
+        guard trimmed.hasPrefix("\"") && trimmed.hasSuffix("\"") && trimmed.count >= 2 else {
+            return trimmed
+        }
+        let inner = String(trimmed.dropFirst().dropLast())
+        var bytes: [UInt8] = []
+        let chars = Array(inner)
+        var i = 0
+        while i < chars.count {
+            if chars[i] == "\\" && i + 1 < chars.count {
+                let next = chars[i + 1]
+                if next == "\\" { bytes.append(UInt8(ascii: "\\")); i += 2; continue }
+                if next == "\"" { bytes.append(UInt8(ascii: "\"")); i += 2; continue }
+                if next == "t" { bytes.append(UInt8(ascii: "\t")); i += 2; continue }
+                if next == "n" { bytes.append(UInt8(ascii: "\n")); i += 2; continue }
+                if next == "r" { bytes.append(UInt8(ascii: "\r")); i += 2; continue }
+                if next >= "0" && next <= "7" {
+                    var octalStr = ""
+                    var j = i + 1
+                    while j < min(i + 4, chars.count) && chars[j] >= "0" && chars[j] <= "7" {
+                        octalStr.append(chars[j])
+                        j += 1
+                    }
+                    if let byteVal = UInt8(octalStr, radix: 8) {
+                        bytes.append(byteVal)
+                        i = j
+                        continue
+                    }
+                }
+                bytes.append(next.asciiValue ?? 0)
+                i += 2
+            } else {
+                if let ascii = chars[i].asciiValue {
+                    bytes.append(ascii)
+                } else {
+                    bytes.append(contentsOf: String(chars[i]).utf8)
+                }
+                i += 1
+            }
+        }
+        return String(data: Data(bytes), encoding: .utf8) ?? inner
+    }
+
     // MARK: - Status Resolution & File Mapping
 
     /// Returns a map of relative file paths and full file paths to their `GitFileState`.
-    /// Runs `git status --porcelain` once to ensure high-performance O(1) status lookup.
+    /// Runs `git status --porcelain=v1 -z -uall` to reliably parse paths with spaces,
+    /// quotes, and Unicode characters without escaping issues, and keys strictly by exact repository paths.
     public func statusMap(forDirectory directory: URL) -> [String: GitFileState] {
-        guard isGitRepository(at: directory), let root = repoRoot(at: directory) else {
+        guard (try? directory.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true,
+              isGitRepository(at: directory),
+              let root = repoRoot(at: directory) else {
             return [:]
         }
 
-        let result = runGit(["status", "--porcelain", "-uall"], at: root)
+        let rootPath = root.standardizedFileURL.path
+        let dirPath = directory.standardizedFileURL.path
+        var args = ["status", "--porcelain=v1", "-z"]
+        if dirPath != rootPath && dirPath.hasPrefix(rootPath) {
+            let relativeDir = String(dirPath.dropFirst(rootPath.count)).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            if !relativeDir.isEmpty {
+                args.append(relativeDir)
+            }
+        }
+
+        let result = runGitData(args, at: root)
         guard result.exitCode == 0 else { return [:] }
 
         var map: [String: GitFileState] = [:]
-        let rootPath = root.standardizedFileURL.path
+        let data = result.output
 
-        for line in result.output.components(separatedBy: .newlines) where line.count >= 3 {
-            let indexStatus = line[line.startIndex]
-            let workTreeStatus = line[line.index(after: line.startIndex)]
-            let rawPath = String(line.dropFirst(3)).trimmingCharacters(in: .whitespaces)
-            guard !rawPath.isEmpty else { continue }
+        var index = data.startIndex
+        while index < data.endIndex {
+            guard let nulIndex = data[index...].firstIndex(of: 0) else { break }
+            let entryData = data[index..<nulIndex]
+            index = nulIndex + 1
 
-            // Handle rename lines: "old -> new"
-            let filePath: String
-            if rawPath.contains(" -> ") {
-                filePath = rawPath.components(separatedBy: " -> ").last ?? rawPath
-            } else {
-                filePath = rawPath
+            guard entryData.count >= 3 else { continue }
+            let indexStatus = Character(UnicodeScalar(entryData[entryData.startIndex]))
+            let workTreeStatus = Character(UnicodeScalar(entryData[entryData.index(after: entryData.startIndex)]))
+            let pathData = entryData.dropFirst(3)
+            guard let rawPath = String(data: Data(pathData), encoding: .utf8) else { continue }
+
+            let finalPath = rawPath
+            // If rename or copy (R or C), skip the following original-path field
+            if indexStatus == "R" || indexStatus == "C" || workTreeStatus == "R" || workTreeStatus == "C" {
+                if let nextNul = data[index...].firstIndex(of: 0) {
+                    index = nextNul + 1
+                }
             }
 
-            // Determine status
             let state: GitFileState
             if indexStatus == "?" && workTreeStatus == "?" {
                 state = .untracked
@@ -151,17 +248,9 @@ public final class GitService: Sendable {
                 state = .modified
             }
 
-            // Store by repo-relative path
-            map[filePath] = state
-
-            // Also store by absolute path for instant lookup
-            let fullPath = (rootPath as NSString).appendingPathComponent(filePath)
+            map[finalPath] = state
+            let fullPath = rootPath + "/" + finalPath
             map[fullPath] = state
-            // Also store by filename for directory-relative lookups
-            let filename = (filePath as NSString).lastPathComponent
-            if map[filename] == nil {
-                map[filename] = state
-            }
         }
 
         return map

@@ -1,0 +1,34 @@
+{
+  "sources": [
+    {
+      "file": "EnsDev_Product_Manifesto.md",
+      "version": "4.2",
+      "sha256": "f2caaa0ac7b4da11d488b8883060f6175fac2ee32d1ef35a291c537cd922eb3d"
+    },
+    {
+      "file": "EnsDev_Constitution.md",
+      "version": "6.0",
+      "sha256": "c5ae2fc3f371c174498fdcba1c3651868af5873d8e0e8bcc5ce3e552ddf21295"
+    },
+    {
+      "file": "EnsDev_Doctrine.md",
+      "version": "2.1",
+      "sha256": "02974c21b567083f8913283b8575b7fe530e9985b13457d2b28f82c32ba0467a"
+    },
+    {
+      "file": "EnsDev_Engineering_Handbook.md",
+      "version": "5.4",
+      "sha256": "8bea64115effb4f7199e79c848be04872a26870fea77c931d25ee5cc906b7d73"
+    },
+    {
+      "file": "EnsDev_Governance.md",
+      "version": "1.7",
+      "sha256": "f79788c57552af7ad6ddb88cb1ccbb40822c878232029f9dd554aed9dc2f3975"
+    },
+    {
+      "file": "EnsDev_Ontology_Standard.md",
+      "version": "4.0",
+      "sha256": "b6fb20aeb72eaeeb3e06ed1a6ba8e1d032e0e72c7f64537664692ddbae91d2d6"
+    }
+  ]
+}

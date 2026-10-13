@@ -1,0 +1,101 @@
+[
+  {
+    "id": "X-01",
+    "publisher": "Apple",
+    "title": "Finder multiple-file rename",
+    "url": "https://support.apple.com/en-ph/guide/mac-help/-mchlp1144/mac",
+    "supported_claim": "Finder has built-in replace-text, add-text and formatting options for multiple items.",
+    "limits": "Corrects Draft F-012 premise; not a claim of feature parity or workflow superiority.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-02",
+    "publisher": "Apple",
+    "title": "Disk Utility storage erasure limits",
+    "url": "https://support.apple.com/en-il/guide/disk-utility/-dskutl14079/mac",
+    "supported_claim": "Disk Utility does not offer secure-erase options for SSDs; Apple points to enabling FileVault from initial use for protection.",
+    "limits": "Whole-device documentation does not prove individual-file cryptographic erasure.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-03",
+    "publisher": "BinaryNights",
+    "title": "ForkLift official manual",
+    "url": "https://www.binarynights.com/manual",
+    "supported_claim": "Documents dual/single panes and customizable controls, sync preview counts for additions/updates/deletions, exclusions and saved Synclets.",
+    "limits": "Documentary pattern comparison; not hands-on safety/performance or current pricing evaluation.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-04",
+    "publisher": "Marta",
+    "title": "Operation queue",
+    "url": "https://marta.sh/docs/core/operation-queue/",
+    "supported_claim": "Documents a queue shared across windows and keyboard access to pause/cancel operations.",
+    "limits": "Inspiration for an operation queue; Nautica concurrency/recovery choices still require their own design.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-05",
+    "publisher": "Marta",
+    "title": "Actions",
+    "url": "https://marta.sh/docs/core/actions/",
+    "supported_claim": "Documents actions, configurable key bindings and an action panel.",
+    "limits": "Supports an action-registry alternative; does not validate Nautica shortcut dispatch.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-06",
+    "publisher": "Marta",
+    "title": "Embedded terminal",
+    "url": "https://marta.sh/docs/advanced/terminal/",
+    "supported_claim": "Documents a pane-associated PTY terminal with directory synchronization.",
+    "limits": "Contrasts documented terminal capability with Nautica\u2019s inspected one-shot runner; no hands-on test.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-07",
+    "publisher": "Cocoatech",
+    "title": "Path Finder Drop Stack",
+    "url": "https://support.cocoatech.com/hc/en-us/articles/43505869579796-Drop-Stack-Temporary-Holding-Area-for-Files",
+    "supported_claim": "Documents temporary file staging before an explicit copy or move.",
+    "limits": "Inspiration for Drop Shelf; not proof of persistent-reference or authority semantics.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-08",
+    "publisher": "Apple",
+    "title": "Keychain user-presence access control",
+    "url": "https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/userpresence",
+    "supported_claim": "Documents a user-presence constraint for protected Keychain access.",
+    "limits": "A design option, not evidence of Nautica\u2019s existing Keychain enforcement.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  },
+  {
+    "id": "X-09",
+    "publisher": "Apple",
+    "title": "NSFileCoordinator",
+    "url": "https://developer.apple.com/documentation/foundation/nsfilecoordinator",
+    "supported_claim": "Documents platform coordination of file access with other participants.",
+    "limits": "Coordination does not itself guarantee transactional replacement or preservation.",
+    "retrieved": "2026-10-07",
+    "kind": "Primary official documentation",
+    "preservation": "URL and paraphrased observation; live page content not archived"
+  }
+]

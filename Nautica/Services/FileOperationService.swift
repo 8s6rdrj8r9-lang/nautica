@@ -13,12 +13,30 @@ struct FileOperationResult {
     var transfers: [Transfer] = []
     var succeeded: [URL] { transfers.map(\.destination) }
     var failed: [(URL, Error)] = []
+
+    /// Whether any item was skipped due to cancellation.
+    var isCancelled: Bool {
+        failed.contains { $0.1 is CancellationError }
+    }
+
+    /// URLs whose transfer was cancelled or skipped.
+    var cancelledSources: [URL] {
+        failed.compactMap { $0.1 is CancellationError ? $0.0 : nil }
+    }
 }
 
 /// Copy, move, trash, and rename (Prompt 10). All work runs on this actor,
 /// off the main thread; every mutation goes through `NSFileCoordinator`.
 actor FileOperationService {
     static let shared = FileOperationService()
+
+    /// Rolls back transfers recorded in `result`, returning destination to its pre-operation state.
+    func rollback(result: FileOperationResult) async {
+        let fm = FileManager.default
+        for transfer in result.transfers.reversed() {
+            try? fm.removeItem(at: transfer.destination)
+        }
+    }
 
     // MARK: - Copy / Move
 
@@ -293,24 +311,36 @@ actor FileOperationService {
             let target: URL
             let fm = FileManager.default
             let directTarget = destination.appendingPathComponent(url.lastPathComponent)
+            let directExists = (try? fm.attributesOfItem(atPath: directTarget.path)) != nil
+            let isReplacing = (resolution == .replace)
 
             if resolution == .replace {
-                if fm.fileExists(atPath: directTarget.path) {
-                    try? fm.removeItem(at: directTarget)
-                }
                 target = directTarget
             } else if resolution == .keepBoth {
                 target = url.nonCollidingURL(in: destination)
             } else {
-                target = fm.fileExists(atPath: directTarget.path) ? url.nonCollidingURL(in: destination) : directTarget
+                target = directExists ? url.nonCollidingURL(in: destination) : directTarget
             }
 
             let completedBeforeItem = progress.completedUnitCount
             do {
                 if move {
-                    try coordinateMove(from: url, to: target)
+                    if isReplacing && directExists {
+                        let backup = destination.appendingPathComponent(".nautica-displaced-" + UUID().uuidString)
+                        try fm.moveItem(at: directTarget, to: backup)
+                        do {
+                            try coordinateMove(from: url, to: target)
+                            try? fm.removeItem(at: backup)
+                        } catch {
+                            // Rollback displaced target on move failure
+                            try? fm.moveItem(at: backup, to: directTarget)
+                            throw error
+                        }
+                    } else {
+                        try coordinateMove(from: url, to: target)
+                    }
                 } else {
-                    try coordinateCopy(from: url, to: target, progress: progress)
+                    try coordinateCopy(from: url, to: target, progress: progress, replacing: isReplacing)
                 }
                 result.transfers.append(.init(original: url, destination: target))
             } catch {
@@ -321,16 +351,16 @@ actor FileOperationService {
         return result
     }
 
-    private func coordinateCopy(from source: URL, to target: URL, progress: Progress) throws {
+    private func coordinateCopy(from source: URL, to target: URL, progress: Progress, replacing: Bool = false) throws {
         var coordinationError: NSError?
         var operationError: Error?
         NSFileCoordinator().coordinate(
             readingItemAt: source, options: [],
-            writingItemAt: target, options: .forReplacing,
+            writingItemAt: target, options: replacing ? .forReplacing : [],
             error: &coordinationError
         ) { source, target in
             do {
-                try stagedCopy(from: source, to: target, progress: progress)
+                try stagedCopy(from: source, to: target, progress: progress, replacing: replacing)
             } catch {
                 operationError = error
             }
@@ -339,9 +369,9 @@ actor FileOperationService {
         if let operationError { throw operationError }
     }
 
-    /// Copy into a private sibling directory, then publish without replacing an existing path.
+    /// Copy into a private sibling directory, then publish without replacing an existing path unless replacing is explicitly requested.
     /// Failure cleanup only touches the staging directory created by this operation.
-    private func stagedCopy(from source: URL, to target: URL, progress: Progress) throws {
+    private func stagedCopy(from source: URL, to target: URL, progress: Progress, replacing: Bool = false) throws {
         let fm = FileManager.default
         let sourcePath = source.resolvingSymlinksInPath().standardizedFileURL.path
         let parent = target.deletingLastPathComponent()
@@ -393,7 +423,8 @@ actor FileOperationService {
                           userInfo: [NSFilePathErrorKey: source.path])
         }
         // Both paths are on the same volume; RENAME_EXCL also rejects dangling symlinks.
-        guard renamex_np(temporary.path, target.path, UInt32(RENAME_EXCL)) == 0 else {
+        let publishFlags: UInt32 = replacing ? 0 : UInt32(RENAME_EXCL)
+        guard renamex_np(temporary.path, target.path, publishFlags) == 0 else {
             throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno),
                           userInfo: [NSFilePathErrorKey: target.path])
         }

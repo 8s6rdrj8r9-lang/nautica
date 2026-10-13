@@ -1,0 +1,451 @@
+Nautica/Services/DirectoryWatcherService.swift:8:    private let onChange: @MainActor () -> Void
+Nautica/Services/DirectoryWatcherService.swift:15:    init(url: URL, onChange: @escaping @MainActor () -> Void) {
+Nautica/Services/DirectoryWatcherService.swift:17:        self.onChange = onChange
+Nautica/Services/DirectoryWatcherService.swift:25:    func startWatching() {
+Nautica/Services/DirectoryWatcherService.swift:51:    func stopWatching() {
+Nautica/Services/DirectoryWatcherService.swift:52:        debounceWorkItem?.cancel()
+Nautica/Services/DirectoryWatcherService.swift:56:            source.cancel()
+Nautica/Services/DirectoryWatcherService.swift:65:    private func scheduleChangeNotification() {
+Nautica/Services/DirectoryWatcherService.swift:66:        debounceWorkItem?.cancel()
+Nautica/Services/DirectoryWatcherService.swift:71:                self.onChange()
+Nautica/Services/FileSystemService.swift:3:/// File listing, metadata, and NSFileCoordinator wrappers.
+Nautica/Services/FileSystemService.swift:16:        .ubiquitousItemDownloadingStatusKey,
+Nautica/Services/FileSystemService.swift:17:        .ubiquitousItemIsDownloadingKey,
+Nautica/Services/FileSystemService.swift:22:    /// Enumerates a directory via NSFileCoordinator, returning sorted items.
+Nautica/Services/FileSystemService.swift:24:    func contentsOfDirectory(at url: URL, includingHidden: Bool) async throws -> [FileItem] {
+Nautica/Services/FileSystemService.swift:29:        NSFileCoordinator().coordinate(
+Nautica/Services/FileSystemService.swift:56:    func attributesOfItem(at url: URL) -> FileItem? {
+Nautica/Services/FileSystemService.swift:62:    func fileExists(at url: URL) -> Bool {
+Nautica/Services/FileSystemService.swift:68:    private func makeItem(from url: URL, includingHidden: Bool, gitStatusMap: [String: GitFileState]? = nil) -> FileItem? {
+Nautica/Services/FileSystemService.swift:69:        guard let values = try? url.resourceValues(forKeys: Set(Self.resourceKeys)) else {
+Nautica/Services/DefaultFileManagerService.swift:21:    func isDefaultFileManager() -> Bool {
+Nautica/Services/DefaultFileManagerService.swift:27:    func currentFolderHandler() -> String? {
+Nautica/Services/DefaultFileManagerService.swift:36:    func setAsDefault() -> Bool {
+Nautica/Services/DefaultFileManagerService.swift:49:    func restoreFinder() -> Bool {
+Nautica/Services/DuplicateFinderService.swift:43:    public static func == (lhs: DuplicateGroup, rhs: DuplicateGroup) -> Bool {
+Nautica/Services/DuplicateFinderService.swift:92:    public func scan(
+Nautica/Services/DuplicateFinderService.swift:131:            guard let values = try? fileURL.resourceValues(forKeys: resourceKeys),
+Nautica/Services/DuplicateFinderService.swift:176:            let prefixHash = (try? ChecksumService.shared.computePrefixHash(url: file.url, bytes: 8192)) ?? UUID().uuidString
+Nautica/Services/DuplicateFinderService.swift:205:            let fullHash = (try? await ChecksumService.shared.computeSHA256(url: file.url)) ?? UUID().uuidString
+Nautica/Services/DuplicateFinderService.swift:232:                let fullHash = (try? await ChecksumService.shared.computeSHA256(url: first.url)) ?? ""
+Nautica/Services/DuplicateFinderService.swift:259:    public static func applyRule(_ rule: DuplicateSelectionRule, to groups: [DuplicateGroup]) -> Set<URL> {
+Nautica/Services/CloudStorageService.swift:21:    static func customCloudFolders() -> [URL] {
+Nautica/Services/CloudStorageService.swift:27:    static func addCustomCloudFolder(_ url: URL) {
+Nautica/Services/CloudStorageService.swift:37:    static func removeCustomCloudFolder(_ url: URL) {
+Nautica/Services/CloudStorageService.swift:45:    static func hiddenCloudFolders() -> Set<String> {
+Nautica/Services/CloudStorageService.swift:51:    static func hideCloudFolder(path: String) {
+Nautica/Services/CloudStorageService.swift:58:    static func unhideCloudFolder(path: String) {
+Nautica/Services/CloudStorageService.swift:66:    static func detectCloudStorageItems(fileManager: FileManager = .default) -> [SidebarItem] {
+Nautica/Services/CloudStorageService.swift:71:        func addItem(_ item: SidebarItem) {
+Nautica/Services/CloudStorageService.swift:92:        if let contents = try? fileManager.contentsOfDirectory(
+Nautica/Services/CloudStorageService.swift:136:    static func provider(for url: URL) -> CloudStorageProvider? {
+Nautica/Services/CloudStorageService.swift:173:    static func cloudStatus(for url: URL, resourceValues: URLResourceValues? = nil) -> CloudSyncStatus {
+Nautica/Services/CloudStorageService.swift:174:        let values = resourceValues ?? (try? url.resourceValues(forKeys: [
+Nautica/Services/CloudStorageService.swift:176:            .ubiquitousItemDownloadingStatusKey,
+Nautica/Services/CloudStorageService.swift:177:            .ubiquitousItemIsDownloadingKey,
+Nautica/Services/CloudStorageService.swift:192:        if values?.ubiquitousItemIsDownloading == true {
+Nautica/Services/CloudStorageService.swift:193:            return .downloading
+Nautica/Services/CloudStorageService.swift:196:        if values?.ubiquitousItemDownloadingStatus == .notDownloaded {
+Nautica/Services/CloudStorageService.swift:209:        if values?.ubiquitousItemDownloadingStatus == .current || values?.ubiquitousItemDownloadingStatus == .downloaded {
+Nautica/Services/CloudStorageService.swift:210:            return .downloaded
+Nautica/Services/CloudStorageService.swift:213:        return .downloaded
+Nautica/Services/CloudStorageService.swift:216:    /// Triggers download of the specified cloud item (and optional children).
+Nautica/Services/CloudStorageService.swift:217:    static func downloadItem(at url: URL, recursive: Bool = true) async throws {
+Nautica/Services/CloudStorageService.swift:222:                includingPropertiesForKeys: [.isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey],
+Nautica/Services/CloudStorageService.swift:226:                    try? FileManager.default.startDownloadingUbiquitousItem(at: fileURL)
+Nautica/Services/CloudStorageService.swift:230:        try FileManager.default.startDownloadingUbiquitousItem(at: url)
+Nautica/Services/CloudStorageService.swift:233:    /// Evicts the locally downloaded data of the specified cloud item to free up disk space.
+Nautica/Services/CloudStorageService.swift:234:    static func evictItem(at url: URL, recursive: Bool = true) async throws {
+Nautica/Services/CloudStorageService.swift:239:                includingPropertiesForKeys: [.isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey],
+Nautica/Services/CloudStorageService.swift:243:                    try? FileManager.default.evictUbiquitousItem(at: fileURL)
+Nautica/Services/CloudStorageService.swift:251:    static func parseCloudFolder(name: String, url: URL) -> SidebarItem {
+Nautica/Services/CloudStorageService.swift:259:    static func provider(for folderName: String, url: URL? = nil) -> CloudStorageProvider {
+Nautica/Services/CloudStorageService.swift:280:    static func formatDisplayName(for folderName: String, provider: CloudStorageProvider) -> String {
+Nautica/Services/CloudStorageService.swift:333:    static func systemImage(for provider: CloudStorageProvider) -> String {
+Nautica/Services/ArchiveService.swift:19:    func isArchive(url: URL) -> Bool {
+Nautica/Services/ArchiveService.swift:23:    func isDiskImage(url: URL) -> Bool {
+Nautica/Services/ArchiveService.swift:29:    func extract(archiveURL: URL, destination: URL? = nil) async throws -> URL {
+Nautica/Services/ArchiveService.swift:66:                    try process.run()
+Nautica/Services/ArchiveService.swift:67:                    process.waitUntilExit()
+Nautica/Services/ArchiveService.swift:87:    func attachDiskImage(at url: URL) async throws -> URL {
+Nautica/Services/ArchiveService.swift:99:                    try process.run()
+Nautica/Services/ArchiveService.swift:100:                    process.waitUntilExit()
+Nautica/Services/ArchiveService.swift:104:                       let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+Nautica/Services/ArchiveService.swift:126:    func createArchive(
+Nautica/Services/ArchiveService.swift:168:                    try process.run()
+Nautica/Services/ArchiveService.swift:169:                    process.waitUntilExit()
+Nautica/Services/ArchiveService.swift:191:    func isEncryptedArchive(url: URL) -> Bool {
+Nautica/Services/ArchiveService.swift:197:    func createEncryptedDiskImage(
+Nautica/Services/ArchiveService.swift:234:                try? fm.copyItem(at: itemURL, to: dest)
+Nautica/Services/ArchiveService.swift:240:                try? fm.removeItem(at: temporaryStagingDir)
+Nautica/Services/ArchiveService.swift:261:                    try process.run()
+Nautica/Services/ArchiveService.swift:264:                    try? inPipe.fileHandleForWriting.close()
+Nautica/Services/ArchiveService.swift:266:                    process.waitUntilExit()
+Nautica/Services/ArchiveService.swift:286:    func createEncryptedTarball(
+Nautica/Services/ArchiveService.swift:339:                    try tarProc.run()
+Nautica/Services/ArchiveService.swift:340:                    try sslProc.run()
+Nautica/Services/ArchiveService.swift:341:                    tarProc.waitUntilExit()
+Nautica/Services/ArchiveService.swift:342:                    sslProc.waitUntilExit()
+Nautica/Services/ArchiveService.swift:364:    func extractEncryptedTarball(
+Nautica/Services/ArchiveService.swift:415:                    try sslDec.run()
+Nautica/Services/ArchiveService.swift:416:                    try tarExtract.run()
+Nautica/Services/ArchiveService.swift:417:                    sslDec.waitUntilExit()
+Nautica/Services/ArchiveService.swift:418:                    tarExtract.waitUntilExit()
+Nautica/Services/ChecksumService.swift:26:    public func computeSHA256(url: URL, progress: (@Sendable (Double) -> Void)? = nil) async throws -> String {
+Nautica/Services/ChecksumService.swift:31:    public func computeMD5(url: URL, progress: (@Sendable (Double) -> Void)? = nil) async throws -> String {
+Nautica/Services/ChecksumService.swift:36:    public func computeSHA1(url: URL, progress: (@Sendable (Double) -> Void)? = nil) async throws -> String {
+Nautica/Services/ChecksumService.swift:41:    public func computeHashes(
+Nautica/Services/ChecksumService.swift:49:        defer { try? fileHandle.close() }
+Nautica/Services/ChecksumService.swift:51:        let fileSize = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+Nautica/Services/ChecksumService.swift:94:    public func computeHash(
+Nautica/Services/ChecksumService.swift:110:    public func computePrefixHash(url: URL, bytes: Int = 8192) throws -> String {
+Nautica/Services/ChecksumService.swift:112:        defer { try? fileHandle.close() }
+Nautica/Services/ChecksumService.swift:123:    public static func normalize(hash: String) -> String {
+Nautica/Services/ChecksumService.swift:132:    public func verify(
+Nautica/Services/FileOperationService.swift:19:/// off the main thread; every mutation goes through `NSFileCoordinator`.
+Nautica/Services/FileOperationService.swift:26:    nonisolated func detectCollisions(sources: [URL], destination: URL) -> [FileConflict] {
+Nautica/Services/FileOperationService.swift:39:    /// Progress counts bytes; cancelling skips remaining items and removes
+Nautica/Services/FileOperationService.swift:41:    func copyItems(
+Nautica/Services/FileOperationService.swift:50:            progress.cancel()
+Nautica/Services/FileOperationService.swift:55:    func moveItems(
+Nautica/Services/FileOperationService.swift:67:    func makeAliases(for urls: [URL], in destination: URL) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:98:    nonisolated func resolveTarget(for url: URL) -> URL? {
+Nautica/Services/FileOperationService.swift:99:        let values = try? url.resourceValues(forKeys: [.isAliasFileKey, .isSymbolicLinkKey])
+Nautica/Services/FileOperationService.swift:101:            if let dest = try? FileManager.default.destinationOfSymbolicLink(atPath: url.path) {
+Nautica/Services/FileOperationService.swift:106:        if values?.isAliasFile == true || (try? URL.bookmarkData(withContentsOf: url)) != nil {
+Nautica/Services/FileOperationService.swift:107:            if let data = try? URL.bookmarkData(withContentsOf: url) {
+Nautica/Services/FileOperationService.swift:109:                if let resolved = try? URL(resolvingBookmarkData: data, options: [.withoutUI, .withoutMounting], relativeTo: nil, bookmarkDataIsStale: &isStale) {
+Nautica/Services/FileOperationService.swift:122:    func trashItems(_ urls: [URL]) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:143:    func restoreItems(_ transfers: [FileOperationResult.Transfer]) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:157:    func duplicateItems(_ urls: [URL], progress: Progress? = nil) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:177:    func deleteItems(_ urls: [URL]) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:181:                try FileManager.default.removeItem(at: url)
+Nautica/Services/FileOperationService.swift:191:    static func duplicateURL(for original: URL) -> URL {
+Nautica/Services/FileOperationService.swift:197:        let regex = try? NSRegularExpression(pattern: #"^(.*?)( copy( \d+)?)?$"#, options: .caseInsensitive)
+Nautica/Services/FileOperationService.swift:226:    func renameItem(at url: URL, to newName: String) async throws -> URL {
+Nautica/Services/FileOperationService.swift:238:    func renameItems(_ renames: [(url: URL, newName: String)], progress: Progress? = nil) async -> FileOperationResult {
+Nautica/Services/FileOperationService.swift:269:    private func transfer(
+Nautica/Services/FileOperationService.swift:299:                    try? fm.removeItem(at: directTarget)
+Nautica/Services/FileOperationService.swift:324:    private func coordinateCopy(from source: URL, to target: URL, progress: Progress) throws {
+Nautica/Services/FileOperationService.swift:327:        NSFileCoordinator().coordinate(
+Nautica/Services/FileOperationService.swift:344:    private func stagedCopy(from source: URL, to target: URL, progress: Progress) throws {
+Nautica/Services/FileOperationService.swift:349:        if (try? source.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true,
+Nautica/Services/FileOperationService.swift:357:        defer { try? fm.removeItem(at: staging) }
+Nautica/Services/FileOperationService.swift:409:    private func coordinateMove(from source: URL, to target: URL) throws {
+Nautica/Services/FileOperationService.swift:412:        NSFileCoordinator().coordinate(
+Nautica/Services/FileOperationService.swift:428:    private func allocatedSize(of url: URL, progress: Progress) -> Int64 {
+Nautica/Services/FileOperationService.swift:430:        guard let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .fileSizeKey]) else {
+Nautica/Services/FileOperationService.swift:442:                total += Int64((try? child.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0)
+Nautica/Services/PAFPackageLoader.swift:8:    static func load(archive: URL, manifestURL: URL? = nil, supplements: [URL] = []) throws -> (PAFPackage, Data) {
+Nautica/Services/PAFPackageLoader.swift:17:        defer { try? FileManager.default.removeItem(at: temporary) }
+Nautica/Services/PAFPackageLoader.swift:95:    static func boundedRead(_ url: URL) throws -> Data {
+Nautica/Services/PAFPackageLoader.swift:101:    static func validatePath(_ path: String) throws {
+Nautica/Services/PAFPackageLoader.swift:110:    static func zipEntries(_ data: Data) throws -> [Entry] {
+Nautica/Services/PAFPackageLoader.swift:112:        func number(_ offset: Int, _ count: Int) throws -> Int {
+Nautica/Services/PAFPackageLoader.swift:149:    private static func readEntry(_ archive: URL, name: String, expectedSize: Int) throws -> Data {
+Nautica/Services/PAFPackageLoader.swift:156:        try process.run()
+Nautica/Services/PAFPackageLoader.swift:160:            if result.count > expectedSize { process.terminate(); process.waitUntilExit(); throw GraphError.invalid("ZIP entry exceeds declared size.") }
+Nautica/Services/PAFPackageLoader.swift:162:        process.waitUntilExit()
+Nautica/Services/GroupClassifier.swift:15:    static func classify(_ items: [FileItem], by criterion: GroupByCriterion) -> [FileItemGroup] {
+Nautica/Services/GroupClassifier.swift:56:    private static func classifyByKind(_ items: [FileItem]) -> [FileItemGroup] {
+Nautica/Services/GroupClassifier.swift:109:    private static func classifyByDate(_ items: [FileItem], dateKey: KeyPath<FileItem, Date?>) -> [FileItemGroup] {
+Nautica/Services/GroupClassifier.swift:155:    private static func classifyBySize(_ items: [FileItem]) -> [FileItemGroup] {
+Nautica/Services/GraphStore.swift:12:    func database() throws -> DatabaseQueue {
+Nautica/Services/GraphStore.swift:19:                try db.execute(sql: "CREATE TABLE \(table) (sequence INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT NOT NULL, recordedAt DOUBLE NOT NULL, payload BLOB NOT NULL)")
+Nautica/Services/GraphStore.swift:25:            try db.execute(sql: "CREATE TABLE records (kind TEXT NOT NULL, id TEXT NOT NULL, payload BLOB NOT NULL, PRIMARY KEY (kind, id))")
+Nautica/Services/GraphStore.swift:26:            try db.execute(sql: "CREATE TABLE immutable (kind TEXT NOT NULL, id TEXT NOT NULL, payload BLOB NOT NULL, hash TEXT NOT NULL, PRIMARY KEY (kind, id))")
+Nautica/Services/GraphStore.swift:36:    static func encode<T: Encodable>(_ value: T) throws -> Data {
+Nautica/Services/GraphStore.swift:41:    static func hash(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined() }
+Nautica/Services/GraphStore.swift:43:    func snapshot(asOf: Date = .now) throws -> GraphSnapshot {
+Nautica/Services/GraphStore.swift:46:    static func snapshot(db: Database, asOf: Date) throws -> GraphSnapshot {
+Nautica/Services/GraphStore.swift:47:        func revisions<T: Decodable>(_ table: String, _: T.Type) throws -> [T] {
+Nautica/Services/GraphStore.swift:48:            let rows = try Row.fetchAll(db, sql: "SELECT payload FROM \(table) WHERE sequence IN (SELECT MAX(sequence) FROM \(table) WHERE recordedAt <= ? GROUP BY id) ORDER BY id", arguments: [asOf.timeIntervalSince1970])
+Nautica/Services/GraphStore.swift:49:            return try rows.map { try JSONDecoder().decode(T.self, from: $0["payload"] as Data) }
+Nautica/Services/GraphStore.swift:53:    static func append<T: Encodable>(_ value: T, id: UUID, table: String, at: Date, db: Database) throws {
+Nautica/Services/GraphStore.swift:54:        try db.execute(sql: "INSERT INTO \(table)(id, recordedAt, payload) VALUES (?, ?, ?)", arguments: [id.uuidString, at.timeIntervalSince1970, try encode(value)])
+Nautica/Services/GraphStore.swift:57:    func saveObject(_ object: NauticaObject, at: Date = .now) throws {
+Nautica/Services/GraphStore.swift:64:    func saveRelationship(_ edge: NauticaRelationship, at: Date = .now) throws {
+Nautica/Services/GraphStore.swift:75:    func registerFile(_ file: URL, captureEvidence: Bool) throws -> NauticaObject {
+Nautica/Services/GraphStore.swift:88:        try saveObject(object)
+Nautica/Services/GraphStore.swift:92:    func records<T: Decodable>(_ kind: String, _: T.Type) throws -> [T] {
+Nautica/Services/GraphStore.swift:94:            try Data.fetchAll(db, sql: "SELECT payload FROM records WHERE kind = ? ORDER BY id", arguments: [kind]).map { try JSONDecoder().decode(T.self, from: $0) }
+Nautica/Services/GraphStore.swift:97:    func putRecord<T: Encodable>(_ value: T, kind: String, id: String) throws {
+Nautica/Services/GraphStore.swift:100:    static func putRecord<T: Encodable>(_ value: T, kind: String, id: String, db: Database) throws {
+Nautica/Services/GraphStore.swift:101:        try db.execute(sql: "INSERT INTO records(kind, id, payload) VALUES (?, ?, ?) ON CONFLICT(kind, id) DO UPDATE SET payload = excluded.payload", arguments: [kind, id, try encode(value)])
+Nautica/Services/GraphStore.swift:103:    func views() throws -> [NauticaView] { try records("view", NauticaView.self).sorted { $0.name < $1.name } }
+Nautica/Services/GraphStore.swift:104:    func saveView(_ view: NauticaView) throws {
+Nautica/Services/GraphStore.swift:109:    func deleteView(_ id: UUID) throws {
+Nautica/Services/GraphStore.swift:112:            let pins = try Data.fetchAll(db, sql: "SELECT payload FROM records WHERE kind = 'pin'").map { try JSONDecoder().decode(DockPin.self, from: $0) }
+Nautica/Services/GraphStore.swift:118:    func pins() throws -> [DockPin] { try records("pin", DockPin.self).sorted { ($0.position, $0.id.uuidString) < ($1.position, $1.id.uuidString) } }
+Nautica/Services/GraphStore.swift:119:    func pin(_ target: DockPin.TargetType, id: String) throws {
+Nautica/Services/GraphStore.swift:131:    func removePin(_ id: UUID) throws {
+Nautica/Services/GraphStore.swift:134:    func reorderPins(_ ids: [UUID]) throws {
+Nautica/Services/GraphStore.swift:136:        guard Set(ids) == Set(pins.map(\.id)), ids.count == pins.count else { throw GraphError.invalid("Dock changed; reload before reordering.") }
+Nautica/Services/GraphStore.swift:145:    static func insertImmutable(_ bytes: Data, kind: String, id: String, db: Database) throws {
+Nautica/Services/GraphStore.swift:146:        if let row = try Row.fetchOne(db, sql: "SELECT payload, hash FROM immutable WHERE kind = ? AND id = ?", arguments: [kind, id]) {
+Nautica/Services/GraphStore.swift:147:            let stored: Data = row["payload"]
+Nautica/Services/GraphStore.swift:151:        try db.execute(sql: "INSERT INTO immutable(kind,id,payload,hash) VALUES (?,?,?,?)", arguments: [kind, id, bytes, hash(bytes)])
+Nautica/Services/GraphStore.swift:153:    static func immutableData(kind: String, id: String, db: Database) throws -> Data {
+Nautica/Services/GraphStore.swift:154:        guard let row = try Row.fetchOne(db, sql: "SELECT payload, hash FROM immutable WHERE kind = ? AND id = ?", arguments: [kind, id]) else { throw GraphError.invalid("Missing immutable \(kind) record.") }
+Nautica/Services/GraphStore.swift:155:        let bytes: Data = row["payload"]
+Nautica/Services/GraphStore.swift:159:    func immutableData(kind: String, id: String) throws -> Data { try database().read { try Self.immutableData(kind: kind, id: id, db: $0) } }
+Nautica/Services/MetadataEditorService.swift:34:                return "Failed to finalize and save updated metadata."
+Nautica/Services/MetadataEditorService.swift:46:    public func writeImageMetadata(
+Nautica/Services/MetadataEditorService.swift:106:            try? FileManager.default.removeItem(at: tempURL)
+Nautica/Services/MetadataEditorService.swift:125:    public func writePDFMetadata(
+Nautica/Services/MetadataEditorService.swift:170:    public func writeAudioMetadata(
+Nautica/Services/MetadataEditorService.swift:200:    private func writeMP3ID3Metadata(
+Nautica/Services/MetadataEditorService.swift:229:        // Build new ID3v2.3 tag payload
+Nautica/Services/MetadataEditorService.swift:232:        func appendTextFrame(id: String, text: String?) {
+Nautica/Services/MetadataEditorService.swift:247:            // Text payload
+Nautica/Services/MetadataEditorService.swift:284:    private func writeM4AMetadata(
+Nautica/Services/MetadataEditorService.swift:293:        func updateItem(key: AVMetadataKey, value: String?) {
+Nautica/Services/MetadataEditorService.swift:311:        if (try? movie.writeHeader(to: tempURL, fileType: .m4a)) != nil {
+Nautica/Services/MetadataEditorService.swift:312:            _ = try? FileManager.default.replaceItemAt(url, withItemAt: tempURL)
+Nautica/Services/MetadataEditorService.swift:320:    public func syncSpotlightAttributes(
+Nautica/Services/MetadataEditorService.swift:349:    private func setExtendedAttribute(name: String, stringValue: String, for path: String) {
+Nautica/Services/MetadataEditorService.swift:357:    private func setExtendedAttribute(name: String, plistValue: Any, for path: String) {
+Nautica/Services/MetadataEditorService.swift:358:        guard let data = try? PropertyListSerialization.data(fromPropertyList: plistValue, format: .binary, options: 0) else {
+Nautica/Services/MetadataEditorService.swift:367:    public func getExtendedAttributeString(name: String, for path: String) -> String? {
+Nautica/Services/GitService.swift:15:    public func runGit(_ args: [String], at directory: URL) -> (output: String, error: String, exitCode: Int32) {
+Nautica/Services/GitService.swift:27:            try process.run()
+Nautica/Services/GitService.swift:30:            process.waitUntilExit()
+Nautica/Services/GitService.swift:43:    public func isGitRepository(at directory: URL) -> Bool {
+Nautica/Services/GitService.swift:49:    public func repoRoot(at directory: URL) -> URL? {
+Nautica/Services/GitService.swift:60:    public func currentBranch(at directory: URL) -> String? {
+Nautica/Services/GitService.swift:73:    public func localBranches(at directory: URL) -> [String] {
+Nautica/Services/GitService.swift:84:    public func switchBranch(to branchName: String, at directory: URL) async throws {
+Nautica/Services/GitService.swift:96:    public func createBranch(named newBranchName: String, at directory: URL) async throws {
+Nautica/Services/GitService.swift:111:    public func statusMap(forDirectory directory: URL) -> [String: GitFileState] {
+Nautica/Services/GitService.swift:171:    public func isDirty(at directory: URL) -> Bool {
+Nautica/Services/GitService.swift:180:    public func stage(urls: [URL], at directory: URL) async throws {
+Nautica/Services/GitService.swift:195:    public func unstage(urls: [URL], at directory: URL) async throws {
+Nautica/Services/GitService.swift:209:    public func discardChanges(for urls: [URL], at directory: URL) async throws {
+Nautica/Services/GitService.swift:222:    public func discardChanges(for url: URL, at directory: URL) async throws {
+Nautica/Services/GitService.swift:227:    public func commit(message: String, at directory: URL) async throws {
+Nautica/Services/GitService.swift:241:    public func diff(for fileURL: URL? = nil, at directory: URL) async throws -> String {
+Nautica/Services/FolderSyncService.swift:105:    func compareFolders(
+Nautica/Services/FolderSyncService.swift:125:                        let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey, .isDirectoryKey])
+Nautica/Services/FolderSyncService.swift:145:                        let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey, .contentModificationDateKey, .isDirectoryKey])
+Nautica/Services/FolderSyncService.swift:236:    func executeSync(
+Nautica/Services/FolderSyncService.swift:262:                        try fm.removeItem(at: targetRight)
+Nautica/Services/FolderSyncService.swift:273:                        try fm.removeItem(at: targetLeft)
+Nautica/Services/FolderSyncService.swift:281:                    try fm.removeItem(at: targetRight)
+Nautica/Services/FolderSyncService.swift:287:                    try fm.removeItem(at: targetLeft)
+Nautica/Services/SecureFileDeletionService.swift:73:    func calculateMetrics(for urls: [URL]) -> (totalFiles: Int, totalBytes: Int64) {
+Nautica/Services/SecureFileDeletionService.swift:90:                    if let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),
+Nautica/Services/SecureFileDeletionService.swift:98:                if let attrs = try? fm.attributesOfItem(atPath: url.path),
+Nautica/Services/SecureFileDeletionService.swift:108:    func secureDelete(
+Nautica/Services/SecureFileDeletionService.swift:137:    private func shredItemRecursively(
+Nautica/Services/SecureFileDeletionService.swift:156:            try fm.removeItem(at: scrambledURL)
+Nautica/Services/SecureFileDeletionService.swift:164:    private func shredSingleFile(
+Nautica/Services/SecureFileDeletionService.swift:244:        try FileManager.default.removeItem(at: scrambledURL)
+Nautica/Services/SecureFileDeletionService.swift:251:    private func scrambleName(at url: URL) throws -> URL {
+Nautica/Services/SecureFileDeletionService.swift:261:    private func patternForPass(
+Nautica/Services/GetInfoService.swift:16:    func showInfo(for urls: [URL]) {
+Nautica/Services/GetInfoService.swift:47:    func showInfo(for url: URL) {
+Nautica/Services/SearchService.swift:27:/// and exporting searches as macOS `.savedSearch` property lists.
+Nautica/Services/SearchService.swift:48:    func performSearch(
+Nautica/Services/SearchService.swift:151:    func stopSearch() {
+Nautica/Services/SearchService.swift:161:    private func stopActiveQuery() {
+Nautica/Services/SearchService.swift:174:    private func harvestResults(from queryObj: NSMetadataQuery) {
+Nautica/Services/SearchService.swift:197:            if !includeHiddenFiles && (url.lastPathComponent.hasPrefix(".") || (try? url.resourceValues(forKeys: [.isHiddenKey]))?.isHidden == true) {
+Nautica/Services/SearchService.swift:210:    private func makeFileItem(from url: URL) -> FileItem? {
+Nautica/Services/SearchService.swift:211:        guard let values = try? url.resourceValues(forKeys: [
+Nautica/Services/SearchService.swift:215:            .isUbiquitousItemKey, .ubiquitousItemDownloadingStatusKey,
+Nautica/Services/SearchService.swift:216:            .ubiquitousItemIsDownloadingKey, .ubiquitousItemHasUnresolvedConflictsKey
+Nautica/Services/SearchService.swift:237:    /// Exports the current query as a macOS `.savedSearch` plist file in `~/Library/Saved Searches/`.
+Nautica/Services/SearchService.swift:239:    func saveSmartFolder(
+Nautica/Services/SearchService.swift:245:        let savedSearchesDir = FileManager.default.homeDirectoryForCurrentUser
+Nautica/Services/SearchService.swift:247:        if !FileManager.default.fileExists(atPath: savedSearchesDir.path) {
+Nautica/Services/SearchService.swift:248:            try FileManager.default.createDirectory(at: savedSearchesDir, withIntermediateDirectories: true)
+Nautica/Services/SearchService.swift:251:        let fileName = name.hasSuffix(".savedSearch") ? name : "\(name).savedSearch"
+Nautica/Services/SearchService.swift:252:        let fileURL = savedSearchesDir.appendingPathComponent(fileName)
+Nautica/Services/QuickLookService.swift:19:    func showPreview(for urls: [URL], selectedIndex: Int) {
+Nautica/Services/QuickLookService.swift:28:            panel.reloadData()
+Nautica/Services/QuickLookService.swift:34:    func hidePreview() {
+Nautica/Services/QuickLookService.swift:39:    func togglePreview(for urls: [URL], selectedIndex: Int) {
+Nautica/Services/QuickLookService.swift:49:    func numberOfPreviewItems(in panel: QLPreviewPanel!) -> Int {
+Nautica/Services/QuickLookService.swift:53:    func previewPanel(_ panel: QLPreviewPanel!, previewItemAt index: Int) -> QLPreviewItem! {
+Nautica/Services/SyncNavigationManager.swift:21:    func toggle() {
+Nautica/Services/SyncNavigationManager.swift:34:    func synchronizedURL(
+Nautica/Services/ServerConnectionService.swift:6:/// and Bonjour discovery for local network machines.
+Nautica/Services/ServerConnectionService.swift:32:    func addFavorite(_ server: String) {
+Nautica/Services/ServerConnectionService.swift:39:    func removeFavorite(at index: Int) {
+Nautica/Services/ServerConnectionService.swift:45:    func recordRecent(_ server: String) {
+Nautica/Services/ServerConnectionService.swift:59:    func connect(to address: String) async throws -> URL? {
+Nautica/Services/ServerConnectionService.swift:78:            try? await Task.sleep(nanoseconds: 500_000_000)
+Nautica/Services/ServerConnectionService.swift:88:    func startBonjourDiscovery() {
+Nautica/Services/QuickActionService.swift:22:    func rotateImage(at url: URL, degrees: Int) async -> Bool {
+Nautica/Services/QuickActionService.swift:29:                    try process.run()
+Nautica/Services/QuickActionService.swift:30:                    process.waitUntilExit()
+Nautica/Services/QuickActionService.swift:40:    func convertImage(at url: URL, toFormat format: String) async throws -> URL {
+Nautica/Services/QuickActionService.swift:58:                    try process.run()
+Nautica/Services/QuickActionService.swift:59:                    process.waitUntilExit()
+Nautica/Services/QuickActionService.swift:75:    func createPDF(from urls: [URL], in destinationDirectory: URL, baseName: String = "Combined") async throws -> URL {
+Nautica/Services/QuickActionService.swift:122:    func availableShortcuts() async -> [String] {
+Nautica/Services/QuickActionService.swift:134:                    try process.run()
+Nautica/Services/QuickActionService.swift:135:                    process.waitUntilExit()
+Nautica/Services/QuickActionService.swift:157:    func shortcuts() -> [String] {
+Nautica/Services/QuickActionService.swift:167:        if (try? process.run()) != nil {
+Nautica/Services/QuickActionService.swift:168:            process.waitUntilExit()
+Nautica/Services/QuickActionService.swift:182:    func runShortcut(name: String, inputFile: URL) async -> (success: Bool, output: String?) {
+Nautica/Services/QuickActionService.swift:194:                    try process.run()
+Nautica/Services/QuickActionService.swift:195:                    process.waitUntilExit()
+Nautica/Services/VaultAutomationService.swift:22:    private var cancellables = Set<AnyCancellable>()
+Nautica/Services/VaultAutomationService.swift:27:    public func startMonitoring() {
+Nautica/Services/VaultAutomationService.swift:86:    public func stopMonitoring() {
+Nautica/Services/VaultAutomationService.swift:113:    public func recordActivity() {
+Nautica/Services/VaultAutomationService.swift:118:    public func refreshActiveVaults() {
+Nautica/Services/VaultAutomationService.swift:124:    public func lockAllVaultsNow() async -> [URL: Error] {
+Nautica/Services/VaultAutomationService.swift:130:    @objc private func handleScreenLocked() {
+Nautica/Services/VaultAutomationService.swift:139:    private func checkInactivityTimeout() {
+Nautica/Services/PAFHost.swift:6:    func importPAF(archive: URL, manifest: URL? = nil, supplements: [URL] = []) throws -> PAFPackage {
+Nautica/Services/PAFHost.swift:7:        let (package, original) = try PAFPackageLoader.load(archive: archive, manifestURL: manifest, supplements: supplements)
+Nautica/Services/PAFHost.swift:17:    func frozenRecords<T: Decodable>(_ kind: String, _: T.Type) throws -> [T] {
+Nautica/Services/PAFHost.swift:23:    func pafPackages() throws -> [PAFPackage] { try frozenRecords("package", PAFPackage.self) }
+Nautica/Services/PAFHost.swift:24:    func pafPackage(_ id: String) throws -> PAFPackage {
+Nautica/Services/PAFHost.swift:27:    func saveAuditDraft(_ draft: AuditDraft) throws {
+Nautica/Services/PAFHost.swift:34:    func auditDrafts() throws -> [AuditDraft] { try records("intake", AuditDraft.self) }
+Nautica/Services/PAFHost.swift:35:    func frozenAudits() throws -> [FrozenAudit] { try frozenRecords("audit", FrozenAudit.self) }
+Nautica/Services/PAFHost.swift:37:    func reviewProjection(_ draft: AuditDraft) throws -> AuditProjection {
+Nautica/Services/PAFHost.swift:40:    private static func projection(_ draft: AuditDraft, db: Database) throws -> AuditProjection {
+Nautica/Services/PAFHost.swift:78:    func freezeAudit(_ draft: AuditDraft, reviewedHash: String, command: String) throws -> FrozenAudit {
+Nautica/Services/PAFHost.swift:95:    static func cleanContext(_ projection: AuditProjection, package: PAFPackage) throws -> Data {
+Nautica/Services/PAFHost.swift:124:    func captureAuditResponse(auditID: UUID, report: Data, auditor: String, boundaryDeclaration: String) throws -> FrozenAuditResponse {
+Nautica/Services/PAFHost.swift:141:    func indexAuditArtifact(auditID: UUID, request: AuditArtifactRequest) throws -> NauticaObject {
+Nautica/Services/PAFHost.swift:156:    func exportAuditContext(auditID: UUID, parent: URL) throws -> URL {
+Nautica/Services/PAFHost.swift:199:            try? FileManager.default.removeItem(at: directory)
+Nautica/Services/ViewOptionsService.swift:38:    func toggle(
+Nautica/Services/ViewOptionsService.swift:62:    func show(
+Nautica/Services/ViewOptionsService.swift:100:    func sync(folderURL: URL, viewMode: ViewMode, iconSize: CGFloat, groupBy: GroupByCriterion) {
+Nautica/Services/ViewOptionsService.swift:108:    func close() {
+Nautica/Services/ViewOptionsService.swift:113:    func panelDidClose() {
+Nautica/Services/TerminalService.swift:38:    nonisolated func detectInstalledTerminals() -> [TerminalEmulator] {
+Nautica/Services/TerminalService.swift:44:    nonisolated func defaultTerminal() -> TerminalEmulator {
+Nautica/Services/TerminalService.swift:55:    func openTerminal(at url: URL, emulator: TerminalEmulator) async throws {
+Nautica/Services/TerminalService.swift:73:            try process.run()
+Nautica/Services/TerminalService.swift:80:    private func openTerminalApp(at url: URL) throws {
+Nautica/Services/TerminalService.swift:99:    private func openFolder(_ url: URL, withApplicationAt appURL: URL) async throws {
+Nautica/Services/VaultDiagnosticsService.swift:41:    public func checkHealth(for vaultURL: URL) async -> VaultHealthReport {
+Nautica/Services/VaultDiagnosticsService.swift:64:                if let data = try? Data(contentsOf: infoPlistURL),
+Nautica/Services/VaultDiagnosticsService.swift:65:                   let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
+Nautica/Services/VaultDiagnosticsService.swift:87:                    if let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey]), let size = values.fileSize {
+Nautica/Services/VaultDiagnosticsService.swift:100:            if let attrs = try? FileManager.default.attributesOfItem(atPath: vaultURL.path) {
+Nautica/Services/VaultDiagnosticsService.swift:122:            try isEncryptedProcess.run()
+Nautica/Services/VaultDiagnosticsService.swift:123:            isEncryptedProcess.waitUntilExit()
+Nautica/Services/VaultDiagnosticsService.swift:126:                if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
+Nautica/Services/VaultDiagnosticsService.swift:153:            if let attrs = try? FileManager.default.attributesOfFileSystem(forPath: mountURL.path) {
+Nautica/Services/VaultDiagnosticsService.swift:192:    public func repair(vaultURL: URL) async throws -> String {
+Nautica/Services/VaultDiagnosticsService.swift:202:        try process.run()
+Nautica/Services/VaultDiagnosticsService.swift:203:        process.waitUntilExit()
+Nautica/Services/TrashOriginStore.swift:16:            try? FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
+Nautica/Services/TrashOriginStore.swift:19:        load()
+Nautica/Services/TrashOriginStore.swift:22:    private func load() {
+Nautica/Services/TrashOriginStore.swift:23:        guard let data = try? Data(contentsOf: storeURL),
+Nautica/Services/TrashOriginStore.swift:24:              let dict = try? JSONDecoder().decode([String: String].self, from: data) else {
+Nautica/Services/TrashOriginStore.swift:30:    private func save() {
+Nautica/Services/TrashOriginStore.swift:31:        guard let data = try? JSONEncoder().encode(mappings) else { return }
+Nautica/Services/TrashOriginStore.swift:32:        try? data.write(to: storeURL, options: .atomic)
+Nautica/Services/TrashOriginStore.swift:36:    func record(transfers: [FileOperationResult.Transfer]) {
+Nautica/Services/TrashOriginStore.swift:41:            save()
+Nautica/Services/TrashOriginStore.swift:46:    func canPutBack(url: URL) -> Bool {
+Nautica/Services/TrashOriginStore.swift:53:    func originalURL(for trashedURL: URL) -> URL? {
+Nautica/Services/TrashOriginStore.swift:63:    func isInsideTrash(_ url: URL) -> Bool {
+Nautica/Services/TrashOriginStore.swift:68:    func putBack(urls: [URL]) async -> FileOperationResult {
+Nautica/Services/TrashOriginStore.swift:83:                try? FileManager.default.createDirectory(at: parentDir, withIntermediateDirectories: true)
+Nautica/Services/TrashOriginStore.swift:102:                    self.save()
+Nautica/Services/PerformanceProfilerService.swift:59:        var info = mach_task_basic_info()
+Nautica/Services/PerformanceProfilerService.swift:60:        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size / 4)
+Nautica/Services/PerformanceProfilerService.swift:63:                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
+Nautica/Services/PerformanceProfilerService.swift:70:    public func measure<T>(
+Nautica/Services/PerformanceProfilerService.swift:98:    public func measureAsync<T>(
+Nautica/Services/PerformanceProfilerService.swift:127:    public func createSyntheticDirectory(
+Nautica/Services/PerformanceProfilerService.swift:146:        let contentPayload = "Nautica high-performance benchmarking test file payload content.\n"
+Nautica/Services/PerformanceProfilerService.swift:147:        let payloadData = contentPayload.data(using: .utf8)!
+Nautica/Services/PerformanceProfilerService.swift:158:                _ = payloadData.withUnsafeBytes { ptr in
+Nautica/Services/ViewStateService.swift:5:/// `FolderViewState` for the current folder and saves changes, debounced by
+Nautica/Services/ViewStateService.swift:13:    private var saveTask: Task<Void, Never>?
+Nautica/Services/ViewStateService.swift:22:    func state(for folderPath: String) -> FolderViewState {
+Nautica/Services/ViewStateService.swift:27:        if let existing = (try? context.fetch(descriptor))?.first {
+Nautica/Services/ViewStateService.swift:42:    /// Inserts a new state if needed and saves immediately.
+Nautica/Services/ViewStateService.swift:43:    func saveState(_ state: FolderViewState) {
+Nautica/Services/ViewStateService.swift:47:        try? context.save()
+Nautica/Services/ViewStateService.swift:51:    func scheduleSave() {
+Nautica/Services/ViewStateService.swift:52:        saveTask?.cancel()
+Nautica/Services/ViewStateService.swift:53:        saveTask = Task { @MainActor [context] in
+Nautica/Services/ViewStateService.swift:54:            try? await Task.sleep(for: .milliseconds(500))
+Nautica/Services/ViewStateService.swift:56:            try? context.save()
+Nautica/Services/ViewStateService.swift:62:    func migrateFromUserDefaultsIfNeeded() {}
+Nautica/Services/SpringLoadManager.swift:4:/// Coordinates spring-loaded folder behavior across Nautica file views.
+Nautica/Services/SpringLoadManager.swift:21:    /// Registers a hover event over a potential spring-load folder.
+Nautica/Services/SpringLoadManager.swift:23:    func hover(on url: URL, delay: TimeInterval = defaultHoverDelay, action: @escaping (URL) -> Void) {
+Nautica/Services/SpringLoadManager.swift:29:        cancel()
+Nautica/Services/SpringLoadManager.swift:37:            self.cancel()
+Nautica/Services/SpringLoadManager.swift:42:    /// Triggers immediate spring loading (e.g. when user taps Spacebar during a drag).
+Nautica/Services/SpringLoadManager.swift:43:    func triggerImmediate() {
+Nautica/Services/SpringLoadManager.swift:45:        cancel()
+Nautica/Services/SpringLoadManager.swift:50:    func cancel() {
+Nautica/Services/TagService.swift:18:    func setupDatabase() throws {
+Nautica/Services/TagService.swift:68:    func toggleColorTag(_ color: TagColor, for urls: [URL]) throws {
+Nautica/Services/TagService.swift:70:            let values = (try? url.resourceValues(forKeys: [.tagNamesKey])) ?? URLResourceValues()
+Nautica/Services/TagService.swift:88:            try? (url as NSURL).setResourceValue(currentTags as NSArray, forKey: .tagNamesKey)
+Nautica/Services/TagService.swift:90:            if let dbTag = try? database().read({ db in
+Nautica/Services/TagService.swift:94:                    try? removeTag(dbTag.id, from: url)
+Nautica/Services/TagService.swift:96:                    try? applyTag(dbTag.id, to: url)
+Nautica/Services/TagService.swift:103:    func clearAllTags(for urls: [URL]) throws {
+Nautica/Services/TagService.swift:105:            try? (url as NSURL).setResourceValue([] as NSArray, forKey: .tagNamesKey)
+Nautica/Services/TagService.swift:107:            try? database().write { db in
+Nautica/Services/TagService.swift:114:    func setTags(_ tags: [String], for url: URL) throws {
+Nautica/Services/TagService.swift:115:        try? (url as NSURL).setResourceValue(tags as NSArray, forKey: .tagNamesKey)
+Nautica/Services/TagService.swift:117:        try? database().write { db in
+Nautica/Services/TagService.swift:122:            let dbTag = try? database().write { db -> TagItem in
+Nautica/Services/TagService.swift:131:                try? applyTag(dbTag.id, to: url)
+Nautica/Services/TagService.swift:137:    func createTag(name: String, colorHex: String) throws -> TagItem {
+Nautica/Services/TagService.swift:146:    func deleteTag(id: UUID) throws {
+Nautica/Services/TagService.swift:153:    func applyTag(_ tagID: UUID, to url: URL) throws {
+Nautica/Services/TagService.swift:172:    func removeTag(_ tagID: UUID, from url: URL) throws {
+Nautica/Services/TagService.swift:187:    func tagsForFile(_ url: URL) throws -> [TagItem] {
+Nautica/Services/TagService.swift:199:           let values = try? url.resourceValues(forKeys: [.tagNamesKey]),
+Nautica/Services/TagService.swift:211:    private func syncNativeTag(name: String, to url: URL, adding: Bool) {
+Nautica/Services/TagService.swift:214:        let values = (try? targetURL.resourceValues(forKeys: [.tagNamesKey])) ?? URLResourceValues()
+Nautica/Services/TagService.swift:223:        try? (targetURL as NSURL).setResourceValue(currentTags as NSArray, forKey: .tagNamesKey)
+Nautica/Services/TagService.swift:226:    private static func colorForStandardTag(_ name: String) -> String {
+Nautica/Services/TagService.swift:239:    func filesWithTag(_ tagID: UUID) throws -> [URL] {
+Nautica/Services/TagService.swift:248:    func allTags() throws -> [TagItem] {
+Nautica/Services/TagService.swift:254:    private func database() throws -> DatabaseQueue {
+Nautica/Services/VaultService.swift:67:                return "Biometric authentication failed or was cancelled."
+Nautica/Services/VaultService.swift:69:                return "No saved credentials found in Keychain for this vault."
+Nautica/Services/VaultService.swift:80:    public func createVault(
+Nautica/Services/VaultService.swift:119:        try process.run()
+Nautica/Services/VaultService.swift:126:        process.waitUntilExit()
+Nautica/Services/VaultService.swift:135:            savePasswordToKeychain(password, for: targetURL)
+Nautica/Services/VaultService.swift:145:    public func unlockVault(
+Nautica/Services/VaultService.swift:167:            if let saved = getPasswordFromKeychain(for: url) {
+Nautica/Services/VaultService.swift:168:                effectivePassword = saved
+Nautica/Services/VaultService.swift:190:        try process.run()
+Nautica/Services/VaultService.swift:197:        process.waitUntilExit()
+Nautica/Services/VaultService.swift:211:        if let plist = try? PropertyListSerialization.propertyList(from: outData, options: [], format: nil) as? [String: Any],
+Nautica/Services/VaultService.swift:233:    public func lockVault(at url: URL) async throws {
+Nautica/Services/VaultService.swift:243:        try? process.run()
+Nautica/Services/VaultService.swift:244:        process.waitUntilExit()
+Nautica/Services/VaultService.swift:248:            try? NSWorkspace.shared.unmountAndEjectDevice(at: mountURL)
+Nautica/Services/VaultService.swift:255:    public func isVault(at url: URL) -> Bool {
+Nautica/Services/VaultService.swift:277:            try process.run()
+Nautica/Services/VaultService.swift:278:            process.waitUntilExit()
+Nautica/Services/VaultService.swift:281:            if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+Nautica/Services/VaultService.swift:293:    public func isVaultMounted(at url: URL) -> (isMounted: Bool, mountURL: URL?) {
+Nautica/Services/VaultService.swift:304:            try process.run()
+Nautica/Services/VaultService.swift:305:            process.waitUntilExit()
+Nautica/Services/VaultService.swift:307:            if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+Nautica/Services/VaultService.swift:339:    public func mountedVaults() -> [(url: URL, mountPoint: URL)] {
+Nautica/Services/VaultService.swift:351:            try process.run()
+Nautica/Services/VaultService.swift:352:            process.waitUntilExit()
+Nautica/Services/VaultService.swift:354:            if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+Nautica/Services/VaultService.swift:380:    public func lockAllVaults() async -> [URL: Error] {
+Nautica/Services/VaultService.swift:397:    public func canUseBiometrics() -> Bool {
+Nautica/Services/VaultService.swift:403:    public func authenticateWithBiometrics(reason: String) async -> Bool {
+Nautica/Services/VaultService.swift:417:    public func hasSavedPasswordInKeychain(for url: URL) -> Bool {
+Nautica/Services/VaultService.swift:421:    public func savePasswordToKeychain(_ password: String, for url: URL) {
+Nautica/Services/VaultService.swift:439:    public func getPasswordFromKeychain(for url: URL) -> String? {
+Nautica/Services/VaultService.swift:457:    public func deletePasswordFromKeychain(for url: URL) {

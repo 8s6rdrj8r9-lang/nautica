@@ -1,0 +1,513 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /tmp/nautica-audit-build-2026-10-07/Build/Products/audit-isolated.xctestrun -destination platform=macOS,arch=arm64 -parallel-testing-enabled NO -resultBundlePath /tmp/nautica-audit-results-2026-10-07.xcresult
+
+Writing result bundle at path:
+	/tmp/nautica-audit-results-2026-10-07.xcresult
+
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00008103-001E0D0821A2001E, name:My Mac }
+{ platform:macOS, arch:arm64, variant:Mac Catalyst, id:00008103-001E0D0821A2001E, name:My Mac }
+{ platform:macOS, arch:arm64, variant:DriverKit, id:00008103-001E0D0821A2001E, name:My Mac }
+{ platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:00008103-001E0D0821A2001E, name:My Mac }
+2026-10-07 14:39:33.364289-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support/default.store', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support/default.store', errno 2 / No such file or directory.
+2026-10-07 14:39:33.364465-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.364480-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error:   Sandbox access to file-write-create denied
+2026-10-07 14:39:33.364490-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+2026-10-07 14:39:33.364496-0600 Nautica[70249:1067218] [error] CoreData: error: Information for file system
+CoreData: error: Information for file system
+2026-10-07 14:39:33.364501-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.364504-0600 Nautica[70249:1067218] [error] CoreData: error:   File system type: 		0
+CoreData: error:   File system type: 		0
+2026-10-07 14:39:33.364509-0600 Nautica[70249:1067218] [error] CoreData: error:   File system flags: 		0
+CoreData: error:   File system flags: 		0
+2026-10-07 14:39:33.364514-0600 Nautica[70249:1067218] [error] CoreData: error:   Total data blocks: 		0
+CoreData: error:   Total data blocks: 		0
+2026-10-07 14:39:33.364518-0600 Nautica[70249:1067218] [error] CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+2026-10-07 14:39:33.364523-0600 Nautica[70249:1067218] [error] CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Free blocks for nonsuperuser:	0
+2026-10-07 14:39:33.369555-0600 Nautica[70249:1067218] [error] CoreData: error:   Total i-nodes: 			0
+CoreData: error:   Total i-nodes: 			0
+2026-10-07 14:39:33.369578-0600 Nautica[70249:1067218] [error] CoreData: error:   File system ID: 		0, 0
+CoreData: error:   File system ID: 		0, 0
+2026-10-07 14:39:33.369585-0600 Nautica[70249:1067218] [error] CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Free i-nodes: 			0
+2026-10-07 14:39:33.369590-0600 Nautica[70249:1067218] [error] CoreData: error:   Owner UID: 			0
+CoreData: error:   Owner UID: 			0
+2026-10-07 14:39:33.369596-0600 Nautica[70249:1067218] [error] CoreData: error:   Filesystem type name:
+CoreData: error:   Filesystem type name: 		
+2026-10-07 14:39:33.369603-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount on name:
+CoreData: error:   Mount on name: 			
+2026-10-07 14:39:33.369608-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount from name:
+CoreData: error:   Mount from name: 		
+2026-10-07 14:39:33.369631-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+2026-10-07 14:39:33.370463-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.370479-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error:   Sandbox access to file-write-create denied
+2026-10-07 14:39:33.370490-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+2026-10-07 14:39:33.370496-0600 Nautica[70249:1067218] [error] CoreData: error: Information for file system
+CoreData: error: Information for file system
+2026-10-07 14:39:33.370579-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.370585-0600 Nautica[70249:1067218] [error] CoreData: error:   File system type: 		0
+CoreData: error:   File system type: 		0
+2026-10-07 14:39:33.370590-0600 Nautica[70249:1067218] [error] CoreData: error:   File system flags: 		0
+CoreData: error:   File system flags: 		0
+2026-10-07 14:39:33.370595-0600 Nautica[70249:1067218] [error] CoreData: error:   Total data blocks: 		0
+CoreData: error:   Total data blocks: 		0
+2026-10-07 14:39:33.370599-0600 Nautica[70249:1067218] [error] CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+2026-10-07 14:39:33.370603-0600 Nautica[70249:1067218] [error] CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Free blocks for nonsuperuser:	0
+2026-10-07 14:39:33.370608-0600 Nautica[70249:1067218] [error] CoreData: error:   Total i-nodes: 			0
+CoreData: error:   Total i-nodes: 			0
+2026-10-07 14:39:33.370722-0600 Nautica[70249:1067218] [error] CoreData: error:   File system ID: 		0, 0
+CoreData: error:   File system ID: 		0, 0
+2026-10-07 14:39:33.370727-0600 Nautica[70249:1067218] [error] CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Free i-nodes: 			0
+2026-10-07 14:39:33.370731-0600 Nautica[70249:1067218] [error] CoreData: error:   Owner UID: 			0
+CoreData: error:   Owner UID: 			0
+2026-10-07 14:39:33.370735-0600 Nautica[70249:1067218] [error] CoreData: error:   Filesystem type name:
+CoreData: error:   Filesystem type name: 		
+2026-10-07 14:39:33.370740-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount on name:
+CoreData: error:   Mount on name: 			
+2026-10-07 14:39:33.370744-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount from name:
+CoreData: error:   Mount from name: 		
+2026-10-07 14:39:33.370754-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library', errno 2 / No such file or directory.
+2026-10-07 14:39:33.370831-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.370847-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error:   Sandbox access to file-write-create denied
+2026-10-07 14:39:33.370858-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+CoreData: error: Failed to statfs file; errno 2 / No such file or directory.
+2026-10-07 14:39:33.370864-0600 Nautica[70249:1067218] [error] CoreData: error: Information for file system
+CoreData: error: Information for file system
+2026-10-07 14:39:33.370868-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.370923-0600 Nautica[70249:1067218] [error] CoreData: error:   File system type: 		0
+CoreData: error:   File system type: 		0
+2026-10-07 14:39:33.370929-0600 Nautica[70249:1067218] [error] CoreData: error:   File system flags: 		0
+CoreData: error:   File system flags: 		0
+2026-10-07 14:39:33.370933-0600 Nautica[70249:1067218] [error] CoreData: error:   Total data blocks: 		0
+CoreData: error:   Total data blocks: 		0
+2026-10-07 14:39:33.370937-0600 Nautica[70249:1067218] [error] CoreData: error:   Free data blocks: 		0
+CoreData: error:   Free data blocks: 		0
+2026-10-07 14:39:33.370941-0600 Nautica[70249:1067218] [error] CoreData: error:   Free blocks for nonsuperuser:	0
+CoreData: error:   Free blocks for nonsuperuser:	0
+2026-10-07 14:39:33.370945-0600 Nautica[70249:1067218] [error] CoreData: error:   Total i-nodes: 			0
+CoreData: error:   Total i-nodes: 			0
+2026-10-07 14:39:33.370949-0600 Nautica[70249:1067218] [error] CoreData: error:   File system ID: 		0, 0
+CoreData: error:   File system ID: 		0, 0
+2026-10-07 14:39:33.371033-0600 Nautica[70249:1067218] [error] CoreData: error:   Free i-nodes: 			0
+CoreData: error:   Free i-nodes: 			0
+2026-10-07 14:39:33.371037-0600 Nautica[70249:1067218] [error] CoreData: error:   Owner UID: 			0
+CoreData: error:   Owner UID: 			0
+2026-10-07 14:39:33.371041-0600 Nautica[70249:1067218] [error] CoreData: error:   Filesystem type name:
+CoreData: error:   Filesystem type name: 		
+2026-10-07 14:39:33.371045-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount on name:
+CoreData: error:   Mount on name: 			
+2026-10-07 14:39:33.371049-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount from name:
+CoreData: error:   Mount from name: 		
+2026-10-07 14:39:33.371059-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.371063-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /tmp/nautica-audit-test-home-2026-10-07
+CoreData: error: Information for /tmp/nautica-audit-test-home-2026-10-07
+2026-10-07 14:39:33.371124-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.371128-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.371132-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.371137-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		64 bytes
+CoreData: error:   File Size: 		64 bytes
+2026-10-07 14:39:33.371141-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		26177391
+CoreData: error:   File inode: 		26177391
+2026-10-07 14:39:33.371146-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		501
+CoreData: error:   File user ID: 		501
+2026-10-07 14:39:33.371150-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.371223-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.371228-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.376253-0600 Nautica[70249:1067218] [error] CoreData: error:   755
+CoreData: error:   755
+2026-10-07 14:39:33.376265-0600 Nautica[70249:1067218] [error] CoreData: error:   file is not a symbolic link
+CoreData: error:   file is not a symbolic link
+2026-10-07 14:39:33.376307-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create allowed
+CoreData: error:   Sandbox access to file-write-create allowed
+2026-10-07 14:39:33.376318-0600 Nautica[70249:1067218] [error] CoreData: error: Information for file system
+CoreData: error: Information for file system
+2026-10-07 14:39:33.376323-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.376326-0600 Nautica[70249:1067218] [error] CoreData: error:   File system type: 		0x1a
+CoreData: error:   File system type: 		0x1a
+2026-10-07 14:39:33.376332-0600 Nautica[70249:1067218] [error] CoreData: error:   File system flags: 		0x4909080
+CoreData: error:   File system flags: 		0x4909080
+2026-10-07 14:39:33.376337-0600 Nautica[70249:1067218] [error] CoreData: error:   MNT_JOURNALED
+CoreData: error:   MNT_JOURNALED
+2026-10-07 14:39:33.376401-0600 Nautica[70249:1067218] [error] CoreData: error:   Total data blocks: 		59840624
+CoreData: error:   Total data blocks: 		59840624
+2026-10-07 14:39:33.376407-0600 Nautica[70249:1067218] [error] CoreData: error:   Free data blocks: 		6490744
+CoreData: error:   Free data blocks: 		6490744
+2026-10-07 14:39:33.376412-0600 Nautica[70249:1067218] [error] CoreData: error:   Free blocks for nonsuperuser:	6490744
+CoreData: error:   Free blocks for nonsuperuser:	6490744
+2026-10-07 14:39:33.376417-0600 Nautica[70249:1067218] [error] CoreData: error:   Total i-nodes: 			261495031
+CoreData: error:   Total i-nodes: 			261495031
+2026-10-07 14:39:33.376422-0600 Nautica[70249:1067218] [error] CoreData: error:   File system ID: 		0x1000012, 0x1a
+CoreData: error:   File system ID: 		0x1000012, 0x1a
+2026-10-07 14:39:33.376433-0600 Nautica[70249:1067218] [error] CoreData: error:   Free i-nodes: 			259629760
+CoreData: error:   Free i-nodes: 			259629760
+2026-10-07 14:39:33.376523-0600 Nautica[70249:1067218] [error] CoreData: error:   Owner UID: 			0
+CoreData: error:   Owner UID: 			0
+2026-10-07 14:39:33.376534-0600 Nautica[70249:1067218] [error] CoreData: error:   Filesystem type name: 		apfs
+CoreData: error:   Filesystem type name: 		apfs
+2026-10-07 14:39:33.376540-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount on name: 			/System/Volumes/Data
+CoreData: error:   Mount on name: 			/System/Volumes/Data
+2026-10-07 14:39:33.376546-0600 Nautica[70249:1067218] [error] CoreData: error:   Mount from name: 		/dev/disk3s1
+CoreData: error:   Mount from name: 		/dev/disk3s1
+2026-10-07 14:39:33.376563-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.376569-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /tmp
+CoreData: error: Information for /tmp
+2026-10-07 14:39:33.376574-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.376668-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.376673-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.376677-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		608 bytes
+CoreData: error:   File Size: 		608 bytes
+2026-10-07 14:39:33.376682-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		24989268
+CoreData: error:   File inode: 		24989268
+2026-10-07 14:39:33.376686-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		0
+CoreData: error:   File user ID: 		0
+2026-10-07 14:39:33.376690-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.376694-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.376781-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.376785-0600 Nautica[70249:1067218] [error] CoreData: error:   777
+CoreData: error:   777
+2026-10-07 14:39:33.376789-0600 Nautica[70249:1067218] [error] CoreData: error:   file is not a symbolic link
+CoreData: error:   file is not a symbolic link
+2026-10-07 14:39:33.376816-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create allowed
+CoreData: error:   Sandbox access to file-write-create allowed
+2026-10-07 14:39:33.376829-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.376834-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /
+CoreData: error: Information for /
+2026-10-07 14:39:33.376838-0600 Nautica[70249:1067218] [error] CoreData: error: ---------------------------
+CoreData: error: ---------------------------
+2026-10-07 14:39:33.376876-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.376883-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.376887-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		704 bytes
+CoreData: error:   File Size: 		704 bytes
+2026-10-07 14:39:33.376891-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		2
+CoreData: error:   File inode: 		2
+2026-10-07 14:39:33.376895-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		0
+CoreData: error:   File user ID: 		0
+2026-10-07 14:39:33.376899-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.376902-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.376906-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.376987-0600 Nautica[70249:1067218] [error] CoreData: error:   755
+CoreData: error:   755
+2026-10-07 14:39:33.376995-0600 Nautica[70249:1067218] [error] CoreData: error:   file is not a symbolic link
+CoreData: error:   file is not a symbolic link
+2026-10-07 14:39:33.377041-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error:   Sandbox access to file-write-create denied
+2026-10-07 14:39:33.377069-0600 Nautica[70249:1067218] [error] CoreData: error: Logging status information for directory path: /tmp/nautica-audit-test-home-2026-10-07/Library/Application Support
+CoreData: error: Logging status information for directory path: /tmp/nautica-audit-test-home-2026-10-07/Library/Application Support
+2026-10-07 14:39:33.377086-0600 Nautica[70249:1067218] [error] CoreData: error: Executing as effective user 501
+CoreData: error: Executing as effective user 501
+2026-10-07 14:39:33.377113-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /
+CoreData: error: Information for /
+2026-10-07 14:39:33.377119-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.377123-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.377127-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		704 bytes
+CoreData: error:   File Size: 		704 bytes
+2026-10-07 14:39:33.377131-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		2
+CoreData: error:   File inode: 		2
+2026-10-07 14:39:33.377135-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		0
+CoreData: error:   File user ID: 		0
+2026-10-07 14:39:33.377139-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.377143-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.377206-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.377211-0600 Nautica[70249:1067218] [error] CoreData: error:   755
+CoreData: error:   755
+2026-10-07 14:39:33.377215-0600 Nautica[70249:1067218] [error] CoreData: error:   component is not a symbolic link
+CoreData: error:   component is not a symbolic link
+2026-10-07 14:39:33.377230-0600 Nautica[70249:1067218] [error] CoreData: error:   component is readable
+CoreData: error:   component is readable
+2026-10-07 14:39:33.377243-0600 Nautica[70249:1067218] [error] CoreData: error:   component is not writeable with errno 30
+CoreData: error:   component is not writeable with errno 30
+2026-10-07 14:39:33.377254-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /tmp
+CoreData: error: Information for /tmp
+2026-10-07 14:39:33.377259-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.377295-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.377299-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		608 bytes
+CoreData: error:   File Size: 		608 bytes
+2026-10-07 14:39:33.377303-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		24989268
+CoreData: error:   File inode: 		24989268
+2026-10-07 14:39:33.377308-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		0
+CoreData: error:   File user ID: 		0
+2026-10-07 14:39:33.377311-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.377315-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.377318-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.377322-0600 Nautica[70249:1067218] [error] CoreData: error:   777
+CoreData: error:   777
+2026-10-07 14:39:33.377403-0600 Nautica[70249:1067218] [error] CoreData: error:   component is not a symbolic link
+CoreData: error:   component is not a symbolic link
+2026-10-07 14:39:33.377418-0600 Nautica[70249:1067218] [error] CoreData: error:   component is readable
+CoreData: error:   component is readable
+2026-10-07 14:39:33.377430-0600 Nautica[70249:1067218] [error] CoreData: error:   component is writeable
+CoreData: error:   component is writeable
+2026-10-07 14:39:33.377439-0600 Nautica[70249:1067218] [error] CoreData: error: Information for /tmp/nautica-audit-test-home-2026-10-07
+CoreData: error: Information for /tmp/nautica-audit-test-home-2026-10-07
+2026-10-07 14:39:33.377444-0600 Nautica[70249:1067218] [error] CoreData: error:   File Device ID: 	0
+CoreData: error:   File Device ID: 	0
+2026-10-07 14:39:33.377447-0600 Nautica[70249:1067218] [error] CoreData: error:   Device ID: 		16777234
+CoreData: error:   Device ID: 		16777234
+2026-10-07 14:39:33.377510-0600 Nautica[70249:1067218] [error] CoreData: error:   File Size: 		64 bytes
+CoreData: error:   File Size: 		64 bytes
+2026-10-07 14:39:33.377516-0600 Nautica[70249:1067218] [error] CoreData: error:   File inode: 		26177391
+CoreData: error:   File inode: 		26177391
+2026-10-07 14:39:33.377520-0600 Nautica[70249:1067218] [error] CoreData: error:   File user ID: 		501
+CoreData: error:   File user ID: 		501
+2026-10-07 14:39:33.377524-0600 Nautica[70249:1067218] [error] CoreData: error:   File group ID: 		0
+CoreData: error:   File group ID: 		0
+2026-10-07 14:39:33.377528-0600 Nautica[70249:1067218] [error] CoreData: error:   File Permissions:
+CoreData: error:   File Permissions: 	
+2026-10-07 14:39:33.377531-0600 Nautica[70249:1067218] [error] CoreData: error: d
+CoreData: error: d
+2026-10-07 14:39:33.377535-0600 Nautica[70249:1067218] [error] CoreData: error:   755
+CoreData: error:   755
+2026-10-07 14:39:33.377538-0600 Nautica[70249:1067218] [error] CoreData: error:   component is not a symbolic link
+CoreData: error:   component is not a symbolic link
+2026-10-07 14:39:33.377621-0600 Nautica[70249:1067218] [error] CoreData: error:   component is readable
+CoreData: error:   component is readable
+2026-10-07 14:39:33.377634-0600 Nautica[70249:1067218] [error] CoreData: error:   component is writeable
+CoreData: error:   component is writeable
+2026-10-07 14:39:33.377642-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library', errno 2 / No such file or directory.
+2026-10-07 14:39:33.377655-0600 Nautica[70249:1067218] [error] CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+CoreData: error: Failed to stat path '/tmp/nautica-audit-test-home-2026-10-07/Library/Application Support', errno 2 / No such file or directory.
+2026-10-07 14:39:33.377710-0600 Nautica[70249:1067218] [error] CoreData: error:   Sandbox access to file-write-create denied
+CoreData: error:   Sandbox access to file-write-create denied
+2026-10-07 14:39:33.378636-0600 Nautica[70249:1067218] [error] CoreData: error: addPersistentStoreWithType:configuration:URL:options:error: returned error NSCocoaErrorDomain (512)
+CoreData: error: addPersistentStoreWithType:configuration:URL:options:error: returned error NSCocoaErrorDomain (512)
+2026-10-07 14:39:33.378926-0600 Nautica[70249:1067218] [error] CoreData: error: userInfo:
+CoreData: error: userInfo:
+2026-10-07 14:39:33.378940-0600 Nautica[70249:1067218] [error] CoreData: error: 	reason : Failed to create file; code = 2
+CoreData: error: 	reason : Failed to create file; code = 2
+2026-10-07 14:39:33.378945-0600 Nautica[70249:1067218] [error] CoreData: error: storeType: SQLite
+CoreData: error: storeType: SQLite
+2026-10-07 14:39:33.378956-0600 Nautica[70249:1067218] [error] CoreData: error: configuration: default
+CoreData: error: configuration: default
+2026-10-07 14:39:33.378984-0600 Nautica[70249:1067218] [error] CoreData: error: URL: file:///tmp/nautica-audit-test-home-2026-10-07/Library/Application%20Support/default.store
+CoreData: error: URL: file:///tmp/nautica-audit-test-home-2026-10-07/Library/Application%20Support/default.store
+CoreData: annotation: options:
+CoreData: annotation: 	NSMigratePersistentStoresAutomaticallyOption : 1
+CoreData: annotation: 	NSInferMappingModelAutomaticallyOption : 1
+CoreData: annotation: 	NSPersistentStoreRemoteChangeNotificationOptionKey : 1
+CoreData: annotation: 	NSPersistentHistoryTrackingKey : 1
+2026-10-07 14:39:33.381177-0600 Nautica[70249:1067218] [error] CoreData: error: <NSPersistentStoreCoordinator: 0xc5cc3c780>: Attempting recovery from error encountered during addPersistentStore: 0xc5d46a250 Error Domain=NSCocoaErrorDomain Code=512 "The file couldn’t be saved." UserInfo={reason=Failed to create file; code = 2}
+CoreData: error: <NSPersistentStoreCoordinator: 0xc5cc3c780>: Attempting recovery from error encountered during addPersistentStore: 0xc5d46a250 Error Domain=NSCocoaErrorDomain Code=512 "The file couldn’t be saved." UserInfo={reason=Failed to create file; code = 2}
+2026-10-07 14:39:33.381245-0600 Nautica[70249:1067218] [error] CoreData: error: During recovery, parent directory path reported as missing
+CoreData: error: During recovery, parent directory path reported as missing
+2026-10-07 14:39:33.389695-0600 Nautica[70249:1067218] [error] CoreData: error: Recovery attempt while adding <NSPersistentStoreDescription: 0xc5d46a250> (type: SQLite, url: file:///tmp/nautica-audit-test-home-2026-10-07/Library/Application%20Support/default.store) was successful!
+CoreData: error: Recovery attempt while adding <NSPersistentStoreDescription: 0xc5d46a250> (type: SQLite, url: file:///tmp/nautica-audit-test-home-2026-10-07/Library/Application%20Support/default.store) was successful!
+2026-10-07 14:39:33.401131-0600 Nautica[70249:1067272] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.401266-0600 Nautica[70249:1067272] [Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.401702-0600 Nautica[70249:1067270] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.401716-0600 Nautica[70249:1067270] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.402181-0600 Nautica[70249:1067269] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.402199-0600 Nautica[70249:1067269] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.402534-0600 Nautica[70249:1067269] [Connection] Will NOT re-try to establish the connection
+2026-10-07 14:39:33.402573-0600 Nautica[70249:1067272] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.402600-0600 Nautica[70249:1067272] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-07 14:39:33.558991-0600 Nautica[70249:1067218] ApplePersistenceIgnoreState: Existing state will not be touched. New state will be written to /var/folders/sl/vhrf7rmj08g3vbx9f0_j9hdr0000gn/T/com.arthur.nautica.audit20261007.savedState
+Test Suite 'All tests' started at 2026-10-07 14:39:34.621.
+Test Suite 'NauticaTests.xctest' started at 2026-10-07 14:39:34.621.
+Test Suite 'BatchRenameTests' started at 2026-10-07 14:39:34.621.
+Test Case '-[NauticaTests.BatchRenameTests testAddPrefixAndSuffix]' started.
+Test Case '-[NauticaTests.BatchRenameTests testAddPrefixAndSuffix]' passed (0.003 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testBatchRenameExecutionAndUndo]' started.
+Test Case '-[NauticaTests.BatchRenameTests testBatchRenameExecutionAndUndo]' passed (0.014 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testConflictDetectionDuplicateNewNames]' started.
+Test Case '-[NauticaTests.BatchRenameTests testConflictDetectionDuplicateNewNames]' passed (0.001 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testConflictDetectionIllegalCharacters]' started.
+Test Case '-[NauticaTests.BatchRenameTests testConflictDetectionIllegalCharacters]' passed (0.001 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testFindAndReplace]' started.
+Test Case '-[NauticaTests.BatchRenameTests testFindAndReplace]' passed (0.001 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testSequenceRenameWithHashes]' started.
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift:35: error: -[NauticaTests.BatchRenameTests testSequenceRenameWithHashes] : XCTAssertEqual failed: ("img1_001.jpg") is not equal to ("vacation_001.jpg")
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift:36: error: -[NauticaTests.BatchRenameTests testSequenceRenameWithHashes] : XCTAssertEqual failed: ("img1_002.jpg") is not equal to ("vacation_002.jpg")
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift:37: error: -[NauticaTests.BatchRenameTests testSequenceRenameWithHashes] : XCTAssertEqual failed: ("img1_003.jpg") is not equal to ("vacation_003.jpg")
+Test Case '-[NauticaTests.BatchRenameTests testSequenceRenameWithHashes]' failed (0.150 seconds).
+Test Case '-[NauticaTests.BatchRenameTests testSequenceRenameWithoutHashesAppendsDigits]' started.
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift:57: error: -[NauticaTests.BatchRenameTests testSequenceRenameWithoutHashesAppendsDigits] : XCTAssertEqual failed: ("docA_0010.pdf") is not equal to ("archive_0010.pdf")
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/BatchRenameTests.swift:58: error: -[NauticaTests.BatchRenameTests testSequenceRenameWithoutHashesAppendsDigits] : XCTAssertEqual failed: ("docA_0011.pdf") is not equal to ("archive_0011.pdf")
+Test Case '-[NauticaTests.BatchRenameTests testSequenceRenameWithoutHashesAppendsDigits]' failed (0.003 seconds).
+Test Suite 'BatchRenameTests' failed at 2026-10-07 14:39:34.797.
+	 Executed 7 tests, with 5 failures (0 unexpected) in 0.173 (0.175) seconds
+Test Suite 'CloudStorageServiceTests' started at 2026-10-07 14:39:34.797.
+Test Case '-[NauticaTests.CloudStorageServiceTests testCloudSyncStatusAndFileItemCloudProperties]' started.
+Test Case '-[NauticaTests.CloudStorageServiceTests testCloudSyncStatusAndFileItemCloudProperties]' passed (0.001 seconds).
+Test Case '-[NauticaTests.CloudStorageServiceTests testDisplayNameFormatting]' started.
+Test Case '-[NauticaTests.CloudStorageServiceTests testDisplayNameFormatting]' passed (0.001 seconds).
+Test Case '-[NauticaTests.CloudStorageServiceTests testParseCloudFolderCreatesSidebarItem]' started.
+Test Case '-[NauticaTests.CloudStorageServiceTests testParseCloudFolderCreatesSidebarItem]' passed (0.001 seconds).
+Test Case '-[NauticaTests.CloudStorageServiceTests testProviderDetection]' started.
+Test Case '-[NauticaTests.CloudStorageServiceTests testProviderDetection]' passed (0.001 seconds).
+Test Case '-[NauticaTests.CloudStorageServiceTests testSystemImages]' started.
+Test Case '-[NauticaTests.CloudStorageServiceTests testSystemImages]' passed (0.001 seconds).
+Test Suite 'CloudStorageServiceTests' passed at 2026-10-07 14:39:34.801.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'FileOperationServiceTests' started at 2026-10-07 14:39:34.801.
+Test Case '-[NauticaTests.FileOperationServiceTests testCancelDuringDirectoryCopyRemovesPartialTree]' started.
+2026-10-07 14:39:34.814113-0600 Nautica[70249:1067270] error processing data: Operation canceled
+Test Case '-[NauticaTests.FileOperationServiceTests testCancelDuringDirectoryCopyRemovesPartialTree]' passed (0.016 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testCancelDuringFileCopyRemovesOnlyStagingFiles]' started.
+2026-10-07 14:39:34.829281-0600 Nautica[70249:1067327] error processing data: Operation canceled
+Test Case '-[NauticaTests.FileOperationServiceTests testCancelDuringFileCopyRemovesOnlyStagingFiles]' passed (0.014 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testCopyIntoOwnDescendantFailsWithoutCreatingPartialFiles]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testCopyIntoOwnDescendantFailsWithoutCreatingPartialFiles]' passed (0.003 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink]' started.
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift:35: error: -[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink] : XCTAssertTrue failed
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift:37: error: -[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("sample 1.txt")")
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift:38: error: -[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink] : XCTUnwrap failed: expected non-nil value of type "URL"
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/FileOperationServiceTests.swift:38: error: -[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink] : XCTAssertEqual failed: threw error "UnwrappingOptional(errorCode: 105, errorUserInfo: ["XCTestErrorUserInfoKeyShouldIgnore": true])"
+Test Case '-[NauticaTests.FileOperationServiceTests testCopyPreservesDanglingDestinationSymlink]' failed (0.006 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testDestinationCreatedDuringCopyIsNeverDeleted]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testDestinationCreatedDuringCopyIsNeverDeleted]' passed (0.009 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testEnumerationFailureThrowsInsteadOfReturningEmptyListing]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testEnumerationFailureThrowsInsteadOfReturningEmptyListing]' passed (1.486 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testPartialMoveKeepsCorrectSuccessfulSourceForUndo]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testPartialMoveKeepsCorrectSuccessfulSourceForUndo]' passed (0.007 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testRecursiveCopyPreservesSymlinksAndPermissions]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testRecursiveCopyPreservesSymlinksAndPermissions]' passed (0.006 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testUndoCollisionPreservesBothFiles]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testUndoCollisionPreservesBothFiles]' passed (0.004 seconds).
+Test Case '-[NauticaTests.FileOperationServiceTests testUndoRestoresOriginalNameAfterCollision]' started.
+Test Case '-[NauticaTests.FileOperationServiceTests testUndoRestoresOriginalNameAfterCollision]' passed (0.005 seconds).
+Test Suite 'FileOperationServiceTests' failed at 2026-10-07 14:39:36.359.
+	 Executed 10 tests, with 4 failures (1 unexpected) in 1.555 (1.558) seconds
+Test Suite 'GraphStoreTests' started at 2026-10-07 14:39:36.360.
+Test Case '-[NauticaTests.GraphStoreTests testDanglingRelationshipsRejectedAndSubsystemRegistered]' started.
+Test Case '-[NauticaTests.GraphStoreTests testDanglingRelationshipsRejectedAndSubsystemRegistered]' passed (0.007 seconds).
+Test Case '-[NauticaTests.GraphStoreTests testHistoricalRevisionAndEvidenceCaptureDoNotReadLiveFile]' started.
+Test Case '-[NauticaTests.GraphStoreTests testHistoricalRevisionAndEvidenceCaptureDoNotReadLiveFile]' passed (0.012 seconds).
+Test Case '-[NauticaTests.GraphStoreTests testSharedIdentityViewsAndPinDeletionPersistAcrossReopen]' started.
+Test Case '-[NauticaTests.GraphStoreTests testSharedIdentityViewsAndPinDeletionPersistAcrossReopen]' passed (0.008 seconds).
+Test Case '-[NauticaTests.GraphStoreTests testSmartRelationshipCombinedViewsAndInferredProvenance]' started.
+Test Case '-[NauticaTests.GraphStoreTests testSmartRelationshipCombinedViewsAndInferredProvenance]' passed (0.010 seconds).
+Test Suite 'GraphStoreTests' passed at 2026-10-07 14:39:36.398.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.037 (0.038) seconds
+Test Suite 'PAFHostTests' started at 2026-10-07 14:39:36.398.
+Test Case '-[NauticaTests.PAFHostTests testFreezeBoundaryImmutabilityCleanExportAndReportIndexing]' started.
+Test Case '-[NauticaTests.PAFHostTests testFreezeBoundaryImmutabilityCleanExportAndReportIndexing]' passed (0.119 seconds).
+Test Case '-[NauticaTests.PAFHostTests testPackageChecksumsMissingFilesAndArchiveSafety]' started.
+Test Case '-[NauticaTests.PAFHostTests testPackageChecksumsMissingFilesAndArchiveSafety]' passed (0.232 seconds).
+Test Case '-[NauticaTests.PAFHostTests testUnselectedEdgesAndUnauthorizedEvidenceExcluded]' started.
+Test Case '-[NauticaTests.PAFHostTests testUnselectedEdgesAndUnauthorizedEvidenceExcluded]' passed (0.096 seconds).
+Test Case '-[NauticaTests.PAFHostTests testUserSuppliedInteractivePackage]' started.
+/tmp/nautica-audit-execution-2026-10-07/NauticaTests/PAFHostTests.swift:120: -[NauticaTests.PAFHostTests testUserSuppliedInteractivePackage] : Test skipped - Set NAUTICA_PAF_PACKAGE to run the real-package integration check.
+Test Case '-[NauticaTests.PAFHostTests testUserSuppliedInteractivePackage]' skipped (0.002 seconds).
+Test Suite 'PAFHostTests' passed at 2026-10-07 14:39:36.848.
+	 Executed 4 tests, with 1 test skipped and 0 failures (0 unexpected) in 0.449 (0.450) seconds
+Test Suite 'SelectionModelTests' started at 2026-10-07 14:39:36.848.
+Test Case '-[NauticaTests.SelectionModelTests testCommandClickTogglesItem]' started.
+Test Case '-[NauticaTests.SelectionModelTests testCommandClickTogglesItem]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testInvertSelection]' started.
+Test Case '-[NauticaTests.SelectionModelTests testInvertSelection]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testMoveSelectionByArrowKey]' started.
+Test Case '-[NauticaTests.SelectionModelTests testMoveSelectionByArrowKey]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testPlainClickSelectsOnlyClickedItem]' started.
+Test Case '-[NauticaTests.SelectionModelTests testPlainClickSelectsOnlyClickedItem]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testSelectAllAndDeselectAll]' started.
+Test Case '-[NauticaTests.SelectionModelTests testSelectAllAndDeselectAll]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testShiftArrowExtendsSelection]' started.
+Test Case '-[NauticaTests.SelectionModelTests testShiftArrowExtendsSelection]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testShiftClickSelectsContiguousRange]' started.
+Test Case '-[NauticaTests.SelectionModelTests testShiftClickSelectsContiguousRange]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testShiftClickWithoutAnchorSelectsFromFirstItem]' started.
+Test Case '-[NauticaTests.SelectionModelTests testShiftClickWithoutAnchorSelectsFromFirstItem]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testTypeAheadBufferExpiresAfterTimeout]' started.
+Test Case '-[NauticaTests.SelectionModelTests testTypeAheadBufferExpiresAfterTimeout]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SelectionModelTests testTypeAheadMatchesCaseInsensitivePrefix]' started.
+Test Case '-[NauticaTests.SelectionModelTests testTypeAheadMatchesCaseInsensitivePrefix]' passed (0.001 seconds).
+Test Suite 'SelectionModelTests' passed at 2026-10-07 14:39:36.857.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.009) seconds
+Test Suite 'SplitLayoutTests' started at 2026-10-07 14:39:36.857.
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutIcons]' started.
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutIcons]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutPaneCounts]' started.
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutPaneCounts]' passed (0.001 seconds).
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutRawValuesMatchSegmentIndices]' started.
+Test Case '-[NauticaTests.SplitLayoutTests testSplitLayoutRawValuesMatchSegmentIndices]' passed (0.001 seconds).
+Test Suite 'SplitLayoutTests' passed at 2026-10-07 14:39:36.860.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.002 (0.003) seconds
+Test Suite 'TagServiceTests' started at 2026-10-07 14:39:36.860.
+Test Case '-[NauticaTests.TagServiceTests testApplyAndQueryTagsForFile]' started.
+2026-10-07 14:39:36.869129-0600 Nautica[70249:1067327] [CopyEngine] TCFURLInfo::TranslateCFError -- status: -43, CFError = Error Domain=NSCocoaErrorDomain Code=4 "The file “nautica-tag-test.txt” doesn’t exist." UserInfo={NSURL=file:///tmp/nautica-tag-test.txt, NSFilePath=/tmp/nautica-tag-test.txt, NSUnderlyingError=0xc5ecc2370 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2026-10-07 14:39:36.871030-0600 Nautica[70249:1067327] [CopyEngine] TCFURLInfo::TranslateCFError -- status: -43, CFError = Error Domain=NSCocoaErrorDomain Code=4 "The file “nautica-tag-test.txt” doesn’t exist." UserInfo={NSURL=file:///tmp/nautica-tag-test.txt, NSFilePath=/tmp/nautica-tag-test.txt, NSUnderlyingError=0xc5ecc1da0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+2026-10-07 14:39:36.872460-0600 Nautica[70249:1067327] [CopyEngine] TCFURLInfo::TranslateCFError -- status: -43, CFError = Error Domain=NSCocoaErrorDomain Code=4 "The file “nautica-tag-test.txt” doesn’t exist." UserInfo={NSURL=file:///tmp/nautica-tag-test.txt, NSFilePath=/tmp/nautica-tag-test.txt, NSUnderlyingError=0xc5ecc1e00 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[NauticaTests.TagServiceTests testApplyAndQueryTagsForFile]' passed (0.014 seconds).
+Test Case '-[NauticaTests.TagServiceTests testCreateTagPersists]' started.
+Test Case '-[NauticaTests.TagServiceTests testCreateTagPersists]' passed (0.002 seconds).
+Test Case '-[NauticaTests.TagServiceTests testDeleteTagCascadesToFileTags]' started.
+2026-10-07 14:39:36.877979-0600 Nautica[70249:1067327] [CopyEngine] TCFURLInfo::TranslateCFError -- status: -43, CFError = Error Domain=NSCocoaErrorDomain Code=4 "The file “nautica-cascade-test.txt” doesn’t exist." UserInfo={NSURL=file:///tmp/nautica-cascade-test.txt, NSFilePath=/tmp/nautica-cascade-test.txt, NSUnderlyingError=0xc5ecc1fe0 {Error Domain=NSPOSIXErrorDomain Code=2 "No such file or directory"}}
+Test Case '-[NauticaTests.TagServiceTests testDeleteTagCascadesToFileTags]' passed (0.003 seconds).
+Test Suite 'TagServiceTests' passed at 2026-10-07 14:39:36.879.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.019 (0.019) seconds
+Test Suite 'NauticaTests.xctest' failed at 2026-10-07 14:39:36.879.
+	 Executed 46 tests, with 1 test skipped and 9 failures (1 unexpected) in 2.244 (2.258) seconds
+Test Suite 'All tests' failed at 2026-10-07 14:39:36.880.
+	 Executed 46 tests, with 1 test skipped and 9 failures (1 unexpected) in 2.244 (2.259) seconds
+2026-10-07 14:39:44.727 xcodebuild[70239:1067071] [MT] IDETestOperationsObserverDebug: 13.094 elapsed -- Testing started completed.
+2026-10-07 14:39:44.727 xcodebuild[70239:1067071] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-10-07 14:39:44.727 xcodebuild[70239:1067071] [MT] IDETestOperationsObserverDebug: 13.094 sec, +13.094 sec -- end
+
+Test session results, code coverage, and logs:
+	/tmp/nautica-audit-results-2026-10-07.xcresult
+
+Failing tests:
+	BatchRenameTests.testSequenceRenameWithHashes()
+	BatchRenameTests.testSequenceRenameWithHashes()
+	BatchRenameTests.testSequenceRenameWithHashes()
+	BatchRenameTests.testSequenceRenameWithoutHashesAppendsDigits()
+	BatchRenameTests.testSequenceRenameWithoutHashesAppendsDigits()
+	FileOperationServiceTests.testCopyPreservesDanglingDestinationSymlink()
+	FileOperationServiceTests.testCopyPreservesDanglingDestinationSymlink()
+	FileOperationServiceTests.testCopyPreservesDanglingDestinationSymlink()
+	FileOperationServiceTests.testCopyPreservesDanglingDestinationSymlink()
+
+** TEST EXECUTE FAILED **
+
+Testing started

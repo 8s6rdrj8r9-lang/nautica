@@ -125,9 +125,9 @@ public final class VaultDiagnosticsService: @unchecked Sendable {
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
                 if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
                     if let isEnc = plist["encrypted"] as? Bool, isEnc {
-                        encryptionType = "Hardware AES (Encrypted APFS)"
+                        encryptionType = "Encrypted Container (APFS)"
                         containerUUID = plist["uuid"] as? String
-                        logs.append("[OK] Cryptographic container headers valid. UUID: \(containerUUID ?? "N/A")")
+                        logs.append("[OK] Cryptographic container headers verified. UUID: \(containerUUID ?? "N/A")")
                     } else {
                         logs.append("[WARNING] Container is not encrypted.")
                         if status != .error { status = .warning }
@@ -136,8 +136,8 @@ public final class VaultDiagnosticsService: @unchecked Sendable {
             } else if mountCheck.isMounted {
                 // When an encrypted sparse bundle is mounted, hdiutil isencrypted cannot lock the bundle header exclusively.
                 // The fact that it is currently mounted confirms cryptographic container validity.
-                encryptionType = "Hardware AES (Encrypted APFS - Active)"
-                logs.append("[OK] Cryptographic container is active and unlocked.")
+                encryptionType = "Encrypted Container (Active Mount)"
+                logs.append("[OK] Cryptographic container is currently unlocked and mounted.")
             } else {
                 logs.append("[WARNING] Unable to read encryption metadata.")
                 if status != .error { status = .warning }
@@ -163,11 +163,11 @@ public final class VaultDiagnosticsService: @unchecked Sendable {
         let summary: String
         switch status {
         case .healthy:
-            summary = "Container structure, headers, and sparse bands are in optimal health."
+            summary = "Container structure, headers, and sparse bands pass structural inspection."
         case .warning:
-            summary = "Minor warnings observed, but the container remains operational."
+            summary = "Minor anomalies observed during structural validation."
         case .error:
-            summary = "Container structure or band integrity issues detected. Repair recommended."
+            summary = "Container structure or band integrity issues detected. Verification recommended."
         }
 
         logs.append("[COMPLETE] Diagnostics completed with result: \(status.rawValue)")
@@ -188,8 +188,8 @@ public final class VaultDiagnosticsService: @unchecked Sendable {
         )
     }
 
-    /// Attempts non-destructive repair of container structure using hdiutil verify.
-    public func repair(vaultURL: URL) async throws -> String {
+    /// Verifies the structural integrity of the container using hdiutil verify.
+    public func verifyIntegrity(vaultURL: URL) async throws -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/hdiutil")
         process.arguments = ["verify", vaultURL.path(percentEncoded: false)]
@@ -205,6 +205,16 @@ public final class VaultDiagnosticsService: @unchecked Sendable {
         let out = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
         let err = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
 
-        return out.isEmpty ? err : out
+        guard process.terminationStatus == 0 else {
+            let msg = err.isEmpty ? (out.isEmpty ? "Verification failed with exit code \(process.terminationStatus)" : out) : err
+            throw VaultService.VaultError.executionFailed(msg.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+
+        return out.isEmpty ? "Integrity verification passed successfully." : out
+    }
+
+    /// Backwards-compatible alias for container integrity verification.
+    public func repair(vaultURL: URL) async throws -> String {
+        try await verifyIntegrity(vaultURL: vaultURL)
     }
 }

@@ -59,6 +59,10 @@ struct FileViewCoordinator: NSViewRepresentable {
     var onCyclePane: (() -> Void)?
     var onToggleTag: ((TagColor) -> Void)?
     var onClearTags: (() -> Void)?
+    var onAddToDropShelf: (([URL]) -> Void)?
+    var onSecureDelete: (([FileItem]) -> Void)?
+    var onCreateEncryptedArchive: (([FileItem]) -> Void)?
+    var onExtractEncryptedArchive: ((URL) -> Void)?
     var setViewMode: ((ViewMode) -> Void)?
     var isFocused: Bool = false
     var onMouseEnter: (() -> Void)?
@@ -113,6 +117,18 @@ struct FileViewCoordinator: NSViewRepresentable {
         iconController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
             coordinator?.parent.onCheckVaultHealth?(url)
         }
+        iconController.onAddToDropShelf = { [weak coordinator = context.coordinator] urls in
+            coordinator?.parent.onAddToDropShelf?(urls)
+        }
+        iconController.onSecureDelete = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onSecureDelete?(items)
+        }
+        iconController.onCreateEncryptedArchive = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onCreateEncryptedArchive?(items)
+        }
+        iconController.onExtractEncryptedArchive = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onExtractEncryptedArchive?(url)
+        }
         iconController.onColumnCountChanged = { [weak coordinator = context.coordinator] count in
             coordinator?.liveColumnCount = count
         }
@@ -163,6 +179,18 @@ struct FileViewCoordinator: NSViewRepresentable {
         listController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
             coordinator?.parent.onCheckVaultHealth?(url)
         }
+        listController.onAddToDropShelf = { [weak coordinator = context.coordinator] urls in
+            coordinator?.parent.onAddToDropShelf?(urls)
+        }
+        listController.onSecureDelete = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onSecureDelete?(items)
+        }
+        listController.onCreateEncryptedArchive = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onCreateEncryptedArchive?(items)
+        }
+        listController.onExtractEncryptedArchive = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onExtractEncryptedArchive?(url)
+        }
         context.coordinator.listViewController = listController
 
         let listView = listController.view
@@ -210,6 +238,18 @@ struct FileViewCoordinator: NSViewRepresentable {
         }
         columnController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
             coordinator?.parent.onCheckVaultHealth?(url)
+        }
+        columnController.onAddToDropShelf = { [weak coordinator = context.coordinator] urls in
+            coordinator?.parent.onAddToDropShelf?(urls)
+        }
+        columnController.onSecureDelete = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onSecureDelete?(items)
+        }
+        columnController.onCreateEncryptedArchive = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onCreateEncryptedArchive?(items)
+        }
+        columnController.onExtractEncryptedArchive = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onExtractEncryptedArchive?(url)
         }
         context.coordinator.columnViewController = columnController
 
@@ -261,6 +301,18 @@ struct FileViewCoordinator: NSViewRepresentable {
         }
         galleryController.onCheckVaultHealth = { [weak coordinator = context.coordinator] url in
             coordinator?.parent.onCheckVaultHealth?(url)
+        }
+        galleryController.onAddToDropShelf = { [weak coordinator = context.coordinator] urls in
+            coordinator?.parent.onAddToDropShelf?(urls)
+        }
+        galleryController.onSecureDelete = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onSecureDelete?(items)
+        }
+        galleryController.onCreateEncryptedArchive = { [weak coordinator = context.coordinator] items in
+            coordinator?.parent.onCreateEncryptedArchive?(items)
+        }
+        galleryController.onExtractEncryptedArchive = { [weak coordinator = context.coordinator] url in
+            coordinator?.parent.onExtractEncryptedArchive?(url)
         }
         context.coordinator.galleryViewController = galleryController
 

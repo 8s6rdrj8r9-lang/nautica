@@ -1,0 +1,33 @@
+{
+  "batch_custom_pattern" : [
+    "vacation_001.txt",
+    "vacation_002.txt",
+    "vacation_003.txt"
+  ],
+  "git_spaced_filename_mapped" : false,
+  "git_status_keys" : [
+    "\"file with spaces.txt\"",
+    "\/tmp\/nautica-audit-capacity-341ABAE2-ECAD-454F-BF15-B16242B68F37\/git-fixture\/\"file with spaces.txt\""
+  ],
+  "listing" : [
+    {
+      "count" : 15000,
+      "run" : 1,
+      "service_listing_ms" : 5260.1319551467896
+    },
+    {
+      "count" : 15000,
+      "run" : 2,
+      "service_listing_ms" : 6138.8759613037109
+    },
+    {
+      "count" : 15000,
+      "run" : 3,
+      "service_listing_ms" : 5374.3820190429688
+    }
+  ],
+  "measurement_limit" : "service enumeration and in-memory sort; no display frame rate, paint, window or Quick Look latency measured",
+  "root" : "\/private\/tmp\/nautica-audit-capacity-341ABAE2-ECAD-454F-BF15-B16242B68F37",
+  "sort_50000_ms" : 37.009000778198242,
+  "sort_count" : 50000
+}

@@ -1,0 +1,674 @@
+{
+  "status": "INTAKE_INVENTORY_ONLY_NOT_FROZEN",
+  "prepared_date": "2026-10-07",
+  "repository": "/Users/arthur/Development/Nautica",
+  "head": "31efe1a4495910804ada6f85deed806b1ffab33c",
+  "git_status": " M Nautica/Info.plist\n M Nautica/Models/FileItem.swift\n M Nautica/Services/ArchiveService.swift\n M Nautica/Views/BrowserView.swift\n M Nautica/Views/FileViews/ColumnViewController.swift\n M Nautica/Views/FileViews/FileContextMenu.swift\n M Nautica/Views/FileViews/FileViewCoordinator.swift\n M Nautica/Views/FileViews/GalleryViewController.swift\n M Nautica/Views/FileViews/IconView.swift\n M Nautica/Views/FileViews/ListView.swift\n M Nautica/Views/RightSidebar/RightSidebarTab.swift\n M Nautica/Views/RightSidebar/RightSidebarView.swift\n M Nautica/Views/Settings/SettingsView.swift\n M Nautica/Views/Windows/MainWindow.swift\n M README.md\n?? Nautica/Models/GraphModel.swift\n?? Nautica/Models/PAFModel.swift\n?? Nautica/Services/DefaultFileManagerService.swift\n?? Nautica/Services/FolderSyncService.swift\n?? Nautica/Services/GraphStore.swift\n?? Nautica/Services/PAFHost.swift\n?? Nautica/Services/PAFPackageLoader.swift\n?? Nautica/Services/SecureFileDeletionService.swift\n?? Nautica/Views/Chrome/CreateEncryptedArchiveSheet.swift\n?? Nautica/Views/Chrome/ExtractEncryptedArchiveSheet.swift\n?? Nautica/Views/Chrome/FolderSyncSheet.swift\n?? Nautica/Views/Chrome/SecureDeleteConfirmationSheet.swift\n?? Nautica/Views/Graph/GraphViewBuilder.swift\n?? Nautica/Views/Graph/GraphWorkspace.swift\n?? Nautica/Views/Graph/PAFWorkspaceView.swift\n?? Nautica/Views/RightSidebar/HexViewerPanelView.swift\n?? NauticaTests/GraphStoreTests.swift\n?? NauticaTests/PAFHostTests.swift\n?? docs/GRAPH-AND-PAF-VALIDATION.md\n?? docs/GRAPH-AND-PAF.md\n?? docs/audits/2026-10-07/EVIDENCE-REGISTER.csv\n?? main\n",
+  "files": [
+    {
+      "path": "Nautica-PRD-v1.0.md",
+      "sha256": "d451513fa23ec85025c2f5204c9feb11596e91c1bd87c06d64033a7d7751b5fe",
+      "tracked": true
+    },
+    {
+      "path": "Nautica.xcodeproj/project.pbxproj",
+      "sha256": "1711f536b88ae603208efe52bb054c768066161a8a194adb6ad6df6e71c93df5",
+      "tracked": true
+    },
+    {
+      "path": "Nautica.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "sha256": "beddec46654b73c62a71846a5acd4dfd72810ff8531d90cc9a9d4ba9429c8f97",
+      "tracked": true
+    },
+    {
+      "path": "Nautica.xcodeproj/xcshareddata/xcschemes/Nautica.xcscheme",
+      "sha256": "91466b11bbe83c4b2abe2e8f4c3869c4e79ce4807d54e4860a0dd7043b34944b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "83d3d9f5a2ffb0b64cacec353e12c37574d42582f844f94a38ae474fb0731437",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Credits.rtf",
+      "sha256": "6c1576fe3d263f54854a951b5a5cb464459ebf347e4fbc4feecc51ff7b26e7f6",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Info.plist",
+      "sha256": "5323264da9073cf92b4f3a14e94f0f4ae74616cc9cddd9fe8f7a40572664cd0d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/BatchRenameModel.swift",
+      "sha256": "7b4ec195aeb7c1c2c602705e2e99fe4da89fd1fa67251849bae0111b8aa1e4c8",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/DirectoryContents.swift",
+      "sha256": "bf4a1d6a1602e68a5c505c9d99b759ffe24f6ed9f8b995db9477357f5ac691c2",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/FileItem.swift",
+      "sha256": "84d3f4827da79637daa235485359214ab1f67e8ea419a6042e08d92df3718fbb",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/GraphModel.swift",
+      "sha256": "c80a6db46d21657571bc32e5ce74fd4f46ff545a7a3092851d6bd2f1bce2bdaf",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Models/GroupByCriterion.swift",
+      "sha256": "3349c0065a7e010afb73403fbb3432da196906eb9b5eaedb3e57987a775ed504",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/NavigationHistory.swift",
+      "sha256": "f1720b8ec01edc6cfbdc1349c3a76aff89cc038b9e30de9a21e1ed5486d5a710",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/PAFModel.swift",
+      "sha256": "c2d5df56f80167a218e9bf04975d27b6ad5cbdeaf0f3cdd85d9809f7bf40e35d",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Models/SearchCriterion.swift",
+      "sha256": "35fe9ee5792a90d9c3e6b9da995b1c3950790541c8dd143f6b469d948b829653",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/SelectionModel.swift",
+      "sha256": "3a5334f37ca05022f1e2dc359c8dce96e8e1c759aae515dcac2c543c2245cedf",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/SidebarItem.swift",
+      "sha256": "dc7a20e095ad6394486c1ea4d965a713fb38ac439b7178194c7b27b6232fa0cc",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/SidebarModel.swift",
+      "sha256": "de3a715755b7c512235fac95dd1b680681742240fb16196f67d212dedc90deb7",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/SortKey.swift",
+      "sha256": "41d2f26c18eb75cebbf1bb6b2e90173251bdef4210bc909c49380623c36120a2",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/SplitLayout.swift",
+      "sha256": "e3493ad8eac3bc1ef3c9a8b65521ad751dad2aa8123f1b5d929530b605526be7",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/TabPersistence.swift",
+      "sha256": "d4465c92dc8462779a7262a14004b12d473ec0745caf364a7313efa642930cc5",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/TabState.swift",
+      "sha256": "81bcbc81470d360297a9708de3b141b036a1082a1f14962e9246e8c88ecc9ab4",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/TagColor.swift",
+      "sha256": "41fbd6063d71c3d5df29766d044732b837c18dc7b5d348b53c723b3502d177e4",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/TagItem.swift",
+      "sha256": "3ab3cebd7d4ddfbc43844a0c4a8379be7d3198e1f50a83867de57dbdaa3f6453",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/ViewMode.swift",
+      "sha256": "78c639c1f76b0d760c9b934cdae00159ebb51753e61ff6472a23c70992f21b06",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Models/ViewState.swift",
+      "sha256": "7d7b23677e0200796a49f38d636609a1caab1901825b68339bb28d7b62335445",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Nautica.entitlements",
+      "sha256": "173ca2c8afd6585e3e3a83449ab93a9b6ce591d513a353493752eab1168df42d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/NauticaApp.swift",
+      "sha256": "800ebbe38ba0cbbc942b9ac51b3845cdd269e99a2a632565de657bebdf477b7b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/ArchiveService.swift",
+      "sha256": "ad339fb640b8e23fdad0a47849dea9c9057a2c0b821c6ba7e3762df8f1230f5d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/ChecksumService.swift",
+      "sha256": "64a0cbeff5bc72852b47b0307c65675034d4707b9fbef95c15db39273bbf6bd8",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/CloudStorageService.swift",
+      "sha256": "7453250df32d9b1cc87b2b15f7469e2488e0dfd4404f2e95bf0094819a01e405",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/DefaultFileManagerService.swift",
+      "sha256": "692de4979e696f9905c1c9a7397ea0039d7a1867fec7557127f9457b80d1ef58",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/DirectoryWatcherService.swift",
+      "sha256": "097cdb19fd14a0da43aa05ab07a283825ae1c58467cb27c2ddc4943733e84902",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/DuplicateFinderService.swift",
+      "sha256": "aa41215965a0e2cb9a77e937a14a70ea05729130b5dd528f12a23a7e4ff1d6dc",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/FileOperationService.swift",
+      "sha256": "cf8bab4c283850c68c8c5a0304122d78f2d0281f223f6d533e19f7c6c8ab3a60",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/FileSystemService.swift",
+      "sha256": "9f8719866eba333c92d57dabbd83c6b3e3cd05fa651610aabb030a0799c87080",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/FolderSyncService.swift",
+      "sha256": "d69475d98c39f332df5ec8d4cc2385b7a24f8053d3e7259c99008f20f3400705",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/GetInfoService.swift",
+      "sha256": "16adaf39d7cb79e152aedbe354642fbed42cbaeb8aa8e25335d4094d51c0b00b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/GitService.swift",
+      "sha256": "88576946d971bef11af220dae70fb3783121a370ddc83574f007e1c478eecb39",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/GraphStore.swift",
+      "sha256": "33dac67ed12b0e07e856d2e4abeeb65b68455620e700f6eb5379015cbd0bd875",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/GroupClassifier.swift",
+      "sha256": "4a445db7a5620e5bf40f1f4e58f70736824de341e5289db853c54c50868a9603",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/MetadataEditorService.swift",
+      "sha256": "5316d7d28e18d6d2b1a17073166e4431f0d3e03c5d3e7e53d1c1d18602156d6f",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/PAFHost.swift",
+      "sha256": "3cde27632166400108ef9cf2635fc4fe5922c9fbbcd63fbdeae6e70259f4e63c",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/PAFPackageLoader.swift",
+      "sha256": "64bd7109b3ff847cbd41809bcd217c74c99eca07b1583f7aa559a4330d7efbbe",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/PerformanceProfilerService.swift",
+      "sha256": "d007300246bcd234d9211bfa044518653667d5386679a3e042c3d74f8432ff07",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/QuickActionService.swift",
+      "sha256": "e4bdc4e961310153bbbe4f32d28d144f1d92f623e946439c823229291ea2eb1f",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/QuickLookService.swift",
+      "sha256": "c356460705a6bee79b5ac037f58c775ec749b174ecafe946b6568a13ef98bc1c",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/SearchService.swift",
+      "sha256": "461d3855c84bbafce414c4a66b7250c80d396cfcd625c08117f3122d431032c9",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/SecureFileDeletionService.swift",
+      "sha256": "593e79c8b24667ce97e0e4845fc9902b8ae83d2406cb7ad3be377dc93f35cc15",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Services/ServerConnectionService.swift",
+      "sha256": "8250a43a0301083d9475ada5009aee004fee05c39fe6fca8cc241f1d6dc508b5",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/SpringLoadManager.swift",
+      "sha256": "cefdcdd96252e0371e3b82f81dbc26eda9d7dc580dcb8dade8f711cf13883a3e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/SyncNavigationManager.swift",
+      "sha256": "05fc29f69f6754dc8f566421ea2ab1a0cb027ec377fee88743bbef550e2b66be",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/TagService.swift",
+      "sha256": "726f508a712ed8e5ad57c0405160e51a6556dfab519c59de767d30f6780b6ab8",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/TerminalService.swift",
+      "sha256": "cf90c94d5530c40a8810d92e76b23db31cbb2e432501b5fcf01c681e3e2c8a4c",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/ThumbnailService.swift",
+      "sha256": "ebaadd77281b5d679aa52d8099849d4265632ec9c7e5bba816d83867ae579306",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/TrashOriginStore.swift",
+      "sha256": "d40afa2b54be1c43d8fd55684dee5f49a3498cf15825e24b7b12b6f66ddca748",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/VaultAutomationService.swift",
+      "sha256": "bd6a808d36a4e3f131a33b3483565f2eae36daf38e3fc44a7ec8df7dc8a7e995",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/VaultDiagnosticsService.swift",
+      "sha256": "55bacfb8cbc92837c03b35f23607b8f458276f43f956e594aec2ce1293848561",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/VaultService.swift",
+      "sha256": "8a26f0a041338afea6c2dc9a649f891581dc42ce6d66359b74a7bf8a9429f380",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/ViewOptionsService.swift",
+      "sha256": "ffe505be3dc420cbf7c58bf719e8b0d75eb6b20603a8e468248e71b70ddf1260",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Services/ViewStateService.swift",
+      "sha256": "7f076b48ddbc0580fbca9bf37dbdbb4b22273712811ef6f09ad98ec265a794bf",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Utilities/Constants.swift",
+      "sha256": "5c86e307c96dcbe7722677947018e8930113670fa81f4c78d7296d97d365c881",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Utilities/Extensions/Color+Hex.swift",
+      "sha256": "7b992702c34467efe0062f91fcaf1ce3cd20173ede0b9327807ab267591af7fb",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Utilities/Extensions/FileManager+Helpers.swift",
+      "sha256": "956bead9ce0e39ff8871a0e9b76d746d02cd40e78eb175fbb6d1c1772ce7623e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Utilities/Extensions/URL+FileOperations.swift",
+      "sha256": "eb761c2d961cfb21e25faf46b96151089f3422fb2e7bbc1879ffe59ebfd63b73",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/BrowserView.swift",
+      "sha256": "62b7fa46cc1594780340807df345c3ae252e308b6f57e1ad6fc4aeebace4802e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/CompressPasswordSheet.swift",
+      "sha256": "11aafcc93d7983c2a5826b64a996e1ac3cd327574f410a9aa950122060a478a5",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/ConnectToServerSheet.swift",
+      "sha256": "914ed3ba6289e1f7701e050267321e6887216d2cddeb659e6c22149a54ec2355",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/CreateEncryptedArchiveSheet.swift",
+      "sha256": "603c72c9b098bcd7c13df1045501f62712d713320887d701a6ae7a00aea35f96",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Chrome/CreateVaultSheet.swift",
+      "sha256": "67e39264962c7c1993f722a049f521963f6a8665bdb85792dbbb9427930706f4",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/DuplicateFinderSheet.swift",
+      "sha256": "86fef3a69fb147c9c49650b0ef4cc2f2bc4e6e2925e41177f238854353da1f4d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/ExtractEncryptedArchiveSheet.swift",
+      "sha256": "eaba8a8443686b6b1443500e03a8ffe09db9089bed5a02360b36f81bcc1ebee6",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Chrome/FilterBarView.swift",
+      "sha256": "1f7a7821f9c54f00335154b24212fe276016c0b4c075cff35bd2799d6f5e9438",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/FolderSyncSheet.swift",
+      "sha256": "48178bea1f9918fbd8e6ff716524c2dda05436eb621846b2e28375432c27e4cc",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Chrome/GitCommitSheet.swift",
+      "sha256": "7d703b94b8a462dd2b2d9806d70699777bacf1e53325d40c7a55d9c12e57e725",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/GitDiffSheet.swift",
+      "sha256": "2ca3dce7dde7e6230d65b1caad5139cf9eb9489c1c01c54dd20937dca7c99e1a",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/GoToFolderSheet.swift",
+      "sha256": "f7b81606126279f1d5c015d1bfa0bcf73cb005f94c7044d2b58bebd6ed4e4229",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/PathBarView.swift",
+      "sha256": "6311b413ef935e37cd26ac310a6309fbe638689b675147440580ff2d8ac771cd",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/ProgressPanel.swift",
+      "sha256": "a5b04338273a216ea9e8245dab8c0e31bbef7168c25f62554d8714a91a98c58f",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/ScopeBarView.swift",
+      "sha256": "4b51bf824dea68e8b77517d9bdb5c06ab08ca554a4c5325e170a8cf249068175",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/SecureDeleteConfirmationSheet.swift",
+      "sha256": "0d2c0d704c8a533f2364787e36051418d4147ef6ada97d5bd0214a2992640a6f",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Chrome/ToolbarView.swift",
+      "sha256": "deaa9933a65d9f4e96b52543018d999071b190b326ed90be37f7c4cc1dafcc8e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/UnlockVaultSheet.swift",
+      "sha256": "1636c48c90eec7b57387cf416ece51e74c6e41a806db4c535f8367a4d0d6c501",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Chrome/VaultHealthSheet.swift",
+      "sha256": "c14bdd6e2a3f54c4c6fc21b9568981567b821efe5a7c827d842e40be3d6c85ab",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Common/TagDotsView.swift",
+      "sha256": "45bd75bb5f9d8416d0583300486713612e8caff422c6c5aed92d5a50a622bc5b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/ConflictResolution/ConflictResolutionModel.swift",
+      "sha256": "7cee2d7c1ec2749085d01c9a30e585640fdf93749ceb308ca55b541f14bd1c1e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/ConflictResolution/ConflictResolutionSheet.swift",
+      "sha256": "7f8e8329268f0c9e80c60b195a13acc94ac006a511737aebaf8d09d417132f7a",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/BatchRenameSheet.swift",
+      "sha256": "b2ee01dd7d6fc891e4036161819fbcb2baa8cafdd42a3a6a914d1aa7f2e1685c",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/ColumnViewController.swift",
+      "sha256": "f42d49aaddef7e64751385aed510f14eedfa8b81e7c38fdf1ba540c87802d060",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/FileContextMenu.swift",
+      "sha256": "ed2ce0c433e511e2e642347ade6c7b69142bd896d89f445de0b8f6d266283600",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/FilePromiseProvider.swift",
+      "sha256": "cb47b6f3a4b7094ebbc16955141c48ef2ac5d6fef5c617e742fc5877220f6756",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/FileViewCoordinator.swift",
+      "sha256": "63d7241aca6f8d93c0abe0537ad72c4c1a7d33af7aede10bd8b455e784259831",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/GalleryViewController.swift",
+      "sha256": "b92fb63e5a9f3f58fa5b551bf4d4be0c0d207486aa437ed3d255e93b9c9e41ca",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/IconView.swift",
+      "sha256": "868ed10b4c13427f1ad5fceaafec56cbb48738205bce91cc9d0485e2b15e5a50",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/IconViewCell.swift",
+      "sha256": "2946362342f49f73fcf4fed6106628121535cc309807b8254f1065c632825bd0",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/ListView.swift",
+      "sha256": "d88f7e2cac3324bbaaf62d9b1cdc765ed49f6f1e98ad0c56d5218dc716eecc34",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/FileViews/ListViewCell.swift",
+      "sha256": "8ef9e10b4f89f4b6e570c548c4e3e18700707929bf696edb2dadfb2a105c11f8",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/GetInfo/CustomIconView.swift",
+      "sha256": "74a18939709ef63d479cb09bded75b849d116d4740cbdc429d126a1b475024c2",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/GetInfo/GetInfoView.swift",
+      "sha256": "4384047e12518032cd7898fc699751b2391d977bb9653d5a6e4b4e8586caa2e0",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/GetInfo/GetInfoWindowController.swift",
+      "sha256": "b4269dc61858e99d0e52a6199370929a8111767aee6ae43fa2470e6ef710e2c6",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Graph/GraphViewBuilder.swift",
+      "sha256": "653098d1550a0bb37d5ef3cf037b040f17de587445982854c1fa7f636f42c870",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Graph/GraphWorkspace.swift",
+      "sha256": "7f85990f574354f5a8630673e42477a280c9995101ae5419cb501607208c2656",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Graph/PAFWorkspaceView.swift",
+      "sha256": "0e87d1eedadf2681c71568e419848db8fc8911682cbd5c6b61c9b080e92414d7",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/Onboarding/OnboardingView.swift",
+      "sha256": "ba5ca80fab4e829792a8331e95f4853073c8a0cd34be2ca61aec81b5229aab0e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/DropShelfPanelView.swift",
+      "sha256": "5b60639cd42d72a8161a9d09d95956832350faef0e8f375bbb96a5961e0eac88",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/FileInfoPanelView.swift",
+      "sha256": "88474dfa955d7e2a2db204e273fdb3c18e4d115b98a758f1e26c71a863607378",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/GitStatusPanelView.swift",
+      "sha256": "a531c0a8401637079aeacb5fab8c22e8b71cac4b9261893764a70457d8f2ed7e",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/HexViewerPanelView.swift",
+      "sha256": "211a562c109a15f523f54e89bafbba0caa625363f295b7c0b0eaca046b0d6b5e",
+      "tracked": false
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/MediaMetadataPanelView.swift",
+      "sha256": "57f683b158d833579976cfa8d0b8f6a2753f8386b04cc9a6c8f1cbaff8241635",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/MiniTerminalPanelView.swift",
+      "sha256": "d2866c08d5421e5754887398d42126f02c4dc14b8a3d022683188ec0b736176d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/QuickActionsPanelView.swift",
+      "sha256": "b47193c93bddf75b8049ea5a70edf813f09f395cc170cea61ff7d52d558df4e0",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/RecentsPanelView.swift",
+      "sha256": "08531521b6baaa93d55ef48dcb2435fec38cf14c774e031bf8c0fca839c7f23b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/RightSidebarTab.swift",
+      "sha256": "573cf7582af2714ee3a0bde397a52a4b9b6502eb7cf75a81ec6e82f7a5f18418",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/RightSidebarView.swift",
+      "sha256": "7a27f91d2d08bd929fa68148981086fb80b58e33fa9c721c5da6429883a84c82",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/RightSidebar/TagPaletteView.swift",
+      "sha256": "e352a58a77b08c3fd022f0eed22d6a44c4d5f62ec6f90772d60223250cbe0302",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Settings/SettingsView.swift",
+      "sha256": "cb75e0c5849807967d1028dfd342248cd72555a023a9a7298b69a4cceae7856d",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/SidebarFolderDropModifier.swift",
+      "sha256": "43923517bdd179bbdd93bf3d4a200b7292f01e1b02c42753c81cb04f06bda593",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/SidebarView.swift",
+      "sha256": "723be9ac0c485e1bda3dc689b63000674e3738070a479b92e58278ee3758d7da",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/TreePanelView.swift",
+      "sha256": "4e8f0383a56bc2e0eafac1904cd29bfbd2106fb4e9c7a7834ead7fb3f65e2fa9",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/ViewOptions/ViewOptionsPanelController.swift",
+      "sha256": "f62a426ea89da33c3eb8b0db843df61143ead7772f986344a22bb11da29ff98b",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/ViewOptions/ViewOptionsView.swift",
+      "sha256": "81be64dafa1f466cf4e5ad7c2a858fd7bb7b753d319c9ff85a9bc213c46a4bdf",
+      "tracked": true
+    },
+    {
+      "path": "Nautica/Views/Windows/MainWindow.swift",
+      "sha256": "ebc7f2f09f43f71e7248d1ad9a486e556e50c1a31b8a42e7ab809e472cd4b5c8",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/BatchRenameTests.swift",
+      "sha256": "789ee8e0f53302a4a952225b5a332c4ef1dc21777caeeee32b90f0fc765b2b10",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/CloudStorageServiceTests.swift",
+      "sha256": "8a9927558d91ecf46d68b33786bf21bcb34815df069737efd67b8d653871744a",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/FileOperationServiceTests.swift",
+      "sha256": "46f7b3bb2ade81fe3ef0987a4c267719cf7caf864b416a82688495cbd02867ec",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/GraphStoreTests.swift",
+      "sha256": "045645f6ca87c46e3f10fc3352e99a056beb213aebd9e914ebafa2c614e2f043",
+      "tracked": false
+    },
+    {
+      "path": "NauticaTests/PAFHostTests.swift",
+      "sha256": "2a1f7163a9cdebd4ebb7e03ea793e9530cfaca80f82c358cacb3921ed515fc9d",
+      "tracked": false
+    },
+    {
+      "path": "NauticaTests/SelectionModelTests.swift",
+      "sha256": "880025cd4c253f59ee1136133507b8f539c9663dbeba1a391c8fb6b6fd90b39d",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/SplitLayoutTests.swift",
+      "sha256": "36ba9953312e278706c103dd4e7172e9081c6dd325f37d5c0c8c82b7673aa207",
+      "tracked": true
+    },
+    {
+      "path": "NauticaTests/TagServiceTests.swift",
+      "sha256": "60970a72068879838a2eb56f4e1edb6cd6c70e38353ea0ed66049206491ead62",
+      "tracked": true
+    },
+    {
+      "path": "README.md",
+      "sha256": "7ef2a824683e4ad9e2741bec20965a93a21b671c2b78c849a0a2996d0abdd3cb",
+      "tracked": true
+    },
+    {
+      "path": "docs/GRAPH-AND-PAF-VALIDATION.md",
+      "sha256": "c0ad30677247a2dafae3252b404ef7f9cce60a266b22b7a50f014d9ab86d2b1c",
+      "tracked": false
+    },
+    {
+      "path": "docs/GRAPH-AND-PAF.md",
+      "sha256": "a4ba2a12d0c5c04921daefcd7b36cb76d2480bfed770bb48438112ca2055e6fd",
+      "tracked": false
+    }
+  ]
+}

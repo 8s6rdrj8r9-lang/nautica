@@ -1,0 +1,125 @@
+{
+  "kit_manifest": {
+    "matching": [
+      "AUDIT-INPUT-TEMPLATE.md",
+      "AUDIT-LAUNCH-PROMPT.md",
+      "AUDIT-REPORT-TEMPLATE.md",
+      "EVIDENCE-REGISTER-TEMPLATE.csv",
+      "FRAMEWORK-INVENTORY.csv",
+      "KIT-PROVENANCE.md",
+      "START-HERE.md",
+      "VERIFICATION-CLASSES-QUICK-GUIDE.md",
+      "framework/AUDIT-AI-RULES.md",
+      "framework/AUDIT-CHANGE.md",
+      "framework/AUDIT-CORE.md",
+      "framework/AUDIT-DOMAINS.md",
+      "framework/AUDIT-EVIDENCE.md",
+      "framework/AUDIT-FINDINGS.md",
+      "framework/AUDIT-METHODOLOGY.md",
+      "framework/AUDIT-PROFILES.md",
+      "framework/AUDIT-REPORTING.md",
+      "framework/AUDIT-RISK.md",
+      "framework/MANIFEST.md",
+      "framework/PACKAGE-MANIFEST.yaml",
+      "framework/PATCH-REPORT.md",
+      "framework/PATCH.diff",
+      "framework/README.md",
+      "framework/SPECIALIST-MODULE-CONTRACT.md",
+      "framework/prompts/CHANGE-AUDIT.md",
+      "framework/prompts/CONTINUE-AUDIT.md",
+      "framework/prompts/META-AUDIT.md",
+      "framework/prompts/PROFILE-PROJECT.md",
+      "framework/prompts/START-AUDIT.md",
+      "framework/prompts/VERIFY-REMEDIATION.md",
+      "framework/regression/REGRESSION-MANIFEST.yaml",
+      "framework/regression/execution/R1.yaml",
+      "framework/regression/execution/R10.yaml",
+      "framework/regression/execution/R11.yaml",
+      "framework/regression/execution/R2.yaml",
+      "framework/regression/execution/R3.yaml",
+      "framework/regression/execution/R4.yaml",
+      "framework/regression/execution/R5.yaml",
+      "framework/regression/execution/R6.yaml",
+      "framework/regression/execution/R7.yaml",
+      "framework/regression/execution/R8.yaml",
+      "framework/regression/execution/R9.yaml",
+      "framework/regression/expected/R1.yaml",
+      "framework/regression/expected/R10.yaml",
+      "framework/regression/expected/R11.yaml",
+      "framework/regression/expected/R2.yaml",
+      "framework/regression/expected/R3.yaml",
+      "framework/regression/expected/R4.yaml",
+      "framework/regression/expected/R5.yaml",
+      "framework/regression/expected/R6.yaml",
+      "framework/regression/expected/R7.yaml",
+      "framework/regression/expected/R8.yaml",
+      "framework/regression/expected/R9.yaml",
+      "framework/templates/AUDIT-PLAN.md",
+      "framework/templates/AUDIT-REPORT.md",
+      "framework/templates/EVIDENCE.md",
+      "framework/templates/FINDING.md",
+      "framework/templates/PROJECT-PROFILE.md",
+      "framework/templates/SPECIALIST-MODULE.md",
+      "framework/validation/prompts/02-BLIND-AUDITOR.md"
+    ],
+    "mismatched": [],
+    "missing": [
+      "source/PAF-v0.1-Evidence-Sufficiency-Patch-Final.zip"
+    ]
+  },
+  "governance_manifest": {
+    "matching": [
+      "EnsDev_Product_Manifesto.md",
+      "EnsDev_Constitution.md",
+      "EnsDev_Doctrine.md",
+      "EnsDev_Engineering_Handbook.md",
+      "EnsDev_Governance.md",
+      "EnsDev_Ontology_Standard.md"
+    ],
+    "mismatched": [],
+    "missing": []
+  },
+  "declared_entry_points": {
+    "start_here": {
+      "path": "START-HERE.md",
+      "included_in_kit": true
+    },
+    "audit_intake": {
+      "path": "AUDIT-INTAKE.md",
+      "included_in_kit": false
+    },
+    "audit_initiation": {
+      "path": "AUDIT-INITIATION-PROMPT-INTERACTIVE.md",
+      "included_in_kit": false
+    },
+    "audit_launch": {
+      "path": "AUDIT-LAUNCH-PROMPT.md",
+      "included_in_kit": true
+    }
+  },
+  "unopened_excluded_fixture_files": [
+    "framework/regression/REGRESSION-MANIFEST.yaml",
+    "framework/regression/execution/R1.yaml",
+    "framework/regression/execution/R10.yaml",
+    "framework/regression/execution/R11.yaml",
+    "framework/regression/execution/R2.yaml",
+    "framework/regression/execution/R3.yaml",
+    "framework/regression/execution/R4.yaml",
+    "framework/regression/execution/R5.yaml",
+    "framework/regression/execution/R6.yaml",
+    "framework/regression/execution/R7.yaml",
+    "framework/regression/execution/R8.yaml",
+    "framework/regression/execution/R9.yaml",
+    "framework/regression/expected/R1.yaml",
+    "framework/regression/expected/R10.yaml",
+    "framework/regression/expected/R11.yaml",
+    "framework/regression/expected/R2.yaml",
+    "framework/regression/expected/R3.yaml",
+    "framework/regression/expected/R4.yaml",
+    "framework/regression/expected/R5.yaml",
+    "framework/regression/expected/R6.yaml",
+    "framework/regression/expected/R7.yaml",
+    "framework/regression/expected/R8.yaml",
+    "framework/regression/expected/R9.yaml"
+  ]
+}

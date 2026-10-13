@@ -10,12 +10,13 @@
 			<key>CFBundleTypeName</key>
 			<string>Folder</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
 			<key>LSHandlerRank</key>
-			<string>Alternate</string>
+			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.folder</string>
+				<string>public.directory</string>
 			</array>
 		</dict>
 	</array>
@@ -35,6 +36,20 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Nautica requires access to your Desktop folder to browse and manage desktop files.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Nautica requires access to your Documents folder to browse and manage document files.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Nautica requires access to your Downloads folder to browse and manage downloaded files.</string>
+	<key>NSRemovableVolumesUsageDescription</key>
+	<string>Nautica requires access to removable and external drives to browse and manage portable storage.</string>
+	<key>NSNetworkVolumesUsageDescription</key>
+	<string>Nautica requires access to network volumes to browse and manage shared folders.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

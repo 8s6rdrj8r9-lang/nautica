@@ -208,6 +208,27 @@ final class ListViewCell: NSTableCellView {
             let tagNames = item.tagInfos.map(\.displayName)
             textField?.stringValue = tagNames.isEmpty ? tags : tagNames.joined(separator: ", ")
         }
+
+        // VoiceOver Accessibility Configuration
+        setAccessibilityElement(true)
+        if column == .name {
+            setAccessibilityRole(.cell)
+            var a11yParts: [String] = [item.name, item.isDirectory ? "Folder" : "File"]
+            if let gitStatus = item.gitStatus {
+                a11yParts.append("Git \(gitStatus.displayName)")
+            }
+            if !item.tagColors.isEmpty {
+                a11yParts.append("\(item.tagColors.count) tags")
+            }
+            if item.cloudStatus == .onlineOnly {
+                a11yParts.append("Stored in cloud")
+            }
+            setAccessibilityLabel(a11yParts.joined(separator: ", "))
+            setAccessibilityHelp(item.isDirectory ? (isExpanded ? "Expanded folder, tap to collapse" : "Collapsed folder, tap to expand") : "File")
+        } else {
+            setAccessibilityRole(.staticText)
+            setAccessibilityLabel("\(column.headerTitle): \(textField?.stringValue ?? "empty")")
+        }
     }
 
     override func prepareForReuse() {
