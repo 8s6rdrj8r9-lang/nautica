@@ -47,4 +47,17 @@ if command -v xcodebuild >/dev/null 2>&1 && xcode-select -p | grep -q "Xcode.app
 
     echo "=== Packaging Complete ==="
     echo "Exported package located at: ${EXPORT_PATH}"
+
+    # 3. Direct App Store Connect API upload
+    PKG_FILE=$(find "${EXPORT_PATH}" -name "*.pkg" 2>/dev/null | head -n 1)
+    if [ -n "${PKG_FILE}" ] && [ -f "${PKG_FILE}" ]; then
+        echo "Uploading ${PKG_FILE} directly to TestFlight via App Store Connect API..."
+        python3 "${PROJECT_DIR}/../../Governance/scripts/asc_client.py" upload \
+            --app-id "6822485064" \
+            --file "${PKG_FILE}" \
+            --version "1.0.0" \
+            --build "1" \
+            --platform "MAC_OS"
+    fi
 fi
+
