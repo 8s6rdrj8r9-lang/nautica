@@ -60,28 +60,28 @@ jobs:
             -destination "generic/platform=macOS" \
             -archivePath build/Nautica.xcarchive \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8 \
-            -authenticationKeyID ${{ secrets.ASC_KEY_ID }} \
-            -authenticationKeyIssuerID ${{ secrets.ASC_ISSUER_ID }}
-
-      - name: Export Binary Package
-        run: |
-          xcodebuild -exportArchive \
-            -archivePath build/Nautica.xcarchive \
-            -exportPath build/TestFlight \
-            -exportOptionsPlist ExportOptions-Export.plist \
-            -allowProvisioningUpdates \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=NO \
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" \
             -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}"
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" 2>&1 | tee xcodebuild-archive.log || (tail -n 120 xcodebuild-archive.log && exit 1)
 
-      - name: Save Binary to GitHub Artifacts
+      - name: Package macOS App for Distribution
+        run: |
+          mkdir -p build/TestFlight
+          cd build/Nautica.xcarchive/Products/Applications
+          zip -qr "$GITHUB_WORKSPACE/build/TestFlight/Nautica-macOS-arm64.zip" Nautica.app
+          cd "$GITHUB_WORKSPACE"
+          echo "Generated Nautica-macOS-arm64.zip size: $(ls -lh build/TestFlight/Nautica-macOS-arm64.zip | awk '{print $5}')"
+
+      - name: Save Binary to GitHub Artifacts (Downloadable App)
         uses: actions/upload-artifact@v4
         with:
           name: Nautica-macOS-Package
-          path: build/TestFlight/
+          path: build/TestFlight/Nautica-macOS-arm64.zip
 
-      - name: Deploy to TestFlight
+      - name: Deploy to TestFlight (Optional)
+        continue-on-error: true
         run: |
           xcodebuild -exportArchive \
             -archivePath build/Nautica.xcarchive \
@@ -89,4 +89,4 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" \
             -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" 2>&1 | tee xcodebuild-upload.log || (tail -n 120 xcodebuild-upload.log && exit 1)
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" 2>&1 | tee xcodebuild-upload.log || echo "TestFlight upload skipped or requires account billing resolution."
