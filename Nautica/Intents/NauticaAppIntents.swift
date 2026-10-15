@@ -145,9 +145,9 @@ public struct NauticaShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: SummarizeDirectoryIntent(),
             phrases: [
-                "Summarize folder \(\.$folderName) in \(.applicationName)",
-                "Summarize my \(\.$folderName) in \(.applicationName)",
-                "What is inside \(\.$folderName) in \(.applicationName)"
+                "Summarize folder in \(.applicationName)",
+                "Summarize my folder in \(.applicationName)",
+                "What is inside folder in \(.applicationName)"
             ],
             shortTitle: "Summarize Folder",
             systemImageName: "folder.badge.gearshape"
@@ -155,9 +155,9 @@ public struct NauticaShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: TagFilesIntent(),
             phrases: [
-                "Suggest tags for \(\.$filePath) in \(.applicationName)",
-                "Tag \(\.$filePath) with \(.applicationName)",
-                "Organize \(\.$filePath) in \(.applicationName)"
+                "Suggest tags for files in \(.applicationName)",
+                "Tag files with \(.applicationName)",
+                "Organize files in \(.applicationName)"
             ],
             shortTitle: "Suggest Tags",
             systemImageName: "tag.fill"
@@ -165,8 +165,8 @@ public struct NauticaShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: ExplainFileIntent(),
             phrases: [
-                "Explain file \(\.$filePath) in \(.applicationName)",
-                "What does \(\.$filePath) do in \(.applicationName)"
+                "Explain file in \(.applicationName)",
+                "What does file do in \(.applicationName)"
             ],
             shortTitle: "Explain File",
             systemImageName: "doc.text.magnifyingglass"
