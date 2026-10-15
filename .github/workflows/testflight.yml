@@ -1,4 +1,4 @@
-name: TestFlight Distribution
+name: macOS Release and TestFlight
 
 on:
   push:
@@ -13,80 +13,77 @@ concurrency:
 
 jobs:
   distribute:
-    name: Build and Deploy to TestFlight
+    name: Build macOS Release Package
     runs-on: macos-15
     timeout-minutes: 60
+    permissions:
+      contents: write
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Apple Distribution Certificate
-        env:
-          P12_BASE64: ${{ secrets.ASC_CERTIFICATE_P12_BASE64 }}
-          P12_PASSWORD: ${{ secrets.ASC_CERTIFICATE_PASSWORD }}
+      - name: Build Nautica for macOS
         run: |
-          if [ -n "$P12_BASE64" ]; then
-            echo "Installing Apple Distribution Certificate into temporary keychain..."
-            KEYCHAIN_PATH=$RUNNER_TEMP/build.keychain-db
-            KEYCHAIN_PASSWORD=temporary-build-password
-            security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-            security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            security list-keychains -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | tr -d '"')
-            echo "$P12_BASE64" | base64 --decode > $RUNNER_TEMP/cert.p12
-            security import $RUNNER_TEMP/cert.p12 -k "$KEYCHAIN_PATH" -P "$P12_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
-            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-            rm -f $RUNNER_TEMP/cert.p12
-          fi
-
-      - name: Set up App Store Connect API Key
-        env:
-          ASC_KEY_CONTENT: ${{ secrets.ASC_PRIVATE_KEY }}
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-        run: |
-          mkdir -p ~/.appstoreconnect/private_keys ~/.private_keys
-          echo "$ASC_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
-          echo "$ASC_KEY_CONTENT" > ~/.private_keys/AuthKey_${ASC_KEY_ID}.p8
-          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8 ~/.private_keys/AuthKey_${ASC_KEY_ID}.p8
-
-      - name: Archive Nautica for Release
-        run: |
-          mkdir -p build
-          xcodebuild archive \
+          mkdir -p build/macOS
+          set -o pipefail
+          xcodebuild \
             -project Nautica.xcodeproj \
             -scheme Nautica \
             -configuration Release \
             -destination "generic/platform=macOS" \
-            -archivePath build/Nautica.xcarchive \
-            -allowProvisioningUpdates \
+            -derivedDataPath "$RUNNER_TEMP/Nautica-Build" \
             ARCHS=arm64 \
             ONLY_ACTIVE_ARCH=NO \
-            -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" \
-            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" 2>&1 | tee xcodebuild-archive.log || (tail -n 120 xcodebuild-archive.log && exit 1)
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=YES \
+            build 2>&1 | tee xcodebuild.log || {
+              echo "=== XCODEBUILD NAUTICA FAILED ==="
+              tail -n 120 xcodebuild.log
+              exit 1
+            }
 
       - name: Package macOS App for Distribution
         run: |
-          mkdir -p build/TestFlight
-          cd build/Nautica.xcarchive/Products/Applications
-          zip -qr "$GITHUB_WORKSPACE/build/TestFlight/Nautica-macOS-arm64.zip" Nautica.app
+          set -e
+          mkdir -p build/macOS
+          APP_PATH=$(find "$RUNNER_TEMP/Nautica-Build" -name "Nautica.app" -type d | head -n 1)
+          echo "Found Nautica.app at: $APP_PATH"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Error: Nautica.app was not found!"
+            find "$RUNNER_TEMP/Nautica-Build" -maxdepth 5 || true
+            exit 1
+          fi
+          cd "$(dirname "$APP_PATH")"
+          zip -qr "$GITHUB_WORKSPACE/build/macOS/Nautica-macOS-arm64.zip" Nautica.app
           cd "$GITHUB_WORKSPACE"
-          echo "Generated Nautica-macOS-arm64.zip size: $(ls -lh build/TestFlight/Nautica-macOS-arm64.zip | awk '{print $5}')"
+          ls -lh build/macOS/Nautica-macOS-arm64.zip
+          echo "Generated Nautica-macOS-arm64.zip size: $(ls -lh build/macOS/Nautica-macOS-arm64.zip | awk '{print $5}')"
 
       - name: Save Binary to GitHub Artifacts (Downloadable App)
         uses: actions/upload-artifact@v4
         with:
           name: Nautica-macOS-Package
-          path: build/TestFlight/Nautica-macOS-arm64.zip
+          path: build/macOS/Nautica-macOS-arm64.zip
 
-      - name: Deploy to TestFlight (Optional)
-        continue-on-error: true
+      - name: Upload Build Log Artifact (Diagnostic)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nautica-Build-Log
+          path: xcodebuild.log
+
+      - name: Publish Diagnostic Log to Diagnostics Branch
+        if: always()
         run: |
-          xcodebuild -exportArchive \
-            -archivePath build/Nautica.xcarchive \
-            -exportOptionsPlist ExportOptions-TestFlight.plist \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$HOME/.appstoreconnect/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8" \
-            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
-            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}" 2>&1 | tee xcodebuild-upload.log || echo "TestFlight upload skipped or requires account billing resolution."
+          if [ -f xcodebuild.log ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -B diagnostics
+            cp xcodebuild.log diagnostic_xcodebuild.log
+            git add diagnostic_xcodebuild.log
+            git commit -m "ci: update diagnostic xcodebuild log [skip ci]" || true
+            git push -f origin diagnostics || true
+          fi
