@@ -1,0 +1,806 @@
+Command line invocation:
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/xcodebuild -project Nautica.xcodeproj -scheme Nautica -configuration Release -destination generic/platform=macOS -derivedDataPath /Users/runner/work/_temp/Nautica-Build ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES build
+
+Build settings from command line:
+    ARCHS = arm64
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGN_STYLE = Manual
+    CODE_SIGNING_ALLOWED = YES
+    CODE_SIGNING_REQUIRED = NO
+    ONLY_ACTIVE_ARCH = NO
+
+Resolve Package Graph
+
+Fetching from https://github.com/groue/GRDB.swift
+
+Creating working copy of package ‘GRDB.swift’
+
+Checking out 7.11.1 of package ‘GRDB.swift’
+
+
+Resolved source packages:
+  GRDB: https://github.com/groue/GRDB.swift @ 7.11.1
+
+note: Using codesigning identity override: -
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (5 targets)
+    Target 'Nautica' in project 'Nautica'
+        ➜ Explicit dependency on target 'GRDB' in project 'GRDB'
+    Target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+    Target 'GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDB_GRDB' in project 'GRDB'
+        ➜ Explicit dependency on target 'GRDBSQLite' in project 'GRDB'
+    Target 'GRDBSQLite' in project 'GRDB' (no dependencies)
+    Target 'GRDB_GRDB' in project 'GRDB' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ReadFileContents /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/docc/features.json
+
+Build description signature: a679ba8c2776a3bddd6d581a20998dbd
+Build description path: /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/XCBuildData/a679ba8c2776a3bddd6d581a20998dbd.xcbuilddata
+ClangStatCache /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -o /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache
+
+CreateBuildDirectory /Users/runner/work/_temp/Nautica-Build/Build/Products
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-create-build-directory /Users/runner/work/_temp/Nautica-Build/Build/Products
+
+CreateBuildDirectory /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-create-build-directory /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml
+
+CreateBuildDirectory /Users/runner/work/_temp/Nautica-Build/Build/Products/Release
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-create-build-directory /Users/runner/work/_temp/Nautica-Build/Build/Products/Release
+
+CreateBuildDirectory /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-create-build-directory /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release
+
+CreateBuildDirectory /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-create-build-directory /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_const_extract_protocols.json (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftConstValuesFileList (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.LinkFileList (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-OutputFileMap.json (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyStaticMetadataFileList (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyMetadataFileList (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-project-headers.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-project-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-own-target-headers.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-generated-files.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-generated-files.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-target-headers.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-non-framework-target-headers.hmap (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/Entitlements.plist (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/Entitlements.plist
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/empty-GRDB_GRDB.plist (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/empty-GRDB_GRDB.plist
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/GRDB_GRDB.DependencyStaticMetadataFileList (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/GRDB_GRDB.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/GRDB_GRDB.DependencyMetadataFileList (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/GRDB_GRDB.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_const_extract_protocols.json (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftConstValuesFileList (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.LinkFileList (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.LinkFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-OutputFileMap.json (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.modulemap (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.modulemap
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyStaticMetadataFileList (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyMetadataFileList (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/resource_bundle_accessor.swift (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    write-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/resource_bundle_accessor.swift
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GeneratedModuleMaps/GRDB.modulemap /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.modulemap (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.modulemap /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GeneratedModuleMaps
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Resources (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Resources
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle
+
+ProcessInfoPlistFile /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Info.plist /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/empty-GRDB_GRDB.plist (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-infoPlistUtility /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB_GRDB.build/empty-GRDB_GRDB.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Info.plist
+
+CpResource /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Resources/PrivacyInfo.xcprivacy /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/PrivacyInfo.xcprivacy (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/PrivacyInfo.xcprivacy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle/Contents/Resources
+
+CodeSign /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle
+
+RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle
+
+Touch /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle (in target 'GRDB_GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /usr/bin/touch -c /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle
+
+SwiftDriver GRDB normal arm64 com.apple.xcode.tools.swift.compiler (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name GRDB -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList -DSWIFT_PACKAGE -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_SNAPSHOT -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -DXcode -enable-upcoming-feature MemberImportVisibility -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos10.15 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -suppress-warnings -swift-version 6 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule -user-module-version 7.11.1 -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -package-name grdb_swift -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_const_extract_protocols.json -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources -Xcc -DSWIFT_PACKAGE -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-Swift.h -working-directory /Users/runner/work/nautica/nautica/Nautica.xcodeproj -no-emit-module-separately-wmo
+
+SwiftDriver\ Compilation GRDB normal arm64 com.apple.xcode.tools.swift.compiler (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name GRDB -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList -DSWIFT_PACKAGE -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_SNAPSHOT -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -DXcode -enable-upcoming-feature MemberImportVisibility -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos10.15 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -suppress-warnings -swift-version 6 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule -user-module-version 7.11.1 -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -package-name grdb_swift -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_const_extract_protocols.json -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources -Xcc -DSWIFT_PACKAGE -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-Swift.h -working-directory /Users/runner/work/nautica/nautica/Nautica.xcodeproj -no-emit-module-separately-wmo
+
+SwiftCompile normal arm64 Compiling\ resource_bundle_accessor.swift,\ Configuration.swift,\ Cursor.swift,\ Database+SQLCipher.swift,\ Database+Schema.swift,\ Database+Statements.swift,\ Database.swift,\ DatabaseBackupProgress.swift,\ DatabaseCollation.swift,\ DatabaseError.swift,\ DatabaseFunction.swift,\ DatabasePool.swift,\ DatabasePublishers.swift,\ DatabaseQueue.swift,\ DatabaseReader.swift,\ DatabaseRegion.swift,\ DatabaseRegionObservation.swift,\ DatabaseSchemaCache.swift,\ DatabaseSchemaSource.swift,\ DatabaseSnapshot.swift,\ DatabaseSnapshotPool.swift,\ DatabaseValue.swift,\ DatabaseValueConvertible.swift,\ DatabaseWriter.swift,\ DispatchQueueActor.swift,\ FetchRequest.swift,\ Row.swift,\ RowAdapter.swift,\ RowDecodingError.swift,\ SQL.swift,\ SQLInterpolation.swift,\ SQLRequest.swift,\ SchedulingWatchdog.swift,\ SerializedDatabase.swift,\ Statement.swift,\ StatementAuthorizer.swift,\ StatementColumnConvertible.swift,\ CGFloat.swift,\ Data.swift,\ DatabaseDateComponents.swift,\ DatabaseValueConvertible+ReferenceConvertible.swift,\ Date.swift,\ Decimal.swift,\ NSData.swift,\ NSNull.swift,\ NSNumber.swift,\ NSString.swift,\ SQLiteDateParser.swift,\ URL.swift,\ UUID.swift,\ DatabaseValueConvertible+Decodable.swift,\ DatabaseValueConvertible+Encodable.swift,\ DatabaseValueConvertible+RawRepresentable.swift,\ JSONRequiredEncoder.swift,\ Optional.swift,\ StandardLibrary.swift,\ TransactionClock.swift,\ TransactionObserver.swift,\ WALSnapshot.swift,\ WALSnapshotTransaction.swift,\ Database+Dump.swift,\ DatabaseReader+dump.swift,\ DumpFormat.swift,\ DebugDumpFormat.swift,\ JSONDumpFormat.swift,\ LineDumpFormat.swift,\ ListDumpFormat.swift,\ QuoteDumpFormat.swift,\ FTS3.swift,\ FTS3Pattern.swift,\ FTS3TokenizerDescriptor.swift,\ FTS4.swift,\ FTS5.swift,\ FTS5CustomTokenizer.swift,\ FTS5Pattern.swift,\ FTS5Tokenizer.swift,\ FTS5TokenizerDescriptor.swift,\ FTS5WrapperTokenizer.swift,\ Fixits.swift,\ JSONColumn.swift,\ SQLJSONExpressible.swift,\ SQLJSONFunctions.swift,\ DatabaseMigrator.swift,\ Migration.swift,\ FTS3+QueryInterface.swift,\ FTS5+QueryInterface.swift,\ ForeignKey.swift,\ Association.swift,\ AssociationAggregate.swift,\ BelongsToAssociation.swift,\ HasManyAssociation.swift,\ HasManyThroughAssociation.swift,\ HasOneAssociation.swift,\ HasOneThroughAssociation.swift,\ JoinAssociation.swift,\ CommonTableExpression.swift,\ QueryInterfaceRequest.swift,\ RequestProtocols.swift,\ Column.swift,\ DatabasePromise.swift,\ SQLAssociation.swift,\ SQLCollection.swift,\ SQLExpression.swift,\ SQLForeignKeyRequest.swift,\ SQLFunctions.swift,\ SQLOperators.swift,\ SQLOrdering.swift,\ SQLRelation.swift,\ SQLSelection.swift,\ SQLSubquery.swift,\ Table.swift,\ SQLColumnGenerator.swift,\ SQLGenerationContext.swift,\ SQLIndexGenerator.swift,\ SQLQueryGenerator.swift,\ SQLTableAlterationGenerator.swift,\ SQLTableGenerator.swift,\ TableAlias.swift,\ SQLInterpolation+QueryInterface.swift,\ ColumnDefinition.swift,\ Database+SchemaDefinition.swift,\ ForeignKeyDefinition.swift,\ IndexDefinition.swift,\ TableAlteration.swift,\ TableDefinition.swift,\ VirtualTableModule.swift,\ TableRecord+Association.swift,\ TableRecord+QueryInterfaceRequest.swift,\ EncodableRecord+Encodable.swift,\ EncodableRecord.swift,\ FetchableRecord+Decodable.swift,\ FetchableRecord+TableRecord.swift,\ FetchableRecord.swift,\ MutablePersistableRecord+DAO.swift,\ MutablePersistableRecord+Delete.swift,\ MutablePersistableRecord+Insert.swift,\ MutablePersistableRecord+Save.swift,\ MutablePersistableRecord+Update.swift,\ MutablePersistableRecord+Upsert.swift,\ MutablePersistableRecord.swift,\ PersistableRecord+Insert.swift,\ PersistableRecord+Save.swift,\ PersistableRecord+Upsert.swift,\ PersistableRecord.swift,\ Record.swift,\ TableRecord.swift,\ CaseInsensitiveIdentifier.swift,\ Inflections+English.swift,\ Inflections.swift,\ Mutex.swift,\ OnDemandFuture.swift,\ OrderedDictionary.swift,\ Pool.swift,\ ReadWriteLock.swift,\ ReceiveValuesOn.swift,\ Refinable.swift,\ Utils.swift,\ DatabaseCancellable.swift,\ ValueConcurrentObserver.swift,\ ValueWriteOnlyObserver.swift,\ Fetch.swift,\ Map.swift,\ RemoveDuplicates.swift,\ Trace.swift,\ ValueReducer.swift,\ SharedValueObservation.swift,\ ValueObservation.swift,\ ValueObservationScheduler.swift /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/resource_bundle_accessor.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Configuration.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Cursor.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Database+SQLCipher.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Database+Schema.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Database+Statements.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Database.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseBackupProgress.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseCollation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseError.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseFunction.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabasePool.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabasePublishers.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseQueue.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseReader.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseRegion.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseRegionObservation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseSchemaCache.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseSchemaSource.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseSnapshot.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseSnapshotPool.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseValue.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseValueConvertible.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DatabaseWriter.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/DispatchQueueActor.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/FetchRequest.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Row.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/RowAdapter.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/RowDecodingError.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/SQL.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/SQLInterpolation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/SQLRequest.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/SchedulingWatchdog.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/SerializedDatabase.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Statement.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/StatementAuthorizer.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/StatementColumnConvertible.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/CoreGraphics/CGFloat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/Data.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/DatabaseDateComponents.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/DatabaseValueConvertible+ReferenceConvertible.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/Date.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/Decimal.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/NSData.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/NSNull.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/NSNumber.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/NSString.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/SQLiteDateParser.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/URL.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/Foundation/UUID.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/DatabaseValueConvertible+Decodable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/DatabaseValueConvertible+Encodable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/DatabaseValueConvertible+RawRepresentable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/JSONRequiredEncoder.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/Optional.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/Support/StandardLibrary/StandardLibrary.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/TransactionClock.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/TransactionObserver.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/WALSnapshot.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Core/WALSnapshotTransaction.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/Database+Dump.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DatabaseReader+dump.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormats/DebugDumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormats/JSONDumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormats/LineDumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormats/ListDumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Dump/DumpFormats/QuoteDumpFormat.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS3.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS3Pattern.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS3TokenizerDescriptor.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS4.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5CustomTokenizer.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5Pattern.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5Tokenizer.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5TokenizerDescriptor.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/FTS/FTS5WrapperTokenizer.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Fixits.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/JSON/JSONColumn.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/JSON/SQLJSONExpressible.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/JSON/SQLJSONFunctions.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Migration/DatabaseMigrator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Migration/Migration.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/FTS3+QueryInterface.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/FTS5+QueryInterface.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/ForeignKey.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/Association.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/AssociationAggregate.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/BelongsToAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/HasManyAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/HasManyThroughAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/HasOneAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/HasOneThroughAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/Association/JoinAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/CommonTableExpression.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/QueryInterfaceRequest.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Request/RequestProtocols.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/Column.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/DatabasePromise.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLAssociation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLCollection.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLExpression.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLForeignKeyRequest.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLFunctions.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLOperators.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLOrdering.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLRelation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLSelection.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/SQLSubquery.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQL/Table.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLColumnGenerator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLGenerationContext.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLIndexGenerator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLQueryGenerator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLTableAlterationGenerator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/SQLTableGenerator.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLGeneration/TableAlias.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/SQLInterpolation+QueryInterface.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/ColumnDefinition.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/Database+SchemaDefinition.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/ForeignKeyDefinition.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/IndexDefinition.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/TableAlteration.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/TableDefinition.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/Schema/VirtualTableModule.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/TableRecord+Association.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/QueryInterface/TableRecord+QueryInterfaceRequest.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/EncodableRecord+Encodable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/EncodableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/FetchableRecord+Decodable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/FetchableRecord+TableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/FetchableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+DAO.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+Delete.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+Insert.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+Save.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+Update.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord+Upsert.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/MutablePersistableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/PersistableRecord+Insert.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/PersistableRecord+Save.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/PersistableRecord+Upsert.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/PersistableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/Record.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Record/TableRecord.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/CaseInsensitiveIdentifier.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Inflections+English.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Inflections.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Mutex.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/OnDemandFuture.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/OrderedDictionary.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Pool.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/ReadWriteLock.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/ReceiveValuesOn.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Refinable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/Utils/Utils.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/DatabaseCancellable.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Observers/ValueConcurrentObserver.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Observers/ValueWriteOnlyObserver.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Reducers/Fetch.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Reducers/Map.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Reducers/RemoveDuplicates.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Reducers/Trace.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/Reducers/ValueReducer.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/SharedValueObservation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/ValueObservation.swift /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/GRDB/ValueObservation/ValueObservationScheduler.swift (in target 'GRDB' from project 'GRDB')
+
+CompileSwift normal arm64 (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling resource_bundle_accessor.swift, Configuration.swift, Cursor.swift, Database+SQLCipher.swift, Database+Schema.swift, Database+Statements.swift, Database.swift, DatabaseBackupProgress.swift, DatabaseCollation.swift, DatabaseError.swift, DatabaseFunction.swift, DatabasePool.swift, DatabasePublishers.swift, DatabaseQueue.swift, DatabaseReader.swift, DatabaseRegion.swift, DatabaseRegionObservation.swift, DatabaseSchemaCache.swift, DatabaseSchemaSource.swift, DatabaseSnapshot.swift, DatabaseSnapshotPool.swift, DatabaseValue.swift, DatabaseValueConvertible.swift, DatabaseWriter.swift, DispatchQueueActor.swift, FetchRequest.swift, Row.swift, RowAdapter.swift, RowDecodingError.swift, SQL.swift, SQLInterpolation.swift, SQLRequest.swift, SchedulingWatchdog.swift, SerializedDatabase.swift, Statement.swift, StatementAuthorizer.swift, StatementColumnConvertible.swift, CGFloat.swift, Data.swift, DatabaseDateComponents.swift, DatabaseValueConvertible+ReferenceConvertible.swift, Date.swift, Decimal.swift, NSData.swift, NSNull.swift, NSNumber.swift, NSString.swift, SQLiteDateParser.swift, URL.swift, UUID.swift, DatabaseValueConvertible+Decodable.swift, DatabaseValueConvertible+Encodable.swift, DatabaseValueConvertible+RawRepresentable.swift, JSONRequiredEncoder.swift, Optional.swift, StandardLibrary.swift, TransactionClock.swift, TransactionObserver.swift, WALSnapshot.swift, WALSnapshotTransaction.swift, Database+Dump.swift, DatabaseReader+dump.swift, DumpFormat.swift, DebugDumpFormat.swift, JSONDumpFormat.swift, LineDumpFormat.swift, ListDumpFormat.swift, QuoteDumpFormat.swift, FTS3.swift, FTS3Pattern.swift, FTS3TokenizerDescriptor.swift, FTS4.swift, FTS5.swift, FTS5CustomTokenizer.swift, FTS5Pattern.swift, FTS5Tokenizer.swift, FTS5TokenizerDescriptor.swift, FTS5WrapperTokenizer.swift, Fixits.swift, JSONColumn.swift, SQLJSONExpressible.swift, SQLJSONFunctions.swift, DatabaseMigrator.swift, Migration.swift, FTS3+QueryInterface.swift, FTS5+QueryInterface.swift, ForeignKey.swift, Association.swift, AssociationAggregate.swift, BelongsToAssociation.swift, HasManyAssociation.swift, HasManyThroughAssociation.swift, HasOneAssociation.swift, HasOneThroughAssociation.swift, JoinAssociation.swift, CommonTableExpression.swift, QueryInterfaceRequest.swift, RequestProtocols.swift, Column.swift, DatabasePromise.swift, SQLAssociation.swift, SQLCollection.swift, SQLExpression.swift, SQLForeignKeyRequest.swift, SQLFunctions.swift, SQLOperators.swift, SQLOrdering.swift, SQLRelation.swift, SQLSelection.swift, SQLSubquery.swift, Table.swift, SQLColumnGenerator.swift, SQLGenerationContext.swift, SQLIndexGenerator.swift, SQLQueryGenerator.swift, SQLTableAlterationGenerator.swift, SQLTableGenerator.swift, TableAlias.swift, SQLInterpolation+QueryInterface.swift, ColumnDefinition.swift, Database+SchemaDefinition.swift, ForeignKeyDefinition.swift, IndexDefinition.swift, TableAlteration.swift, TableDefinition.swift, VirtualTableModule.swift, TableRecord+Association.swift, TableRecord+QueryInterfaceRequest.swift, EncodableRecord+Encodable.swift, EncodableRecord.swift, FetchableRecord+Decodable.swift, FetchableRecord+TableRecord.swift, FetchableRecord.swift, MutablePersistableRecord+DAO.swift, MutablePersistableRecord+Delete.swift, MutablePersistableRecord+Insert.swift, MutablePersistableRecord+Save.swift, MutablePersistableRecord+Update.swift, MutablePersistableRecord+Upsert.swift, MutablePersistableRecord.swift, PersistableRecord+Insert.swift, PersistableRecord+Save.swift, PersistableRecord+Upsert.swift, PersistableRecord.swift, Record.swift, TableRecord.swift, CaseInsensitiveIdentifier.swift, Inflections+English.swift, Inflections.swift, Mutex.swift, OnDemandFuture.swift, OrderedDictionary.swift, Pool.swift, ReadWriteLock.swift, ReceiveValuesOn.swift, Refinable.swift, Utils.swift, DatabaseCancellable.swift, ValueConcurrentObserver.swift, ValueWriteOnlyObserver.swift, Fetch.swift, Map.swift, RemoveDuplicates.swift, Trace.swift, ValueReducer.swift, SharedValueObservation.swift, ValueObservation.swift, ValueObservationScheduler.swift (in target 'GRDB' from project 'GRDB')
+
+SwiftDriver\ Compilation\ Requirements GRDB normal arm64 com.apple.xcode.tools.swift.compiler (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/nautica/nautica/Nautica.xcodeproj
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name GRDB -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList -DSWIFT_PACKAGE -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_SNAPSHOT -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -DXcode -enable-upcoming-feature MemberImportVisibility -plugin-path /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos10.15 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -suppress-warnings -swift-version 6 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -I /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule -user-module-version 7.11.1 -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -package-name grdb_swift -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_const_extract_protocols.json -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/DerivedSources -Xcc -DSWIFT_PACKAGE -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-Swift.h -working-directory /Users/runner/work/nautica/nautica/Nautica.xcodeproj -no-emit-module-separately-wmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GeneratedModuleMaps/GRDB-Swift.h /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-Swift.h (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB-Swift.h -o /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GeneratedModuleMaps/GRDB-Swift.h
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.swiftdoc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftdoc (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftdoc /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.swiftdoc
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.swiftmodule /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.swiftmodule
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.abi.json /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.abi.json (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.abi.json /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/arm64-apple-macos.abi.json
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftsourceinfo (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -strip-unsigned-binaries -strip-deterministic -strip-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/strip -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftsourceinfo /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo
+
+Ld /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o normal (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos10.15 -r -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -Os -w -L/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release -L/Users/runner/work/_temp/Nautica-Build/Build/Products/Release -L/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib -F/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release -F/Users/runner/work/_temp/Nautica-Build/Build/Products/Release -iframework /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks -filelist /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.LinkFileList -nostdlib -Xlinker -object_path_lto -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_lto.o -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule -o /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o
+
+ProcessProductPackaging /Users/runner/work/nautica/nautica/Nautica/Nautica.entitlements /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    
+    Entitlements:
+    
+    {
+    "com.apple.security.app-sandbox" = 1;
+    "com.apple.security.files.bookmarks.app-scope" = 1;
+    "com.apple.security.files.user-selected.read-write" = 1;
+    "com.apple.security.get-task-allow" = 1;
+    "com.apple.security.network.client" = 1;
+}
+    
+    builtin-productPackagingUtility /Users/runner/work/nautica/nautica/Nautica/Nautica.entitlements -entitlements -format xml -o /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent
+
+ProcessProductPackagingDER /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent.der (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /usr/bin/derq query -f xml -i /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent -o /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent.der --raw
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned
+
+MkDir /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/unthinned (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /bin/mkdir -p /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/unthinned
+
+GenerateAssetSymbols /Users/runner/work/nautica/nautica/Nautica/Assets.xcassets (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool /Users/runner/work/nautica/nautica/Nautica/Assets.xcassets --compile /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --enable-on-demand-resources NO --development-region en --target-device mac --minimum-deployment-target 14.0 --platform macosx --bundle-identifier com.arthur.nautica --generate-swift-asset-symbols /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CompileAssetCatalogVariant thinned /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources /Users/runner/work/nautica/nautica/Nautica/Assets.xcassets (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /Applications/Xcode_16.4.app/Contents/Developer/usr/bin/actool /Users/runner/work/nautica/nautica/Nautica/Assets.xcassets --compile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --enable-on-demand-resources NO --development-region en --target-device mac --minimum-deployment-target 14.0 --platform macosx
+2026-10-15 16:36:05.795 ibtoold[3802:14423] NSFileCoordinator is doing nothing.
+/* com.apple.actool.notices */
+/Users/runner/work/nautica/nautica/Nautica/Assets.xcassets: warning: Accent color ‘AccentColor’ is not present in any asset catalogs.
+/* com.apple.actool.compilation-results */
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist_thinned
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned/AppIcon.icns
+/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned/Assets.car
+
+
+SwiftDriver Nautica normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-SwiftDriver -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Nautica -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -swift-version 5 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-generated-files.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-own-target-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-project-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-Swift.h -working-directory /Users/runner/work/nautica/nautica -no-emit-module-separately-wmo
+
+SwiftCompile normal arm64 Compiling\ FileOperationService.swift,\ RecentsPanelView.swift,\ AIService.swift,\ Color+Hex.swift,\ FileContextMenu.swift,\ SidebarModel.swift,\ FileInfoPanelView.swift,\ VaultDiagnosticsService.swift,\ GroupByCriterion.swift,\ GraphWorkspace.swift,\ ServerConnectionService.swift,\ ToolbarView.swift,\ ThumbnailService.swift,\ GitDiffSheet.swift,\ FileViewCoordinator.swift,\ BrowserView.swift,\ GraphStore.swift,\ CreateVaultSheet.swift,\ SettingsView.swift,\ DuplicateFinderService.swift,\ TabState.swift,\ QuickActionsPanelView.swift,\ ArchiveService.swift,\ ColumnViewController.swift,\ SidebarItem.swift,\ DropShelfPanelView.swift,\ TagColor.swift,\ VaultAutomationService.swift,\ TagDotsView.swift,\ GraphModel.swift,\ GraphViewBuilder.swift,\ SecureFileDeletionService.swift,\ SecureDeleteConfirmationSheet.swift,\ ListViewCell.swift,\ TrashOriginStore.swift,\ GitCommitSheet.swift,\ FilePromiseProvider.swift,\ MainWindow.swift,\ GitService.swift,\ CreateEncryptedArchiveSheet.swift,\ DirectoryWatcherService.swift,\ TabPersistence.swift,\ MiniTerminalPanelView.swift,\ ViewState.swift,\ BatchRenameSheet.swift,\ SelectionModel.swift,\ TerminalService.swift,\ VaultHealthSheet.swift,\ FileItem.swift,\ SearchService.swift,\ ScopeBarView.swift,\ NauticaAppIntents.swift,\ ListView.swift,\ PAFPackageLoader.swift,\ FolderSyncSheet.swift,\ GetInfoService.swift,\ ConnectToServerSheet.swift,\ TagPaletteView.swift,\ DefaultFileManagerService.swift,\ Constants.swift,\ StorageModel.swift,\ MediaMetadataPanelView.swift,\ ViewMode.swift,\ ViewStateService.swift,\ SearchCriterion.swift,\ OnboardingView.swift,\ TagService.swift,\ DirectoryContents.swift,\ GetInfoWindowController.swift,\ NauticaApp.swift,\ QuickLookService.swift,\ ProgressPanel.swift,\ IconViewCell.swift,\ TreePanelView.swift,\ PAFHost.swift,\ FilterBarView.swift,\ ViewOptionsView.swift,\ FolderSyncService.swift,\ CompressPasswordSheet.swift,\ RightSidebarView.swift,\ CloudStorageService.swift,\ URL+FileOperations.swift,\ SplitLayout.swift,\ HexViewerPanelView.swift,\ TagItem.swift,\ ViewOptionsService.swift,\ ConflictResolutionSheet.swift,\ PAFModel.swift,\ SyncNavigationManager.swift,\ BatchRenameModel.swift,\ GetInfoView.swift,\ QuickActionService.swift,\ PathBarView.swift,\ IconView.swift,\ SidebarView.swift,\ MetadataEditorService.swift,\ ExtractEncryptedArchiveSheet.swift,\ ViewOptionsPanelController.swift,\ FileSystemService.swift,\ RightSidebarTab.swift,\ ChecksumService.swift,\ FileManager+Helpers.swift,\ SortKey.swift,\ GitStatusPanelView.swift,\ VaultService.swift,\ ConflictResolutionModel.swift,\ NavigationHistory.swift,\ PAFWorkspaceView.swift,\ SpringLoadManager.swift,\ UnlockVaultSheet.swift,\ CustomIconView.swift,\ PerformanceProfilerService.swift,\ GoToFolderSheet.swift,\ GalleryViewController.swift,\ SidebarFolderDropModifier.swift,\ GroupClassifier.swift,\ DuplicateFinderSheet.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/nautica/nautica/Nautica/Services/FileOperationService.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/RecentsPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Services/AIService.swift /Users/runner/work/nautica/nautica/Nautica/Utilities/Extensions/Color+Hex.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/FileContextMenu.swift /Users/runner/work/nautica/nautica/Nautica/Models/SidebarModel.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/FileInfoPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Services/VaultDiagnosticsService.swift /Users/runner/work/nautica/nautica/Nautica/Models/GroupByCriterion.swift /Users/runner/work/nautica/nautica/Nautica/Views/Graph/GraphWorkspace.swift /Users/runner/work/nautica/nautica/Nautica/Services/ServerConnectionService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift /Users/runner/work/nautica/nautica/Nautica/Services/ThumbnailService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/GitDiffSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/FileViewCoordinator.swift /Users/runner/work/nautica/nautica/Nautica/Views/BrowserView.swift /Users/runner/work/nautica/nautica/Nautica/Services/GraphStore.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/CreateVaultSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/Settings/SettingsView.swift /Users/runner/work/nautica/nautica/Nautica/Services/DuplicateFinderService.swift /Users/runner/work/nautica/nautica/Nautica/Models/TabState.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/QuickActionsPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Services/ArchiveService.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift /Users/runner/work/nautica/nautica/Nautica/Models/SidebarItem.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/DropShelfPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Models/TagColor.swift /Users/runner/work/nautica/nautica/Nautica/Services/VaultAutomationService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Common/TagDotsView.swift /Users/runner/work/nautica/nautica/Nautica/Models/GraphModel.swift /Users/runner/work/nautica/nautica/Nautica/Views/Graph/GraphViewBuilder.swift /Users/runner/work/nautica/nautica/Nautica/Services/SecureFileDeletionService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/SecureDeleteConfirmationSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListViewCell.swift /Users/runner/work/nautica/nautica/Nautica/Services/TrashOriginStore.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/GitCommitSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/FilePromiseProvider.swift /Users/runner/work/nautica/nautica/Nautica/Views/Windows/MainWindow.swift /Users/runner/work/nautica/nautica/Nautica/Services/GitService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/CreateEncryptedArchiveSheet.swift /Users/runner/work/nautica/nautica/Nautica/Services/DirectoryWatcherService.swift /Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MiniTerminalPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Models/ViewState.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/BatchRenameSheet.swift /Users/runner/work/nautica/nautica/Nautica/Models/SelectionModel.swift /Users/runner/work/nautica/nautica/Nautica/Services/TerminalService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/VaultHealthSheet.swift /Users/runner/work/nautica/nautica/Nautica/Models/FileItem.swift /Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ScopeBarView.swift /Users/runner/work/nautica/nautica/Nautica/Intents/NauticaAppIntents.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift /Users/runner/work/nautica/nautica/Nautica/Services/PAFPackageLoader.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/FolderSyncSheet.swift /Users/runner/work/nautica/nautica/Nautica/Services/GetInfoService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ConnectToServerSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/TagPaletteView.swift /Users/runner/work/nautica/nautica/Nautica/Services/DefaultFileManagerService.swift /Users/runner/work/nautica/nautica/Nautica/Utilities/Constants.swift /Users/runner/work/nautica/nautica/Nautica/Models/StorageModel.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Models/ViewMode.swift /Users/runner/work/nautica/nautica/Nautica/Services/ViewStateService.swift /Users/runner/work/nautica/nautica/Nautica/Models/SearchCriterion.swift /Users/runner/work/nautica/nautica/Nautica/Views/Onboarding/OnboardingView.swift /Users/runner/work/nautica/nautica/Nautica/Services/TagService.swift /Users/runner/work/nautica/nautica/Nautica/Models/DirectoryContents.swift /Users/runner/work/nautica/nautica/Nautica/Views/GetInfo/GetInfoWindowController.swift /Users/runner/work/nautica/nautica/Nautica/NauticaApp.swift /Users/runner/work/nautica/nautica/Nautica/Services/QuickLookService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ProgressPanel.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconViewCell.swift /Users/runner/work/nautica/nautica/Nautica/Views/TreePanelView.swift /Users/runner/work/nautica/nautica/Nautica/Services/PAFHost.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/FilterBarView.swift /Users/runner/work/nautica/nautica/Nautica/Views/ViewOptions/ViewOptionsView.swift /Users/runner/work/nautica/nautica/Nautica/Services/FolderSyncService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/CompressPasswordSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/RightSidebarView.swift /Users/runner/work/nautica/nautica/Nautica/Services/CloudStorageService.swift /Users/runner/work/nautica/nautica/Nautica/Utilities/Extensions/URL+FileOperations.swift /Users/runner/work/nautica/nautica/Nautica/Models/SplitLayout.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/HexViewerPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Models/TagItem.swift /Users/runner/work/nautica/nautica/Nautica/Services/ViewOptionsService.swift /Users/runner/work/nautica/nautica/Nautica/Views/ConflictResolution/ConflictResolutionSheet.swift /Users/runner/work/nautica/nautica/Nautica/Models/PAFModel.swift /Users/runner/work/nautica/nautica/Nautica/Services/SyncNavigationManager.swift /Users/runner/work/nautica/nautica/Nautica/Models/BatchRenameModel.swift /Users/runner/work/nautica/nautica/Nautica/Views/GetInfo/GetInfoView.swift /Users/runner/work/nautica/nautica/Nautica/Services/QuickActionService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/PathBarView.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift /Users/runner/work/nautica/nautica/Nautica/Views/SidebarView.swift /Users/runner/work/nautica/nautica/Nautica/Services/MetadataEditorService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ExtractEncryptedArchiveSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/ViewOptions/ViewOptionsPanelController.swift /Users/runner/work/nautica/nautica/Nautica/Services/FileSystemService.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/RightSidebarTab.swift /Users/runner/work/nautica/nautica/Nautica/Services/ChecksumService.swift /Users/runner/work/nautica/nautica/Nautica/Utilities/Extensions/FileManager+Helpers.swift /Users/runner/work/nautica/nautica/Nautica/Models/SortKey.swift /Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift /Users/runner/work/nautica/nautica/Nautica/Services/VaultService.swift /Users/runner/work/nautica/nautica/Nautica/Views/ConflictResolution/ConflictResolutionModel.swift /Users/runner/work/nautica/nautica/Nautica/Models/NavigationHistory.swift /Users/runner/work/nautica/nautica/Nautica/Views/Graph/PAFWorkspaceView.swift /Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/UnlockVaultSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/GetInfo/CustomIconView.swift /Users/runner/work/nautica/nautica/Nautica/Services/PerformanceProfilerService.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/GoToFolderSheet.swift /Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift /Users/runner/work/nautica/nautica/Nautica/Views/SidebarFolderDropModifier.swift /Users/runner/work/nautica/nautica/Nautica/Services/GroupClassifier.swift /Users/runner/work/nautica/nautica/Nautica/Views/Chrome/DuplicateFinderSheet.swift /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Nautica' from project 'Nautica')
+CompileSwift normal arm64 (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:233:18: warning: 'minSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.minSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:234:18: warning: 'maxSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.maxSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:283:18: warning: 'minSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.minSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:284:18: warning: 'maxSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.maxSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:308:18: warning: 'minSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.minSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/ToolbarView.swift:309:18: warning: 'maxSize' was deprecated in macOS 12.0: This property is no longer recommended. Instead, let the system automatically measure the size of the view using constraints.
+            item.maxSize = control.fittingSize
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/GitDiffSheet.swift:141:13: warning: initialization of immutable value 'trimmed' was never used; consider replacing with assignment to '_' or removing it
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        ~~~~^~~~~~~
+        _
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:73:55: warning: main actor-isolated property 'keyWindow' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func closeOtherTabs(for window: NSWindow? = NSApp.keyWindow) {
+                                                      ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:202:48: note: property declared here
+@property (nullable, readonly, weak) NSWindow *keyWindow;
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:73:49: warning: main actor-isolated var 'NSApp' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func closeOtherTabs(for window: NSWindow? = NSApp.keyWindow) {
+                                                ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:191:58: note: var declared here
+APPKIT_EXTERN __kindof NSApplication * _Null_unspecified NSApp NS_SWIFT_UI_ACTOR;
+                                                         ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:81:60: warning: main actor-isolated property 'keyWindow' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func closeTabsToTheRight(for window: NSWindow? = NSApp.keyWindow) {
+                                                           ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:202:48: note: property declared here
+@property (nullable, readonly, weak) NSWindow *keyWindow;
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:81:54: warning: main actor-isolated var 'NSApp' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func closeTabsToTheRight(for window: NSWindow? = NSApp.keyWindow) {
+                                                     ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:191:58: note: var declared here
+APPKIT_EXTERN __kindof NSApplication * _Null_unspecified NSApp NS_SWIFT_UI_ACTOR;
+                                                         ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:63:59: warning: main actor-isolated property 'keyWindow' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func moveTabToNewWindow(for window: NSWindow? = NSApp.keyWindow) {
+                                                          ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:202:48: note: property declared here
+@property (nullable, readonly, weak) NSWindow *keyWindow;
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:63:53: warning: main actor-isolated var 'NSApp' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func moveTabToNewWindow(for window: NSWindow? = NSApp.keyWindow) {
+                                                    ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:191:58: note: var declared here
+APPKIT_EXTERN __kindof NSApplication * _Null_unspecified NSApp NS_SWIFT_UI_ACTOR;
+                                                         ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:68:56: warning: main actor-isolated property 'keyWindow' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func mergeAllWindows(for window: NSWindow? = NSApp.keyWindow) {
+                                                       ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:202:48: note: property declared here
+@property (nullable, readonly, weak) NSWindow *keyWindow;
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Models/TabPersistence.swift:68:50: warning: main actor-isolated var 'NSApp' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func mergeAllWindows(for window: NSWindow? = NSApp.keyWindow) {
+                                                 ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSApplication.h:191:58: note: var declared here
+APPKIT_EXTERN __kindof NSApplication * _Null_unspecified NSApp NS_SWIFT_UI_ACTOR;
+                                                         ^
+/Users/runner/work/nautica/nautica/Nautica/Services/DuplicateFinderService.swift:125:40: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+        for case let fileURL as URL in enumerator {
+                                       ^
+/Users/runner/work/nautica/nautica/Nautica/Services/DuplicateFinderService.swift:166:13: warning: variable 'candidateFiles' was never mutated; consider changing to 'let' constant
+        var candidateFiles = sizeCandidates.values.flatMap { $0 }
+        ~~~ ^
+        let
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/QuickActionsPanelView.swift:349:29: warning: no calls to throwing functions occur within 'try' expression
+            if let result = try? await QuickActionService.shared.runShortcut(name: name, inputFile: first.url) {
+                            ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift:338:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift:347:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:23:51: warning: main actor-isolated static property 'defaultHoverDelay' can not be referenced from a nonisolated context; this is an error in the Swift 6 language mode
+    func hover(on url: URL, delay: TimeInterval = defaultHoverDelay, action: @escaping (URL) -> Void) {
+                                                  ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:13:16: note: static property declared here
+    static let defaultHoverDelay: TimeInterval = 0.7
+               ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift:613:45: warning: result of call to 'run(resultType:body:)' is unused
+                            await MainActor.run { NSAlert(error: error).runModal() }
+                                            ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift:623:45: warning: result of call to 'run(resultType:body:)' is unused
+                            await MainActor.run { NSAlert(error: error).runModal() }
+                                            ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ColumnViewController.swift:698:29: warning: no calls to throwing functions occur within 'try' expression
+                        _ = try? await QuickActionService.shared.runShortcut(name: shortcutName, inputFile: item.url)
+                            ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SecureFileDeletionService.swift:258:17: warning: result of call to 'fcntl' is unused
+                fcntl(fd, F_FULLFSYNC)
+                ^    ~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Services/SecureFileDeletionService.swift:263:13: warning: result of call to 'fcntl' is unused
+            fcntl(fd, F_FULLFSYNC)
+            ^    ~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/Chrome/GitCommitSheet.swift:211:13: warning: initialization of immutable value 'rootPath' was never used; consider replacing with assignment to '_' or removing it
+        let rootPath = repositoryRoot.standardizedFileURL.path
+        ~~~~^~~~~~~~
+        _
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:135:39: warning: capture of 'queryObj' with non-sendable type 'NSMetadataQuery' in a '@Sendable' closure
+            self.harvestResults(from: queryObj)
+                                      ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSMetadata.h:18:12: note: class 'NSMetadataQuery' does not conform to the 'Sendable' protocol
+@interface NSMetadataQuery : NSObject {
+           ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:134:18: warning: main actor-isolated property 'isGathering' can not be mutated from a Sendable closure; this is an error in the Swift 6 language mode
+            self.isGathering = false
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:33:33: note: mutation of this property is only permitted within the actor
+    @Published private(set) var isGathering: Bool = false
+                                ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:135:18: warning: call to main actor-isolated instance method 'harvestResults(from:)' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+            self.harvestResults(from: queryObj)
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:179:18: note: calls to instance method 'harvestResults(from:)' from outside of its actor context are implicitly asynchronous
+    private func harvestResults(from queryObj: NSMetadataQuery) {
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:144:39: warning: capture of 'queryObj' with non-sendable type 'NSMetadataQuery' in a '@Sendable' closure
+            self.harvestResults(from: queryObj)
+                                      ^
+/Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSMetadata.h:18:12: note: class 'NSMetadataQuery' does not conform to the 'Sendable' protocol
+@interface NSMetadataQuery : NSObject {
+           ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:144:18: warning: call to main actor-isolated instance method 'harvestResults(from:)' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+            self.harvestResults(from: queryObj)
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SearchService.swift:179:18: note: calls to instance method 'harvestResults(from:)' from outside of its actor context are implicitly asynchronous
+    private func harvestResults(from queryObj: NSMetadataQuery) {
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift:497:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift:506:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift:609:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift:620:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/ListView.swift:719:25: warning: no calls to throwing functions occur within 'try' expression
+                    _ = try? await QuickActionService.shared.runShortcut(name: shortcutName, inputFile: first.url)
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Models/StorageModel.swift:107:13: warning: 'nonisolated(unsafe)' has no effect on property 'mountObserver', consider using 'nonisolated'
+    private nonisolated(unsafe) var mountObserver: NSObjectProtocol?
+            ^~~~~~~~~~~
+            nonisolated
+/Users/runner/work/nautica/nautica/Nautica/Models/StorageModel.swift:108:13: warning: 'nonisolated(unsafe)' has no effect on property 'unmountObserver', consider using 'nonisolated'
+    private nonisolated(unsafe) var unmountObserver: NSObjectProtocol?
+            ^~~~~~~~~~~
+            nonisolated
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:617:32: warning: reference to captured var 'result' in concurrently-executing code; this is an error in the Swift 6 language mode
+                self.details = result
+                               ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:602:17: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                Self.extractImageMetadata(from: url, into: &result)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:602:17: note: calls to static method 'extractImageMetadata(from:into:)' from outside of its actor context are implicitly asynchronous
+                Self.extractImageMetadata(from: url, into: &result)
+                ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:638:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func extractImageMetadata(from url: URL, into result: inout MediaDetails) {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:605:17: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+                Self.extractPDFMetadata(from: url, into: &result)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:605:17: note: calls to static method 'extractPDFMetadata(from:into:)' from outside of its actor context are implicitly asynchronous
+                Self.extractPDFMetadata(from: url, into: &result)
+                ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/MediaMetadataPanelView.swift:623:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func extractPDFMetadata(from url: URL, into result: inout MediaDetails) {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Services/FolderSyncService.swift:131:44: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+            for case let fileURL as URL in enumerator {
+                                           ^
+/Users/runner/work/nautica/nautica/Nautica/Services/FolderSyncService.swift:149:44: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+            for case let fileURL as URL in enumerator {
+                                           ^
+/Users/runner/work/nautica/nautica/Nautica/Services/FolderSyncService.swift:161:13: warning: variable 'allRelPaths' was never mutated; consider changing to 'let' constant
+        var allRelPaths = Set(leftFiles.keys).union(Set(rightFiles.keys))
+        ~~~ ^
+        let
+/Users/runner/work/nautica/nautica/Nautica/Services/FolderSyncService.swift:220:27: warning: value 'l' was defined but never used; consider replacing with boolean test
+            } else if let l = left {
+                      ~~~~^~~~
+                                   != nil
+/Users/runner/work/nautica/nautica/Nautica/Services/CloudStorageService.swift:225:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+                for case let fileURL as URL in enumerator {
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Services/CloudStorageService.swift:242:48: warning: instance method 'makeIterator' is unavailable from asynchronous contexts; this is an error in the Swift 6 language mode; this is an error in the Swift 6 language mode
+                for case let fileURL as URL in enumerator {
+                                               ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift:492:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift:501:37: warning: result of call to 'run(resultType:body:)' is unused
+                    await MainActor.run { NSAlert(error: error).runModal() }
+                                    ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift:559:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift:570:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/IconView.swift:669:25: warning: no calls to throwing functions occur within 'try' expression
+                    _ = try? await QuickActionService.shared.runShortcut(name: shortcutName, inputFile: first.url)
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/SidebarView.swift:340:37: warning: conditional downcast from 'URL?' to 'URL' does nothing
+                if let url = object as? URL {
+                             ~~~~~~~^~~~~~~
+                                   
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:314:37: warning: reference to captured var 'parsedChanges' in concurrently-executing code; this is an error in the Swift 6 language mode
+                self.changedFiles = parsedChanges
+                                    ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:284:28: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let isInside = Self.runGit(["rev-parse", "--is-inside-work-tree"], at: url).trimmingCharacters(in: .whitespacesAndNewlines) == "true"
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                           await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:284:28: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            let isInside = Self.runGit(["rev-parse", "--is-inside-work-tree"], at: url).trimmingCharacters(in: .whitespacesAndNewlines) == "true"
+                           ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:294:24: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let root = Self.runGit(["rev-parse", "--show-toplevel"], at: url).trimmingCharacters(in: .whitespacesAndNewlines)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                       await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:294:24: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            let root = Self.runGit(["rev-parse", "--show-toplevel"], at: url).trimmingCharacters(in: .whitespacesAndNewlines)
+                       ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:295:26: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let branch = Self.runGit(["branch", "--show-current"], at: url).trimmingCharacters(in: .whitespacesAndNewlines)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                         await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:295:26: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            let branch = Self.runGit(["branch", "--show-current"], at: url).trimmingCharacters(in: .whitespacesAndNewlines)
+                         ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:296:29: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let rawStatus = Self.runGit(["status", "--porcelain"], at: url)
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                            await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:296:29: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            let rawStatus = Self.runGit(["status", "--porcelain"], at: url)
+                            ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:297:26: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            let rawLog = Self.runGit(["log", "--oneline", "-5"], at: url)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                         await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:297:26: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            let rawLog = Self.runGit(["log", "--oneline", "-5"], at: url)
+                         ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:324:17: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            _ = Self.runGit(["add", "-A"], at: url)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:324:17: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            _ = Self.runGit(["add", "-A"], at: url)
+                ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:332:17: warning: expression is 'async' but is not marked with 'await'; this is an error in the Swift 6 language mode
+            _ = Self.runGit(["init"], at: url)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                await 
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:332:17: note: calls to static method 'runGit(_:at:)' from outside of its actor context are implicitly asynchronous
+            _ = Self.runGit(["init"], at: url)
+                ^
+/Users/runner/work/nautica/nautica/Nautica/Views/RightSidebar/GitStatusPanelView.swift:337:25: note: main actor isolation inferred from conformance to protocol 'View'
+    private static func runGit(_ args: [String], at directory: URL) -> String {
+                        ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:34:34: warning: main actor-isolated property 'activeTargetURL' can not be referenced from a Sendable closure; this is an error in the Swift 6 language mode
+            guard let self, self.activeTargetURL == url else { return }
+                                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:16:22: note: property declared here
+    private(set) var activeTargetURL: URL?
+                     ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:36:30: warning: main actor-isolated property 'activeAction' can not be referenced from a Sendable closure; this is an error in the Swift 6 language mode
+            let block = self.activeAction
+                             ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:17:17: note: property declared here
+    private var activeAction: ((URL) -> Void)?
+                ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:37:18: warning: call to main actor-isolated instance method 'cancel()' in a synchronous nonisolated context; this is an error in the Swift 6 language mode
+            self.cancel()
+                 ^
+/Users/runner/work/nautica/nautica/Nautica/Services/SpringLoadManager.swift:50:10: note: calls to instance method 'cancel()' from outside of its actor context are implicitly asynchronous
+    func cancel() {
+         ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:201:45: warning: result of call to 'run(resultType:body:)' is unused
+                            await MainActor.run { NSAlert(error: error).runModal() }
+                                            ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:210:45: warning: result of call to 'run(resultType:body:)' is unused
+                            await MainActor.run { NSAlert(error: error).runModal() }
+                                            ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:437:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:448:41: warning: result of call to 'run(resultType:body:)' is unused
+                        await MainActor.run { NSAlert(error: error).runModal() }
+                                        ^   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:463:37: warning: variable 'self' was written to, but never read
+            openInTerminal: { [weak self] in
+                                    ^
+/Users/runner/work/nautica/nautica/Nautica/Views/FileViews/GalleryViewController.swift:509:25: warning: no calls to throwing functions occur within 'try' expression
+                    _ = try? await QuickActionService.shared.runShortcut(name: shortcutName, inputFile: item.url)
+                        ^
+
+SwiftDriver\ Compilation Nautica normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-Swift-Compilation -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Nautica -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -swift-version 5 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-generated-files.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-own-target-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-project-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-Swift.h -working-directory /Users/runner/work/nautica/nautica -no-emit-module-separately-wmo
+
+ExtractAppIntentsMetadata (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name GRDB --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk --xcode-version 16F6 --platform-family macOS --deployment-target 10.15 --bundle-identifier grdb.swift.GRDB --output /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.appintents --target-triple arm64-apple-macos10.15 --binary-file /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o --dependency-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB_dependency_info.dat --stringsdata-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftFileList --metadata-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/GRDB.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.SwiftConstValuesFileList --force --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-15 16:36:01.108 appintentsmetadataprocessor[3810:14454] Starting appintentsmetadataprocessor export
+2026-10-15 16:36:01.235 appintentsmetadataprocessor[3810:14454] Extracted no relevant App Intents symbols, skipping writing output
+
+CodeSign /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o
+
+RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o (in target 'GRDB' from project 'GRDB')
+    cd /Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift
+    builtin-RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB.o
+
+CpResource /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/PrivacyInfo.xcprivacy /Users/runner/work/nautica/nautica/Nautica/PrivacyInfo.xcprivacy (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/nautica/nautica/Nautica/PrivacyInfo.xcprivacy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources
+
+CpResource /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/Nautica.icns /Users/runner/work/nautica/nautica/Nautica/Nautica.icns (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/nautica/nautica/Nautica/Nautica.icns /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources
+
+CpResource /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/Credits.rtf /Users/runner/work/nautica/nautica/Nautica/Credits.rtf (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/nautica/nautica/Nautica/Credits.rtf /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/GRDB_GRDB.bundle /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/GRDB_GRDB.bundle /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources
+
+LinkAssetCatalog /Users/runner/work/nautica/nautica/Nautica/Assets.xcassets (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-linkAssetCatalog --thinned /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/thinned --thinned-dependencies /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist_unthinned --output /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources --plist-output /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/AppIcon.icns (in target 'Nautica' from project 'Nautica')
+note: Emplaced /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/Assets.car (in target 'Nautica' from project 'Nautica')
+
+ProcessInfoPlistFile /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Info.plist /Users/runner/work/nautica/nautica/Nautica/Info.plist (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-infoPlistUtility /Users/runner/work/nautica/nautica/Nautica/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/PkgInfo -expandbuildsettings -platform macosx -additionalcontentfile /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/assetcatalog_generated_info.plist -scanforprivacyfile /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/GRDB_GRDB.bundle -o /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Info.plist
+
+SwiftDriverJobDiscovery normal arm64 Compiling FileOperationService.swift, RecentsPanelView.swift, AIService.swift, Color+Hex.swift, FileContextMenu.swift, SidebarModel.swift, FileInfoPanelView.swift, VaultDiagnosticsService.swift, GroupByCriterion.swift, GraphWorkspace.swift, ServerConnectionService.swift, ToolbarView.swift, ThumbnailService.swift, GitDiffSheet.swift, FileViewCoordinator.swift, BrowserView.swift, GraphStore.swift, CreateVaultSheet.swift, SettingsView.swift, DuplicateFinderService.swift, TabState.swift, QuickActionsPanelView.swift, ArchiveService.swift, ColumnViewController.swift, SidebarItem.swift, DropShelfPanelView.swift, TagColor.swift, VaultAutomationService.swift, TagDotsView.swift, GraphModel.swift, GraphViewBuilder.swift, SecureFileDeletionService.swift, SecureDeleteConfirmationSheet.swift, ListViewCell.swift, TrashOriginStore.swift, GitCommitSheet.swift, FilePromiseProvider.swift, MainWindow.swift, GitService.swift, CreateEncryptedArchiveSheet.swift, DirectoryWatcherService.swift, TabPersistence.swift, MiniTerminalPanelView.swift, ViewState.swift, BatchRenameSheet.swift, SelectionModel.swift, TerminalService.swift, VaultHealthSheet.swift, FileItem.swift, SearchService.swift, ScopeBarView.swift, NauticaAppIntents.swift, ListView.swift, PAFPackageLoader.swift, FolderSyncSheet.swift, GetInfoService.swift, ConnectToServerSheet.swift, TagPaletteView.swift, DefaultFileManagerService.swift, Constants.swift, StorageModel.swift, MediaMetadataPanelView.swift, ViewMode.swift, ViewStateService.swift, SearchCriterion.swift, OnboardingView.swift, TagService.swift, DirectoryContents.swift, GetInfoWindowController.swift, NauticaApp.swift, QuickLookService.swift, ProgressPanel.swift, IconViewCell.swift, TreePanelView.swift, PAFHost.swift, FilterBarView.swift, ViewOptionsView.swift, FolderSyncService.swift, CompressPasswordSheet.swift, RightSidebarView.swift, CloudStorageService.swift, URL+FileOperations.swift, SplitLayout.swift, HexViewerPanelView.swift, TagItem.swift, ViewOptionsService.swift, ConflictResolutionSheet.swift, PAFModel.swift, SyncNavigationManager.swift, BatchRenameModel.swift, GetInfoView.swift, QuickActionService.swift, PathBarView.swift, IconView.swift, SidebarView.swift, MetadataEditorService.swift, ExtractEncryptedArchiveSheet.swift, ViewOptionsPanelController.swift, FileSystemService.swift, RightSidebarTab.swift, ChecksumService.swift, FileManager+Helpers.swift, SortKey.swift, GitStatusPanelView.swift, VaultService.swift, ConflictResolutionModel.swift, NavigationHistory.swift, PAFWorkspaceView.swift, SpringLoadManager.swift, UnlockVaultSheet.swift, CustomIconView.swift, PerformanceProfilerService.swift, GoToFolderSheet.swift, GalleryViewController.swift, SidebarFolderDropModifier.swift, GroupClassifier.swift, DuplicateFinderSheet.swift, GeneratedAssetSymbols.swift (in target 'Nautica' from project 'Nautica')
+
+SwiftDriver\ Compilation\ Requirements Nautica normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Nautica -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList -Xcc -fmodule-map-file\=/Users/runner/work/_temp/Nautica-Build/SourcePackages/checkouts/GRDB.swift/Sources/GRDBSQLite/module.modulemap -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -swift-version 5 -I /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks -F /Users/runner/work/_temp/Nautica-Build/Build/Products/Release -emit-localized-strings -emit-localized-strings-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64 -c -num-threads 3 -Xcc -ivfsstatcache -Xcc /Users/runner/work/_temp/Nautica-Build/SDKStatCaches.noindex/macosx15.5-24F74-a403186ba963133a54a0e0cacd566b0b.sdkstatcache -output-file-map /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/runner/work/_temp/Nautica-Build/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_const_extract_protocols.json -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-generated-files.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-own-target-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica-f943ea3981813d363f0bd866bef6f82e-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica-project-headers.hmap -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/include -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources-normal/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/arm64 -Xcc -I/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources -emit-objc-header -emit-objc-header-path /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-Swift.h -working-directory /Users/runner/work/nautica/nautica -no-emit-module-separately-wmo
+
+SwiftMergeGeneratedHeaders /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/Nautica-Swift.h /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-Swift.h (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-swiftHeaderTool -arch arm64 /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica-Swift.h -o /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/DerivedSources/Nautica-Swift.h
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.swiftmodule /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.swiftmodule
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.swiftdoc /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftdoc (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftdoc /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.swiftdoc
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.abi.json /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.abi.json (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.abi.json /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/arm64-apple-macos.abi.json
+
+Copy /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftsourceinfo (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftsourceinfo /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo
+
+Ld /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica normal (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos14.0 -isysroot /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk -Os -L/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release -L/Users/runner/work/_temp/Nautica-Build/Build/Products/Release -F/Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/EagerLinkingTBDs/Release -F/Users/runner/work/_temp/Nautica-Build/Build/Products/Release/PackageFrameworks -F/Users/runner/work/_temp/Nautica-Build/Build/Products/Release -filelist /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.LinkFileList -Xlinker -rpath -Xlinker @executable_path/../Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_lto.o -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_dependency_info.dat -fobjc-link-runtime -fprofile-instr-generate -L/Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.swiftmodule -Wl,-no_warn_duplicate_libraries -Xlinker -no_adhoc_codesign -o /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica -Xlinker -add_ast_path -Xlinker /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/GRDB.build/Release/GRDB.build/Objects-normal/arm64/GRDB.swiftmodule
+
+GenerateDSYMFile /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app.dSYM /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica -o /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app.dSYM
+
+ExtractAppIntentsMetadata (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name Nautica --sdk-root /Applications/Xcode_16.4.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk --xcode-version 16F6 --platform-family macOS --deployment-target 14.0 --bundle-identifier com.arthur.nautica --output /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources --target-triple arm64-apple-macos14.0 --binary-file /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica --dependency-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica_dependency_info.dat --stringsdata-file /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftFileList --metadata-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyMetadataFileList --static-metadata-file-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.DependencyStaticMetadataFileList --swift-const-vals-list /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Objects-normal/arm64/Nautica.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-10-15 16:38:36.126 appintentsmetadataprocessor[8943:28199] Starting appintentsmetadataprocessor export
+2026-10-15 16:38:36.299 appintentsmetadataprocessor[8943:28199] Writing Metadata.appintents
+2026-10-15 16:38:36.299 appintentsmetadataprocessor[8943:28199] Metadata root: /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Resources/Metadata.appintents
+
+CopySwiftLibs /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/MacOS/Nautica --scan-folder /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Frameworks --scan-folder /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/PlugIns --scan-folder /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Library/SystemExtensions --scan-folder /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Extensions --platform macosx --toolchain /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app/Contents/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+CodeSign /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    
+    Signing Identity:     "Sign to Run Locally"
+    
+    /usr/bin/codesign --force --sign - -o runtime --entitlements /Users/runner/work/_temp/Nautica-Build/Build/Intermediates.noindex/Nautica.build/Release/Nautica.build/Nautica.app.xcent --timestamp\=none --generate-entitlement-der /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app
+
+RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-RegisterExecutionPolicyException /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app
+
+Validate /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    builtin-validationUtility /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app -no-validate-extension -infoplist-subpath Contents/Info.plist
+
+Touch /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /usr/bin/touch -c /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app
+
+RegisterWithLaunchServices /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app (in target 'Nautica' from project 'Nautica')
+    cd /Users/runner/work/nautica/nautica
+    /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /Users/runner/work/_temp/Nautica-Build/Build/Products/Release/Nautica.app
+
+note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-O, expected -Onone (in target 'Nautica' from project 'Nautica')
+note: Disabling previews because SWIFT_VERSION is set and SWIFT_OPTIMIZATION_LEVEL=-Owholemodule, expected -Onone (in target 'GRDB' from project 'GRDB')
+** BUILD SUCCEEDED **
+
