@@ -227,7 +227,7 @@ final class ListViewCell: NSTableCellView {
             setAccessibilityHelp(item.isDirectory ? (isExpanded ? "Expanded folder, tap to collapse" : "Collapsed folder, tap to expand") : "File")
         } else {
             setAccessibilityRole(.staticText)
-            setAccessibilityLabel("\(column.headerTitle): \(textField?.stringValue ?? "empty")")
+            setAccessibilityLabel("\(column.title): \(textField?.stringValue ?? "empty")")
         }
     }
 

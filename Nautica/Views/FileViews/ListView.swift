@@ -24,6 +24,8 @@ enum ListColumn: String, CaseIterable {
         }
     }
 
+    var headerTitle: String { title }
+
     var defaultWidth: CGFloat {
         switch self {
         case .name: return 260
