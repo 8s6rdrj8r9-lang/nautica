@@ -23,7 +23,7 @@ struct RightSidebarView: View {
                 ForEach(RightSidebarTab.allCases) { tab in
                     Button(action: { selectedTab = tab }) {
                         Image(systemName: tab.icon)
-                            .font(.system(size: 12, weight: selectedTab == tab ? .semibold : .regular))
+                            .font(.body.weight(selectedTab == tab ? .semibold : .regular))
                             .foregroundStyle(selectedTab == tab ? Color.accentColor : Color.secondary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 24)
@@ -33,6 +33,9 @@ struct RightSidebarView: View {
                             )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(tab.title)
+                    .accessibilityValue(selectedTab == tab ? "Selected" : "")
+                    .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
                     .help("\(tab.title) — \(tab.tooltip)")
                 }
             }

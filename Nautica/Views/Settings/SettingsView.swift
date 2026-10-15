@@ -7,10 +7,10 @@ import SwiftUI
 struct SettingsView: View {
     var body: some View {
         TabView {
-            RightDockSettingsView()
-                .tabItem { Label("Right Dock", systemImage: "sidebar.right") }
             GeneralSettingsTab()
                 .tabItem { Label("General", systemImage: "gear") }
+            RightDockSettingsView()
+                .tabItem { Label("Pinned Navigation", systemImage: "pin") }
             AppearanceSettingsTab()
                 .tabItem { Label("Appearance", systemImage: "paintbrush") }
             TerminalSettingsTab()
@@ -22,7 +22,7 @@ struct SettingsView: View {
             AdvancedSettingsTab()
                 .tabItem { Label("Advanced", systemImage: "wrench.and.screwdriver") }
         }
-        .frame(width: 560, height: 650)
+        .frame(minWidth: 620, idealWidth: 680, minHeight: 600, idealHeight: 700)
     }
 }
 
@@ -91,7 +91,7 @@ private struct AppearanceSettingsTab: View {
 
     var body: some View {
         Form {
-            Section("Sidebar") {
+            Section("Files Sidebar") {
                 SizeSetting("Font size", value: $sidebarFontSize, range: 10...24)
                 SizeSetting("Row spacing", value: $sidebarSpacing, range: 0...16)
                 SizeSetting("Width", value: $sidebarWidth, range: 160...600, step: 10)
@@ -105,6 +105,7 @@ private struct AppearanceSettingsTab: View {
                 Picker("Default view:", selection: $defaultViewMode) {
                     Text("Icons").tag(ViewMode.icon.rawValue)
                     Text("List").tag(ViewMode.list.rawValue)
+                    Text("Columns").tag(ViewMode.column.rawValue)
                 }
                 .pickerStyle(.segmented)
                 Toggle("Use system accent color", isOn: $useSystemAccent)
@@ -119,7 +120,7 @@ private struct AppearanceSettingsTab: View {
                 SizeSetting("Icon size", value: $iconSize, range: 32...256, step: 4)
                 SizeSetting("Grid spacing", value: $iconSpacing, range: 0...40, step: 2)
             }
-            Text("Sizing changes apply immediately to all windows. The toolbar icon slider uses the same setting.")
+            Text("These sizing controls apply to the Files workspace. Saved per-folder view settings override the default view. The toolbar icon slider uses the same icon-size setting.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -280,11 +281,14 @@ private struct AdvancedSettingsTab: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage(Constants.checkForUpdatesKey) private var checkForUpdates = false
     @State private var didResetViewStates = false
+    @State private var confirmReset = false
+    @State private var resetError: String?
 
     var body: some View {
         Form {
             Button("Reset All View States…") {
-                resetViewStates()
+                didResetViewStates = false
+                confirmReset = true
             }
             if didResetViewStates {
                 Text("Per-folder view settings were reset.")
@@ -305,12 +309,27 @@ private struct AdvancedSettingsTab: View {
         }
         .formStyle(.grouped)
         .padding()
+        .confirmationDialog("Reset all per-folder view settings?", isPresented: $confirmReset) {
+            Button("Reset View Settings", role: .destructive) { resetViewStates() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This removes saved folder layouts and sorting preferences. Your files, tags, Objects and Views are preserved. This cannot be undone.")
+        }
+        .alert("Could Not Reset View Settings", isPresented: Binding(get: { resetError != nil }, set: { if !$0 { resetError = nil } })) {
+            Button("OK") { resetError = nil }
+        } message: { Text(resetError ?? "") }
     }
 
     private func resetViewStates() {
-        try? modelContext.delete(model: FolderViewState.self)
-        try? modelContext.save()
-        didResetViewStates = true
+        do {
+            try modelContext.delete(model: FolderViewState.self)
+            try modelContext.save()
+            didResetViewStates = true
+        } catch {
+            modelContext.rollback()
+            didResetViewStates = false
+            resetError = error.localizedDescription
+        }
     }
 
     private func reveal(_ url: URL) {
@@ -322,53 +341,101 @@ private struct AdvancedSettingsTab: View {
 // MARK: - Intelligence & AI (macOS 27)
 
 private struct IntelligenceSettingsTab: View {
-    @AppStorage(Constants.aiEnabledKey) private var aiEnabled = true
+    @AppStorage(Constants.aiEnabledKey) private var aiEnabled = false
     @AppStorage(Constants.aiProviderKey) private var aiProvider = AIService.Provider.appleFoundation.rawValue
-    @AppStorage(Constants.enableAIBackupKey) private var enableAIBackup = true
-    @AppStorage(Constants.openAIAPIKeyKey) private var openAIAPIKey = ""
+    @AppStorage(Constants.enableAIBackupKey) private var enableAIBackup = false
+    @AppStorage(AICloudPolicy.consentKey) private var cloudConsent = ""
+    @AppStorage(AICloudPolicy.localOnlyKey) private var localOnly = true
+    @State private var replacementKey = ""
+    @State private var hasKey = false
+    @State private var keyError: String?
+    @State private var showCloudDisclosure = false
+
+    private var cloudAuthorized: Bool { cloudConsent == AICloudPolicy.version && !localOnly }
 
     var body: some View {
         Form {
-            Section("Apple Intelligence (macOS 27)") {
+            Section("On-Device Intelligence") {
                 Toggle("Enable Intelligence Features", isOn: $aiEnabled)
-                Text("Enables on-device directory summaries, smart tag generation, and content explanations. Operates completely locally without network egress.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text("Directory summaries, suggested tags and file explanations run on this Mac by default. Core file browsing works with Intelligence disabled.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Toggle("Keep AI Requests on This Mac", isOn: $localOnly)
+                    .onChange(of: localOnly) { _, value in
+                        if value {
+                            enableAIBackup = false
+                            aiProvider = AIService.Provider.appleFoundation.rawValue
+                        }
+                    }
+                Text("Local-only mode blocks every cloud AI request, including fallback.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
-
             if aiEnabled {
-                Section("Engine Configuration") {
-                    Picker("Primary Engine:", selection: $aiProvider) {
-                        Text("Apple Foundation Models (On-Device)").tag(AIService.Provider.appleFoundation.rawValue)
-                        Text("ChatGPT (OpenAI)").tag(AIService.Provider.openAI.rawValue)
+                Section("Processing") {
+                    Picker("Primary Engine", selection: $aiProvider) {
+                        Text("On-Device").tag(AIService.Provider.appleFoundation.rawValue)
+                        if cloudAuthorized { Text("OpenAI (Cloud)").tag(AIService.Provider.openAI.rawValue) }
                     }
-
-                    HStack {
-                        Label("Siri AI Delegation", systemImage: "waveform")
-                        Spacer()
-                        Text("Enabled via App Intents")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Section("Cloud Backup Fallback") {
-                    Toggle("Enable ChatGPT (OpenAI) Backup", isOn: $enableAIBackup)
-                    Text("Automatically fallback to ChatGPT if on-device models are busy or unavailable.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-
-                    if enableAIBackup || aiProvider == AIService.Provider.openAI.rawValue {
-                        SecureField("OpenAI API Key:", text: $openAIAPIKey)
-                        Text("Key is stored locally in macOS application preferences and used only for explicit AI requests.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    if !cloudAuthorized {
+                        Text("Cloud requests are blocked until you review and allow OpenAI processing.")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Button("Review Cloud Processing…") { showCloudDisclosure = true }
+                    } else {
+                        Toggle("Use OpenAI When On-Device AI Is Unavailable", isOn: $enableAIBackup)
+                        Text("Cloud requests send the selected task's filenames, folder summary or up to 4,000 bytes of text to OpenAI using your API account. API charges may apply.")
+                            .font(.caption).foregroundStyle(.secondary)
+                        Button("Revoke Cloud Processing") {
+                            cloudConsent = ""
+                            localOnly = true
+                            enableAIBackup = false
+                            aiProvider = AIService.Provider.appleFoundation.rawValue
+                        }
                     }
                 }
             }
+            Section("OpenAI Credential") {
+                    Text(hasKey ? "An API key is stored in macOS Keychain." : "No API key is stored.")
+                        .font(.caption).foregroundStyle(.secondary)
+                    SecureField("New or Replacement API Key", text: $replacementKey)
+                    HStack {
+                        Button("Save Key") {
+                            do {
+                                try AIAPIKeyStore.save(replacementKey)
+                                replacementKey = ""
+                                hasKey = true
+                            } catch { keyError = error.localizedDescription }
+                        }.disabled(replacementKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        Button("Remove Key", role: .destructive) {
+                            do {
+                                try AIAPIKeyStore.remove()
+                                replacementKey = ""
+                                hasKey = false
+                            } catch { keyError = error.localizedDescription }
+                        }.disabled(!hasKey)
+                    }
+                    Text("Keys are stored securely on this Mac. Saving a key does not enable cloud processing.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
         }
         .formStyle(.grouped)
         .padding()
+        .onAppear {
+            do { hasKey = try AIAPIKeyStore.loadMigratingLegacyKey() != nil }
+            catch { keyError = error.localizedDescription }
+            if !cloudAuthorized { aiProvider = AIService.Provider.appleFoundation.rawValue }
+        }
+        .confirmationDialog("Allow Cloud AI Processing?", isPresented: $showCloudDisclosure) {
+            Button("Allow OpenAI Processing") {
+                enableAIBackup = false
+                cloudConsent = AICloudPolicy.version
+                localOnly = false
+            }
+            Button("Keep Requests Local", role: .cancel) { }
+        } message: {
+            Text("For AI tasks you request, OpenAI may receive filenames and folder information, or up to 4,000 bytes from the selected text file. Requests use your API account and may incur charges. Only send information you are authorized to share. You can revoke future requests or enable local-only mode here. Already sent information cannot be recalled. Automatic fallback remains off until you enable it.")
+        }
+        .alert("API Key Could Not Be Updated", isPresented: Binding(get: { keyError != nil }, set: { if !$0 { keyError = nil } })) {
+            Button("OK") { keyError = nil }
+        } message: { Text(keyError ?? "") }
     }
 }
 

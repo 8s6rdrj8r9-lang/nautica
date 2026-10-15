@@ -112,7 +112,8 @@ struct RightDockSettingsView: View {
     @State private var editing: NauticaView?
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Toggle("Enable Right Dock", isOn: $enabled)
+            Text("Pinned navigation is available in Objects & Views and PAF. Files has its own Inspector.").font(.callout).foregroundStyle(.secondary)
+            Toggle("Enable Pinned Navigation", isOn: $enabled)
             Toggle("Show Labels", isOn: $labels)
             Picker("Presentation", selection: $compact) { Text("Expanded").tag(false); Text("Compact").tag(true) }
             HStack {

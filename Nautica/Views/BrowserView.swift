@@ -144,6 +144,7 @@ struct BrowserView: View {
     @AppStorage(Constants.defaultIconSizeKey) private var iconSize: Double = 64
     /// Session-level default for the hidden-files toggle.
     @State private var showHiddenFiles = UserDefaults.standard.bool(forKey: Constants.showHiddenFilesKey)
+    @State private var gitStatus: GitStatusSnapshot?
     @State private var searchText = ""
     @State private var searchCriteria: [SearchCriterion] = []
     /// Rename sheet state (Prompt 10).
@@ -2087,10 +2088,10 @@ struct BrowserView: View {
     @ViewBuilder
     private var statusBarGitBranchView: some View {
         let currentURL = activeTab.navigationHistory.currentURL
-        if GitService.shared.isGitRepository(at: currentURL) {
-            let branch = GitService.shared.currentBranch(at: currentURL) ?? "HEAD"
-            let isDirty = GitService.shared.isDirty(at: currentURL)
-            let branches = GitService.shared.localBranches(at: currentURL)
+        if let gitStatus, gitStatus.url == currentURL {
+            let branch = gitStatus.branch
+            let isDirty = gitStatus.isDirty
+            let branches = gitStatus.branches
 
             Menu {
                 Section("Branch") {
@@ -2337,6 +2338,18 @@ struct BrowserView: View {
             splitLayoutView
 
             bottomBarView
+                .task(id: activeTab.navigationHistory.currentURL) {
+                    let url = activeTab.navigationHistory.currentURL
+                    gitStatus = nil
+                    while !Task.isCancelled {
+                        let snapshot = await Task.detached(priority: .utility) {
+                            GitStatusSnapshot.read(at: url)
+                        }.value
+                        guard !Task.isCancelled else { return }
+                        gitStatus = snapshot
+                        do { try await Task.sleep(for: .seconds(5)) } catch { return }
+                    }
+                }
         }
         .navigationTitle(windowTitle)
         .toolbar {
@@ -2661,4 +2674,20 @@ private extension View {
 
 #Preview {
     BrowserView()
+}
+
+/// Git subprocesses must never run inside SwiftUI body evaluation. Process waiting
+/// can spin the main run loop and re-enter layout while the view is updating.
+private struct GitStatusSnapshot: Sendable {
+    let url: URL
+    let branch: String
+    let isDirty: Bool
+    let branches: [String]
+
+    static func read(at url: URL) -> GitStatusSnapshot? {
+        let git = GitService.shared
+        guard git.isGitRepository(at: url) else { return nil }
+        return Self(url: url, branch: git.currentBranch(at: url) ?? "HEAD",
+                    isDirty: git.isDirty(at: url), branches: git.localBranches(at: url))
+    }
 }

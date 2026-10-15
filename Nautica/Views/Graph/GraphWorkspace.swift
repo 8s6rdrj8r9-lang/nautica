@@ -53,19 +53,6 @@ struct GraphApplicationShell: View {
     @AppStorage("Nautica.RightDock.Enabled") private var dockEnabled = true
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                Button("Files", systemImage: "folder") { workspaceMode = "files"; destination = nil }
-                    .tint(workspaceMode == "files" ? .accentColor : .secondary)
-                Button("Objects & Views", systemImage: "point.3.connected.trianglepath.dotted") { workspaceMode = "graph"; destination = nil }
-                    .tint(workspaceMode == "graph" ? .accentColor : .secondary)
-                Button("PAF", systemImage: "checkmark.shield") { workspaceMode = "paf"; destination = DockPin(targetType: .subsystem, targetID: "paf") }
-                    .tint(workspaceMode == "paf" ? .accentColor : .secondary)
-                Spacer()
-                if model.busy { ProgressView().controlSize(.small) }
-                Button("New View", systemImage: "plus") { newView = NauticaView(name: "") }
-                SettingsLink { Label("Settings", systemImage: "gear") }
-            }.padding(8)
-            Divider()
             if workspaceMode == "files" {
                 BrowserView()
             } else {
@@ -92,6 +79,24 @@ struct GraphApplicationShell: View {
                 }
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Picker("Workspace", selection: Binding(get: { workspaceMode }, set: { workspaceMode = $0; destination = nil })) {
+                    Label("Files", systemImage: "folder").tag("files")
+                    Label("Objects & Views", systemImage: "point.3.connected.trianglepath.dotted").tag("graph")
+                    Label("PAF", systemImage: "checkmark.shield").tag("paf")
+                }
+                .pickerStyle(.segmented)
+                .fixedSize()
+            }
+            ToolbarItemGroup(placement: .primaryAction) {
+                if model.busy { ProgressView().controlSize(.small).accessibilityLabel("Working") }
+                if workspaceMode == "graph" {
+                    Button("New View", systemImage: "plus") { newView = NauticaView(name: "") }
+                }
+                SettingsLink { Label("Settings", systemImage: "gear") }
+            }
+        }
         .frame(minWidth: 900, minHeight: 550)
         .task { do { try await model.refresh() } catch { model.error = error.localizedDescription } }
         .sheet(item: $newView) { GraphViewBuilder(model: model, original: $0) }
@@ -114,7 +119,7 @@ struct RightDockView: View {
                     ForEach(model.pins) { pin in
                         Button { focused = pin.id; open(pin) } label: {
                             VStack(spacing: 4) {
-                                Image(systemName: model.symbol(pin)).font(.system(size: compact ? 16 : 21))
+                                Image(systemName: model.symbol(pin)).font(compact ? .body : .title3)
                                 if showLabels && !compact { Text(model.label(pin)).font(.caption).lineLimit(3).multilineTextAlignment(.center) }
                             }.frame(maxWidth: .infinity).padding(.vertical, compact ? 8 : 12)
                         }
@@ -127,7 +132,13 @@ struct RightDockView: View {
                             Button("Remove from Dock") { model.run { try await model.store.removePin(pin.id) } }
                         }
                     }
-                    if model.pins.isEmpty { Text("Pin Views in Settings").font(.caption).multilineTextAlignment(.center).foregroundStyle(.secondary) }
+                    if model.pins.isEmpty {
+                        SettingsLink {
+                            Label("Configure Pins", systemImage: "pin")
+                                .font(.caption).multilineTextAlignment(.center)
+                        }
+                        .help("Configure pinned navigation for Objects & Views and PAF in Settings")
+                    }
                 }
                 .padding(6)
                 .frame(minHeight: max(0, geometry.size.height), alignment: .center)
@@ -176,23 +187,47 @@ struct GraphBrowserView: View {
                             }
                     }
                 }
-            }.frame(width: 180)
+            }.frame(minWidth: 180, idealWidth: 220, maxWidth: 300)
             Divider()
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text(currentView?.name ?? "Objects").font(.title2)
+                    Text(currentView?.name ?? "Objects").font(.title2).fontWeight(.semibold)
                     Spacer()
                     if let view = currentView { Button("Configure") { editingView = view } }
                     Button("New Object") { editingObject = NauticaObject(type: "document", name: "") }
                     Menu("Register File") {
                         Button("File Reference…") { registerFile(evidence: false) }
                         Button("Capture Evidence…") { registerFile(evidence: true) }
-                    }
+                    }.fixedSize()
                     Button("Add Relationship") { showRelationship = true }.disabled(model.graph.objects.count < 2)
+                        .help(model.graph.objects.count < 2 ? "Create at least two Objects to add a relationship" : "Connect two Objects")
                 }
-                TextField("Search Objects by name, type, or tag", text: $search)
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Search Objects by name, type, or tag", text: $search)
+                        .textFieldStyle(.plain)
+                    if !search.isEmpty {
+                        Button { search = "" } label: { Image(systemName: "xmark.circle.fill") }
+                            .buttonStyle(.plain).accessibilityLabel("Clear object search")
+                    }
+                }
+                .padding(6)
+                .background(.background, in: RoundedRectangle(cornerRadius: 6))
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
                 if objects.isEmpty {
-                    ContentUnavailableView("No Objects", systemImage: "square.stack", description: Text("Create an Object or register a file. Objects can appear in many Views."))
+                    ContentUnavailableView {
+                        Label(search.isEmpty ? "No Objects" : "No Matching Objects", systemImage: "square.stack")
+                    } description: {
+                        Text(search.isEmpty ? "Create an Object or register a file. Objects can appear in many Views." : "Try another name, type, or tag.")
+                    } actions: {
+                        if search.isEmpty {
+                            Button("New Object") { editingObject = NauticaObject(type: "document", name: "") }
+                            Button("Register File…") { registerFile(evidence: false) }
+                        } else {
+                            Button("Clear Search") { search = "" }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     List(objects) { object in
                         Button { editingObject = object } label: {
@@ -221,7 +256,10 @@ struct GraphBrowserView: View {
                         }
                     }
                 }
-                Text("\(objects.count) Objects · \(model.graph.relationships.count) Relationships").font(.caption).foregroundStyle(.secondary)
+                Divider()
+                Text("\(objects.count) Objects · \(model.graph.relationships.count) Relationships")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }.padding().frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .onAppear { applyDestination() }

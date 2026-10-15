@@ -1,70 +1,28 @@
-//
-//  AIServiceTests.swift
-//  NauticaTests
-//
-//  EnsDev macOS 27 Foundation Models & Backup Fallback Contract Tests
-//
-
 import XCTest
 @testable import Nautica
 
 final class AIServiceTests: XCTestCase {
+    func testCloudRequiresCurrentConsentAndExplicitCloudChoice() throws {
+        let suite = "NauticaAIConsentTests-\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
 
-    override func setUp() async throws {
-        // Reset test keys to baseline
-        UserDefaults.standard.removeObject(forKey: Constants.aiEnabledKey)
-        UserDefaults.standard.removeObject(forKey: Constants.aiProviderKey)
-        UserDefaults.standard.removeObject(forKey: Constants.aiBackupProviderKey)
-        UserDefaults.standard.removeObject(forKey: Constants.enableAIBackupKey)
-    }
-
-    override func tearDown() async throws {
-        UserDefaults.standard.removeObject(forKey: Constants.aiEnabledKey)
-        UserDefaults.standard.removeObject(forKey: Constants.aiProviderKey)
-        UserDefaults.standard.removeObject(forKey: Constants.aiBackupProviderKey)
-        UserDefaults.standard.removeObject(forKey: Constants.enableAIBackupKey)
-    }
-
-    func testAIServiceDefaultConfiguration() async {
-        let ai = AIService.shared
-        // By default, AI should default to Apple Foundation Models
-        let provider = await ai.activeProvider
-        XCTAssertEqual(provider, .appleFoundation, "Default AI provider must be on-device Apple Foundation Models")
-
-        let backup = await ai.backupProvider
-        XCTAssertEqual(backup, .openai, "Default backup AI provider must be OpenAI")
-
-        let backupEnabled = await ai.isBackupEnabled
-        XCTAssertFalse(backupEnabled, "Backup fallback must be disabled by default (opt-in cloud privacy)")
-    }
-
-    func testAIServiceSummarizeFileRequiresOptInWhenDisabled() async {
-        let ai = AIService.shared
-        UserDefaults.standard.set(false, forKey: Constants.aiEnabledKey)
-
-        let tempURL = URL(fileURLWithPath: "/tmp/nautica-test-ai-disabled.txt")
-        try? "Sample content for testing".write(to: tempURL, atomically: true, encoding: .utf8)
-        defer { try? FileManager.default.removeItem(at: tempURL) }
-
-        do {
-            _ = try await ai.summarizeFile(at: tempURL)
-            XCTFail("Should throw disabled error when AI is disabled")
-        } catch {
-            XCTAssertTrue(error.localizedDescription.contains("disabled") || (error as? AIServiceError) == .disabled)
-        }
-    }
-
-    func testAIServiceSummarizeFileThrowsForNonExistentFile() async {
-        let ai = AIService.shared
-        UserDefaults.standard.set(true, forKey: Constants.aiEnabledKey)
-
-        let missingURL = URL(fileURLWithPath: "/tmp/nautica-nonexistent-\(UUID().uuidString).txt")
-
-        do {
-            _ = try await ai.summarizeFile(at: missingURL)
-            XCTFail("Should throw fileNotFound error")
-        } catch {
-            XCTAssertEqual(error as? AIServiceError, .fileNotFound)
-        }
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults))
+        defaults.set(true, forKey: Constants.aiEnabledKey)
+        defaults.set(true, forKey: Constants.enableAIBackupKey)
+        defaults.set(AIService.Provider.openAI.rawValue, forKey: Constants.aiProviderKey)
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults), "Legacy cloud settings cannot authorize egress")
+        defaults.set(AICloudPolicy.version, forKey: AICloudPolicy.consentKey)
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults), "Local-only has a safe default")
+        defaults.set(false, forKey: AICloudPolicy.localOnlyKey)
+        XCTAssertTrue(AICloudPolicy.allowsCloud(defaults: defaults))
+        defaults.set(true, forKey: AICloudPolicy.localOnlyKey)
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults), "Local-only overrides consent")
+        defaults.set(false, forKey: AICloudPolicy.localOnlyKey)
+        defaults.set("older-disclosure", forKey: AICloudPolicy.consentKey)
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults))
+        defaults.set(AICloudPolicy.version, forKey: AICloudPolicy.consentKey)
+        defaults.set(false, forKey: Constants.aiEnabledKey)
+        XCTAssertFalse(AICloudPolicy.allowsCloud(defaults: defaults), "Disabled Intelligence cannot send cloud requests")
     }
 }

@@ -216,7 +216,11 @@ final class SidebarModel {
 
     private static func makeItem(for url: URL) -> SidebarItem {
         let home = FileManager.default.homeURL
-        let name = url == home ? "Home" : url.lastPathComponent
+        let cloudRoot = home.appendingPathComponent("Library/Mobile Documents/com~apple~CloudDocs")
+        let name: String
+        if url.standardizedFileURL == home.standardizedFileURL { name = "Home" }
+        else if url.standardizedFileURL == cloudRoot.standardizedFileURL { name = "iCloud Drive" }
+        else { name = FileManager.default.displayName(atPath: url.path) }
         return SidebarItem(url: url, name: name)
     }
 

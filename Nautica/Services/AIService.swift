@@ -1,4 +1,5 @@
 import Foundation
+import Security
 #if canImport(FoundationModels)
 import FoundationModels
 #endif
@@ -31,7 +32,7 @@ public actor AIService {
             return SystemLanguageModel.default.availability == .available
         }
         #endif
-        return true
+        return false
     }
 
     // MARK: - Directory Summarization
@@ -113,7 +114,7 @@ public actor AIService {
                 return try await runOnDeviceFoundationModel(prompt: prompt)
             } catch {
                 // If on-device fails and backup is enabled, route to ChatGPT
-                if defaults.bool(forKey: Constants.enableAIBackupKey) {
+                if defaults.bool(forKey: Constants.enableAIBackupKey), AICloudPolicy.allowsCloud(defaults: defaults) {
                     return try await runChatGPTBackup(prompt: prompt)
                 }
                 return fallbackDefault
@@ -133,7 +134,7 @@ public actor AIService {
             }
             let session = LanguageModelSession()
             let response = try await session.respond(to: prompt)
-            return response.text.trimmingCharacters(in: .whitespacesAndNewlines)
+            return response.content.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         #endif
         throw NSError(domain: "AIService", code: 2, userInfo: [NSLocalizedDescriptionKey: "FoundationModels framework unavailable on this architecture."])
@@ -143,7 +144,10 @@ public actor AIService {
 
     private func runChatGPTBackup(prompt: String) async throws -> String {
         let defaults = UserDefaults.standard
-        guard let apiKey = defaults.string(forKey: Constants.openAIAPIKeyKey), !apiKey.isEmpty else {
+        guard AICloudPolicy.allowsCloud(defaults: defaults) else {
+            throw NSError(domain: "AIService", code: 6, userInfo: [NSLocalizedDescriptionKey: "Cloud AI is not authorized. Review Intelligence settings or use on-device processing."])
+        }
+        guard let apiKey = try AIAPIKeyStore.loadMigratingLegacyKey(), !apiKey.isEmpty else {
             throw NSError(domain: "AIService", code: 3, userInfo: [NSLocalizedDescriptionKey: "ChatGPT API key missing in Settings."])
         }
 
@@ -176,5 +180,71 @@ public actor AIService {
         }
 
         throw NSError(domain: "AIService", code: 5, userInfo: [NSLocalizedDescriptionKey: "Invalid ChatGPT response structure."])
+    }
+}
+
+/// Versioned consent is separate from the old provider/fallback preferences.
+/// Existing installations remain local until the current disclosure is accepted.
+enum AICloudPolicy {
+    static let consentKey = "Nautica.AI.CloudConsentVersion"
+    static let localOnlyKey = "Nautica.AI.LocalOnly"
+    static let version = "2026-10-15.1"
+
+    static func allowsCloud(defaults: UserDefaults) -> Bool {
+        guard defaults.bool(forKey: Constants.aiEnabledKey),
+              defaults.string(forKey: consentKey) == version else { return false }
+        return (defaults.object(forKey: localOnlyKey) as? Bool) == false
+    }
+}
+
+/// No credential contents are exposed in error messages or logs.
+enum AIAPIKeyStore {
+    private static let service = "com.arthur.nautica.openai"
+    private static let account = "api-key"
+    private static var query: [String: Any] {
+        [kSecClass as String: kSecClassGenericPassword,
+         kSecAttrService as String: service, kSecAttrAccount as String: account]
+    }
+    private static func failure(_ status: OSStatus) -> NSError {
+        NSError(domain: NSOSStatusErrorDomain, code: Int(status),
+                userInfo: [NSLocalizedDescriptionKey: "macOS Keychain could not complete this operation (\(status))."])
+    }
+    static func loadMigratingLegacyKey() throws -> String? {
+        var lookup = query
+        lookup[kSecReturnData as String] = true
+        lookup[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(lookup as CFDictionary, &result)
+        if status == errSecSuccess {
+            guard let data = result as? Data, let key = String(data: data, encoding: .utf8) else {
+                throw failure(errSecDecode)
+            }
+            UserDefaults.standard.removeObject(forKey: Constants.openAIAPIKeyKey)
+            return key
+        }
+        guard status == errSecItemNotFound else { throw failure(status) }
+        if let legacy = UserDefaults.standard.string(forKey: Constants.openAIAPIKeyKey), !legacy.isEmpty {
+            try save(legacy)
+            return legacy
+        }
+        return nil
+    }
+    static func save(_ key: String) throws {
+        let data = Data(key.trimmingCharacters(in: .whitespacesAndNewlines).utf8)
+        guard !data.isEmpty else { throw failure(errSecParam) }
+        let status = SecItemUpdate(query as CFDictionary, [kSecValueData as String: data] as CFDictionary)
+        if status == errSecItemNotFound {
+            var item = query
+            item[kSecValueData as String] = data
+            item[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+            let added = SecItemAdd(item as CFDictionary, nil)
+            guard added == errSecSuccess else { throw failure(added) }
+        } else if status != errSecSuccess { throw failure(status) }
+        UserDefaults.standard.removeObject(forKey: Constants.openAIAPIKeyKey)
+    }
+    static func remove() throws {
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else { throw failure(status) }
+        UserDefaults.standard.removeObject(forKey: Constants.openAIAPIKeyKey)
     }
 }

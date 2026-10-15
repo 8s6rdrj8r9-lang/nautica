@@ -10,11 +10,23 @@ struct PAFWorkspaceView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Label("PAF", systemImage: "checkmark.shield").font(.largeTitle)
+                Label("PAF", systemImage: "checkmark.shield").font(.title2).fontWeight(.semibold)
                 Spacer()
                 Button("Import Package…") { importing = true }
             }
-            Text("Package-driven audits over a reviewed, frozen projection of Nautica Objects and Relationships.").foregroundStyle(.secondary)
+            Text("Audit your Objects and Relationships using a reviewed, frozen set of inputs.").foregroundStyle(.secondary)
+            Text("Import a package, review the inputs, then freeze and export them to an independent auditor. Nautica does not include a model runner.")
+                .font(.callout).foregroundStyle(.secondary)
+            if model.packages.isEmpty && model.drafts.isEmpty && model.audits.isEmpty {
+                ContentUnavailableView {
+                    Label("No Audit Packages", systemImage: "checkmark.shield")
+                } description: {
+                    Text("Import a PAF package to start an audit. Your draft inputs can be reviewed before anything is frozen.")
+                } actions: {
+                    Button("Import Package…") { importing = true }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
             List {
                 Section("Installed packages") {
                     ForEach(model.packages) { package in
@@ -44,6 +56,8 @@ struct PAFWorkspaceView: View {
                     }
                 }
             }
+            }
+            Divider()
             Text("Execution uses a standalone export for an independent auditor. Nautica does not currently include a model runner; external auditor context isolation must be recorded honestly.").font(.caption).foregroundStyle(.secondary)
         }.padding(20)
         .sheet(isPresented: $importing) { PAFImportView(model: model) }
